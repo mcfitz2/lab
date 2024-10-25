@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  prometheus-prefect-exporter
+  name:  prometheus-prefect-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-prefect-exporter
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: prometheus-prefect-exporter
+    spec:
+      containers:
+        - env:
+            - name: PREFECT_API_URL
+              value: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
+            - name: PREFECT_API_KEY
+              value: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
+          image: prefecthq/prometheus-prefect-exporter:latest
+          name:  prometheus-prefect-exporter
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+      restartPolicy: Always

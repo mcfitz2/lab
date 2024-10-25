@@ -1,9 +1,9 @@
 # Configure machines (VMs and Physical)
 
-- hosts: proxmox
-  name: Configure machine [proxmox]
-  roles:
-    - role: pve_backup
+# - hosts: proxmox
+#   name: Configure machine [proxmox]
+#   roles:
+#     - role: pve_backup
 
 # - hosts: development
 #   name: Configure machine [development]
@@ -43,24 +43,24 @@
 #   roles:
 #     - name: k3s_install_node
 
-- hosts: localhost
-  connection: local
-  become: false
-  roles:
-    - k3s_postconfig
+# - hosts: localhost
+#   connection: local
+#   become: false
+#   roles:
+#     - k3s_postconfig
 
 # - hosts: node_metrics
 #   name: Install node-exporter
 #   roles:
 #     - name: geerlingguy.node_exporter
 
-# - hosts: monitoring
-#   name: Configure machine(s) [monitoring]
-#   gather_facts: false
-#   roles:
-#     - name: monitoring_infra
-#     - name: prometheus.prometheus.prometheus
-#     - name: prometheus.prometheus.pushgateway
+- hosts: monitoring
+  name: Configure machine(s) [monitoring]
+  gather_facts: false
+  roles:
+    - name: monitoring_infra
+    - name: prometheus.prometheus.prometheus
+    - name: prometheus.prometheus.pushgateway
 
 # - hosts: greatlakes-db
 #   roles:
@@ -69,11 +69,12 @@
 - hosts: localhost
   connection: local
   roles:
-    - name: pve-exporter
-    - name: unpoller
-    - name: sonarr
-    - name: radarr
-    - name: tautulli
-    - name: overseer
-    - name: fidelity_calendar
-    - name: k8up
+    # - name: pve-exporter
+    # - name: unpoller
+    # - name: sonarr
+    # - name: radarr
+    # - name: tautulli
+    # - name: overseer
+    # - name: fidelity_calendar
+    # - name: k8up
+    - name: prefect-exporter

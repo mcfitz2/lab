@@ -1,0 +1,19 @@
+- name: Create [monitoring] namespace
+  kubernetes.core.k8s:
+    name: monitoring
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: Deploy deployment
+  kubernetes.core.k8s:
+    kubeconfig: '~/.kube/config'
+    state: present
+    template: "deployment.yaml.j2"
+    apply: true
+- name: Deploy service
+  kubernetes.core.k8s:
+    kubeconfig: '~/.kube/config'
+    state: present
+    template: "service.yaml.j2"
+    apply: true

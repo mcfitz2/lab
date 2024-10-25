@@ -85,6 +85,8 @@ pve_exporter_port: 30206
 node_exporter_port: 9100
 unpoller_port: 30207
 k8up_port: 30209
+prometheus_prefect_exporter_port: 30210
+
 prometheus_scrape_configs_raw: |
   {% for target in groups['node_metrics'] +%}
   - job_name: "{{ target }}"
@@ -127,6 +129,11 @@ prometheus_scrape_configs_raw: |
     scrape_interval: 30s
     static_configs:
       - targets: ['localhost:9092']
+  - job_name: 'prefect'
+    scrape_interval: 1m
+    scrape_timeout: 30s
+    static_configs:
+      - targets: ['{{ master_ip }}:{{ prometheus_prefect_exporter_port }}']
 build_infra: false
 setup_monitoring: true
 prometheus_scrape_configs: "{{ prometheus_scrape_configs_raw | from_yaml }}"
