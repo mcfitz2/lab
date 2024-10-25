@@ -1,0 +1,56 @@
+<div class="card">
+    <div class="card-header">
+        <a class="btn" href="/app/inventory/create-item">Add Item</a>
+        <a class="btn" href="/app/inventory/manage-locations">Manage Storage</a>
+    </div>
+    <div class="card-block">
+        <clr-datagrid #datagrid class="limit-height">
+            <clr-dg-column [clrDgField]="'name'">Name</clr-dg-column>
+            <clr-dg-column [clrDgField]="'category'">Category</clr-dg-column>
+            <clr-dg-column [clrDgField]="'expirationDate'">Expires</clr-dg-column>
+            <clr-dg-column [clrDgField]="'status'">Status</clr-dg-column>
+            <clr-dg-column [clrDgField]="'needsAttention'">Stocked</clr-dg-column>
+            <clr-dg-column [clrDgField]="'restockCost'">Restock Cost</clr-dg-column>
+            <clr-dg-column [clrDgField]="'orderInfo.retailer'">Restock Cost</clr-dg-column>
+            <clr-dg-column [clrDgField]="'orderInfo.retailerId'">Restock Cost</clr-dg-column>
+
+            <clr-dg-column class="button-column"></clr-dg-column>
+            <clr-dg-row *clrDgItems="let item of items" [clrDgItem]="item">
+                <clr-dg-cell>{{ item.name }}</clr-dg-cell>
+                <clr-dg-cell>{{ item.category | titlecase }}</clr-dg-cell>
+                <clr-dg-cell *ngIf="item.shelfLife < 0">Never</clr-dg-cell>
+                <clr-dg-cell *ngIf="item && item.shelfLife >= 0">{{ item.expirationDate|date:'mediumDate' }}</clr-dg-cell>
+                <clr-dg-cell [class.highlight]="item.needsAttention">{{item.status}}</clr-dg-cell>
+                <clr-dg-cell *ngIf="item.needsAttention"><cds-icon status="danger" shape="exclamation-triangle"></cds-icon></clr-dg-cell>
+                <clr-dg-cell *ngIf="!item.needsAttention"><cds-icon shape="check"></cds-icon></clr-dg-cell>
+                <clr-dg-cell>{{item.restockCost | currency:'USD':'symbol'}}</clr-dg-cell>
+                <clr-dg-cell>{{item.orderInfo.retailer }}</clr-dg-cell>
+                <clr-dg-cell>{{item.orderInfo.retailerId }}</clr-dg-cell>
+
+                <clr-dg-cell>
+                    <div *ngIf="item.confirm" class="btn-group">
+                        <cds-button action="outline" size="sm" [routerLink]="['/app/inventory/item', item._id]">Update</cds-button>
+                        <cds-button action="outline" size="sm">Order More</cds-button>
+                        <cds-button action="outline" size="sm" (click)="item.confirm = false">Cancel</cds-button>
+                        <cds-button action="outline" size="sm" status="danger" (click)="delete(item)">Confirm</cds-button>
+                      </div>
+                      <div *ngIf="!item.confirm" class="btn-group">
+                        <cds-button action="outline" size="sm" [routerLink]="['/app/inventory/item', item._id]" size="sm">Update</cds-button>
+                        <a target="_blank" href="{{item.orderInfo?.url}}"><cds-button size="sm" action="outline" [disabled]="!item.orderInfo?.url" size="sm" >Order More</cds-button></a>
+                        <cds-button action="outline" *ngIf="!item.confirm" size="sm" (click)="item.confirm = true">Delete</cds-button>
+                    </div>
+                
+                </clr-dg-cell>
+                <clr-dg-row-detail *clrIfExpanded>
+                    {{ item | json }}
+                      </clr-dg-row-detail> 
+            </clr-dg-row>
+
+            <clr-dg-footer></clr-dg-footer>
+        </clr-datagrid>
+
+    </div>
+    <div class="card-footer">
+
+    </div>
+</div>

@@ -1,0 +1,9 @@
+- hosts: all
+  name: Copy SSH keys to hosts
+  gather_facts: false
+  tasks:
+    - name: Copy key
+      ansible.posix.authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      ignore_unreachable: true

@@ -1,0 +1,99 @@
+- name: Deploy CRDs
+  kubernetes.core.k8s:
+    kubeconfig: '~/.kube/config'
+    state: present
+    src: "https://github.com/k8up-io/k8up/releases/download/k8up-4.8.1/k8up-crd.yaml"
+    apply: true
+    server_side_apply:
+      field_manager: kubectl
+
+- name: Add chart repo
+  kubernetes.core.helm_repository:
+    name: k8up-io
+    repo_url: "https://k8up-io.github.io/k8up"
+
+- name: Deploy k8up
+  kubernetes.core.helm:
+    name: k8up
+    chart_ref: k8up-io/k8up
+    release_namespace: k8up
+    create_namespace: true
+    wait: true
+    update_repo_cache: true
+    disable_hook: true
+    values:
+      metrics:
+        service:
+          nodePort: "{{ k8up_port }}"
+          type: NodePort
+
+- name: Setup backup-credentials in namespace
+  kubernetes.core.k8s:
+    kubeconfig: '~/.kube/config'
+    state: present
+    apply: true
+    resource_definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: backup-credentials
+        namespace: "{{ item }}"
+      type: Opaque
+      stringData:
+        username: "{{ b2_key_id }}"
+        password: "{{ b2_key_value }}"
+  with_items: "{{ k8s_namespaces }}"
+
+- name: Setup backup-repo in namespace
+  kubernetes.core.k8s:
+    kubeconfig: '~/.kube/config'
+    state: present
+    apply: true
+    resource_definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: backup-repo
+        namespace: "{{ item }}"
+      type: Opaque
+      stringData:
+        password: "{{ k8up_backup_repo_pass }}"
+  with_items: "{{ k8s_namespaces }}"
+
+- name: Setup backup schedule in namespace
+  kubernetes.core.k8s:
+    kubeconfig: '~/.kube/config'
+    state: present
+    apply: true
+    resource_definition:
+      apiVersion: k8up.io/v1
+      kind: Schedule
+      metadata:
+        name: schedule-all
+        namespace: "{{ item }}"
+      spec:
+        backend:
+          s3:
+            endpoint: "{{ b2_endpoint }}"
+            bucket: "{{ proxmox_backup_bucket }}"
+            accessKeyIDSecretRef:
+              name: backup-credentials
+              key: username
+            secretAccessKeySecretRef:
+              name: backup-credentials
+              key: password
+          repoPasswordSecretRef:
+            name: backup-repo
+            key: password
+        backup:
+          schedule: '0 12 * * *'
+          failedJobsHistoryLimit: 2
+          successfulJobsHistoryLimit: 2
+        check:
+          schedule: '0 1 * * 1'
+        prune:
+          schedule: '0 1 * * 0'
+          retention:
+            keepLast: 5
+            keepDaily: 5
+  with_items: "{{ k8s_namespaces }}"

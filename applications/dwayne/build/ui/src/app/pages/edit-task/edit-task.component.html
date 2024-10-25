@@ -1,0 +1,9 @@
+<app-page-wrapper [headerText]="'Edit Task'">
+    <cds-input>
+        <label>Task Name</label>
+        <input #taskName="ngModel" type="text" name="name" class="full-width" [(ngModel)]="task.name" placeholder="Task Name" required />
+    </cds-input>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" [disabled]="taskName.invalid" (click)="submit()">Submit</button>
+    </div>
+</app-page-wrapper>

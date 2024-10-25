@@ -1,0 +1,95 @@
+<app-page-wrapper [headerText]="'Edit Item'">
+    <cds-form-group>
+        <cds-input>
+            <label>Name</label>
+            <input #itemName="ngModel" [(ngModel)]="item.name" type="text" name="name" placeholder="Item Name" required
+                minlength="1" />
+        </cds-input>
+        <cds-select>
+            <label>Category</label>
+            <select [(ngModel)]="item.category">
+                <option>batteries</option>
+                <option>fuel</option>
+                <option>tools</option>
+                <option>heaters</option>
+                <option>misc</option>
+            </select>
+        </cds-select>
+        <cds-form-group layout="compact">
+            <cds-input>
+                <label>Reorder Link</label>
+                <input type="text" name="name" [(ngModel)]="item.orderInfo.url" placeholder="Reorder Link" required
+                    minlength="1" />
+            </cds-input>
+            <cds-button (click)="loadInfo()" action="outline" size="sm">Get Info</cds-button>
+        </cds-form-group>
+        <cds-input>
+            <label>Package Size</label>
+            <input type="number" name="name" [(ngModel)]="item.orderInfo.packageSize" placeholder="Package Size" required
+                minlength="1" />
+        </cds-input>
+        <cds-input>
+            <label>Package Price</label>
+            <input type="number" name="name" [(ngModel)]="item.orderInfo.price" placeholder="Package Price" required
+                minlength="1" />
+        </cds-input>
+        <cds-input-group>
+            <label>Shelf Life</label>
+            <cds-input>
+                <label>Shelf Life</label>
+                <input [disabled]="neverCheck.checked" #shelfLifeValue type="number" name="name" value="{{item.shelfLife}}" (change)="updateShelfLife(shelfLifeValue.value, shelfLifeUnit.selectedOptions[0].value, neverCheck.checked)" placeholder="Shelf Life" required minlength="1" />
+            </cds-input>
+            <cds-select>
+                <label>Unit</label>
+                <select  [disabled]="neverCheck.checked" #shelfLifeUnit (change)="updateShelfLife(shelfLifeValue.value, shelfLifeUnit.selectedOptions[0].value, neverCheck.checked)">
+                    <option value="1">days</option>
+                    <option value="7">weeks</option>
+                    <option value="30">months</option>
+                    <option value="365">years</option>
+                </select>
+            </cds-select>
+            <cds-checkbox>
+                <label>Never Expires</label>
+                <input #neverCheck type="checkbox" (change)="updateShelfLife(shelfLifeValue.value, shelfLifeUnit.selectedOptions[0].value, neverCheck.checked)">
+            </cds-checkbox>
+        </cds-input-group>
+        <cds-select>
+            <label>Unit</label>
+            <select [(ngModel)]="item.unit">
+                <option>ea</option>
+                <option>in</option>
+                <option>lb</option>
+                <option>gal</option>
+                <option>oz</option>
+                <option>ea</option>
+                <option>l</option>
+                <option>meal</option>
+                <option>dollar</option>
+                <option>qt</option>
+                <option>ft</option>
+                <option>btl</option>
+            </select>
+        </cds-select>
+    </cds-form-group>
+    <div *ngFor="let location of item.locations" class="card">
+        <div class="card-header">
+            {{location.name}}
+        </div>
+        <div class="card-block">
+            <cds-form-group>
+                <cds-input>
+                    <label>Quantity Needed</label>
+                    <input [(ngModel)]="location.quantityNeed" type="number">
+                </cds-input>
+                <cds-input>
+                    <label>Quantity On Hand</label>
+                    <input [(ngModel)]="location.quantityHave" type="number">
+                </cds-input>
+            </cds-form-group>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" [disabled]="loading" (click)="submit()">Submit</button>
+    </div>
+</app-page-wrapper>

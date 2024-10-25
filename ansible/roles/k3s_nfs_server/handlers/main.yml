@@ -1,0 +1,11 @@
+- name: Wait 60 seconds for container to start
+  ansible.builtin.pause:
+    seconds: 60
+  listen: container_started
+- name: Remove host from known_hosts
+  ansible.builtin.command:
+    cmd: "ssh-keygen -R {{ ansible_host }}"
+  delegate_to: localhost
+  listen: container_created
+  throttle: 1
+  changed_when: false

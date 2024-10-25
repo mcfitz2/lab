@@ -1,0 +1,103 @@
+- hosts: localhost
+  tasks:
+    - name: Create VM
+      community.general.proxmox_kvm:
+        vmid: 888
+        node: pve-heavy
+        api_user: 'root@pam'
+        api_password: 'cl0ser2g0d'
+        api_host: 192.168.1.47
+        cores: 1
+        memory: 1024
+        onboot: true
+        timeout: 500
+      register: creation
+      throttle: 1
+    - name: Backup VM
+      mcfitz2.proxmox_backup.proxmox_backup:
+        vmid: 888
+        node: pve-heavy
+        api_user: 'root@pam'
+        api_password: 'cl0ser2g0d'
+        api_host: 192.168.1.47
+        storage: backups
+        verify_ssl: false
+        wait: true
+    - name: Get Latest Backup
+      mcfitz2.proxmox_backup.proxmox_backup_info:
+        vmid: 888
+        node: pve-heavy
+        api_user: 'root@pam'
+        api_password: 'cl0ser2g0d'
+        api_host: 192.168.1.47
+        storage: backups
+        verify_ssl: false
+      register: latest
+    - name: Restore VM to latest backup
+      mcfitz2.proxmox_backup.proxmox_backup_restore:
+        vmid: 888
+        node: pve-heavy
+        api_user: 'root@pam'
+        api_password: 'cl0ser2g0d'
+        api_host: 192.168.1.47
+        verify_ssl: false
+        backup: "{{ latest['latest']['volid'] }}"
+        wait: true
+        start_after_restore: true
+        try_hard_stop: true
+
+    - name: Create container
+      community.general.proxmox:
+        vmid: 999
+        node: pve-heavy
+        api_user: 'root@pam'
+        api_password: 'cl0ser2g0d'
+        api_host: 192.168.1.47
+        password: 'cl0ser2g0d'
+        hostname: 'test'
+        nameserver: '192.168.1.1'
+        pubkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        unprivileged: false
+        disk: 'zfs-ssd:10'
+        ostemplate: 'local:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst'
+        cores: 1
+        memory: 1024
+        swap: 512
+        onboot: true
+        netif: '{"net0":"name=eth0,ip=192.168.10.2/24,gw=192.168.10.1,bridge=vmbr0"}'
+        timeout: 500
+        features:
+          - nesting=1
+      register: creation
+      throttle: 1
+    - name: Backup container
+      mcfitz2.proxmox_backup.proxmox_backup:
+        vmid: 999
+        node: pve-heavy
+        api_user: 'root@pam'
+        api_password: 'cl0ser2g0d'
+        api_host: 192.168.1.47
+        storage: backups
+        verify_ssl: false
+        wait: true
+    - name: Get Latest Backup
+      mcfitz2.proxmox_backup.proxmox_backup_info:
+        vmid: 999
+        node: pve-heavy
+        api_user: 'root@pam'
+        api_password: 'cl0ser2g0d'
+        api_host: 192.168.1.47
+        storage: backups
+        verify_ssl: false
+      register: latest
+    - name: Restore container to latest backup
+      mcfitz2.proxmox_backup.proxmox_backup_restore:
+        vmid: 999
+        node: pve-heavy
+        api_user: 'root@pam'
+        api_password: 'cl0ser2g0d'
+        api_host: 192.168.1.47
+        verify_ssl: false
+        backup: "{{ latest['latest']['volid'] }}"
+        wait: true
+        start_after_restore: true

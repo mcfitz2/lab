@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  fidelity-calendar
+  name:  fidelity-calendar
+  namespace: misc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fidelity-calendar
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: fidelity-calendar
+    spec:
+      imagePullSecrets:
+        - name: gitlab-credentials
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+          image: registry.gitlab.com/mcfitz2/lab/fidelity_calendar:latest
+          name:  fidelity-calendar
+          ports:
+            - containerPort: 8989
+              protocol: TCP
+      restartPolicy: Always

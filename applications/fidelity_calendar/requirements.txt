@@ -1,0 +1,6 @@
+python-dateutil==2.8.2
+requests==2.31.0
+pytz==2023.3
+flask
+ics
+pyyaml

@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+  dwayne-db:
+    image: mongo
+    container_name: dwayne-db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME:
+      MONGO_INITDB_ROOT_PASSWORD:
+    volumes:
+      - /home/micah/app-data/dwayne:/data/db
+    ports:
+      - 27018:27017
+  dwayne-ui:
+    build: ./dwayne/ui
+    container_name: dwayne-ui
+    depends_on:
+      - dwayne-backend
+  dwayne-backend:
+      build: ./dwayne/backend
+      environment:
+        MONGO_URL: MONGO
+      container_name: dwayne-backend
+      depends_on:
+        - dwayne-db

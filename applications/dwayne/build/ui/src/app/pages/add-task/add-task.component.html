@@ -1,0 +1,13 @@
+<app-page-wrapper [headerText]="'Add Task'">
+    <cds-input>
+        <label>Task Name</label>
+        <input #taskName="ngModel" type="text" name="name" class="full-width" [(ngModel)]="task.name" placeholder="Task Name" required />
+    </cds-input>
+    <clr-date-container>
+        <label>Due Date</label>
+        <input type="date" autocomplete="off" clrDate name="dueDate"  [(ngModel)]="task.dueDateString" required/>
+      </clr-date-container>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" [disabled]="taskName.invalid" (click)="submit()">Create Task</button>
+    </div>
+</app-page-wrapper>

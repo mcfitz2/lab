@@ -1,0 +1,15 @@
+<app-page-wrapper [headerText]="'Complete Task'">
+    <div clrForm>
+      <clr-input-container>
+        <label>Meter Value</label>
+        <input type="number" name="meterValue" clrInput ="full-width" [(ngModel)]="task.completedMeterValue" placeholder="Meter Value" />
+      </clr-input-container>
+      <clr-date-container>
+        <label>Completed Date</label>
+        <input type="date" autocomplete="off" clrDate name="completedDate"  [(ngModel)]="task.completedDateString" required/>
+      </clr-date-container>
+      </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" [disabled]="!task.completedDateString || loading" (click)="submit()">Complete Task</button>
+    </div>
+    </app-page-wrapper>

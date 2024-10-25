@@ -1,0 +1,35 @@
+<body cds-theme="dark">
+   
+    <div class="main-container">
+        <header class="header header-1">
+            <div class="branding">
+                <a href="#" class="nav-link">
+                    <!-- <cds-icon></cds-icon> -->
+                    <!-- <img class="logo" src="assets/images/dwayne.jpg"> -->
+                    <span class="title">Dwayne</span>
+                </a>
+            </div>
+        </header>
+        <nav class="subnav">
+            <ul class="nav">
+              <li class="nav-item">
+                <a class="nav-link" href="/app/maintenance">Maintenance</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/app/inventory">Inventory</a>
+              </li>
+            
+            </ul>
+          </nav>
+        <div class="content-container">
+            <!-- <clr-vertical-nav>
+                <a clrVerticalNavLink routerLink="/app/maintenance" routerLinkActive="active">Maintenance</a>
+                <a clrVerticalNavLink routerLink="/app/inventory" routerLinkActive="active">Inventory</a>
+            </clr-vertical-nav> -->
+            <div class="content-area">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </div>
+
+</body>

@@ -1,0 +1,18 @@
+header () {
+    echo "============================================="
+    echo "** $1"
+    echo "============================================="
+}
+backup_host () {
+    header "Backup up PVE Host"
+    mkdir -p /primary/backups/host
+    find /primary/backups/proxmox/host -ctime +2 -exec rm {} \;
+    tar czvf /primary/backups/proxmox/host/pve-$(hostname)-$(date +"%Y-%m-%d_%H-%M-%S").tar.gz /etc /root
+    s3cmd put /primary/backups/proxmox/host/pve-$(hostname)-$(date +"%Y-%m-%d_%H-%M-%S").tar.gz s3://{{ proxmox_backup_bucket }}/host/
+    if [ $? -eq 0 ]; then
+            curl -s "http://192.168.1.43:3001/api/push/UbQuIlp0kK?status=up&msg=OK&ping=" > /dev/null
+    fi
+
+}
+
+backup_host

@@ -1,0 +1,6 @@
+__pycache__
+*.pyc
+*.zip
+node_modules
+oauth-service/dist
+uptime-service/dist

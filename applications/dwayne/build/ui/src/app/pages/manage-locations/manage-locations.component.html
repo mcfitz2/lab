@@ -1,0 +1,19 @@
+<app-page-wrapper [headerText]="'Manage Locations'">
+    <div class="clr-row">
+        <div class="clr-col-6">
+            <cds-form-group>
+          <cds-input>
+            <label>Name</label>
+            <input #newNameInput="ngModel" [(ngModel)]="newName" type="text" placeholder="Location" minlength="1">
+          </cds-input>
+          <cds-icon-button action="outline" size="icon" [disabled]="newNameInput.invalid" (click)="add()"><cds-icon shape="plus"></cds-icon></cds-icon-button>
+        </cds-form-group>
+        </div>
+        <div class="clr-col-6">
+            <div class="btn-wrapper" *ngFor="let location of user.locations"><button (click)="remove(location)" class="btn">{{location}} <cds-icon shape="times"></cds-icon></button></div>
+        </div>
+      </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="submit()">Submit</button>
+      </div>
+</app-page-wrapper>

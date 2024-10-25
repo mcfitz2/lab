@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  overseer
+  name:  overseer
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: overseer
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: overseer
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+          image: sctx/overseerr:latest
+          name:  overseer
+          ports:
+            - containerPort: 8989
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /app/config
+              name: overseer-config
+      restartPolicy: Always
+      volumes:
+        - name: overseer-config
+          persistentVolumeClaim:
+            claimName: overseer-config

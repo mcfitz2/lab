@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  sonarr
+  name:  sonarr
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+          image: lscr.io/linuxserver/sonarr:latest
+          name:  sonarr
+          ports:
+            - containerPort: 8989
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: sonarr-config
+            - mountPath: /tv
+              name: sonarr-tv
+            - mountPath: /downloads
+              name: sonarr-downloads
+      restartPolicy: Always
+      volumes:
+        - name: sonarr-config
+          persistentVolumeClaim:
+            claimName: sonarr-config
+        - name: sonarr-tv
+          nfs:
+            server:  "{{ nfs_server_host }}"
+            path: "{{ media_nfs_export }}/TV"
+        - name: sonarr-downloads
+          nfs:
+            server: "{{ nfs_server_host }}"
+            path:  "{{ media_nfs_export }}/downloads"

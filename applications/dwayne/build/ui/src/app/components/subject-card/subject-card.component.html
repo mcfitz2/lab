@@ -1,0 +1,35 @@
+<div class="card">
+    <div class="card-header">
+        {{ subject.year }} {{ subject.brand}} {{subject.model}}
+    </div>
+    <div class="card-block">
+        <div class="card-media-block">
+            <img *ngIf="subject.thumbnail" src="{{ subject.thumbnail }}" class="card-media-image">
+            <img *ngIf="!subject.thumbnail" src="assets/images/default-machine.jpg" class="card-media-image">
+
+            <div class="card-media-description">
+                <div class="card-media-title">
+                    Type: {{subject.type | titlecase}}
+                </div>
+                <div class="card-media-title">
+                    Usage: {{subject.meterValue | number:'1.0':'en-US'}} {{subject.meterUnit}}
+                </div>
+                <span class="card-media-text">
+
+                </span>
+            </div>
+        </div>
+        <h3>Pending Tasks</h3>
+        <app-service-task-datagrid [subject]="subject"></app-service-task-datagrid>
+        <h3>Recurring Tasks</h3>
+        <app-recurring-service-task-datagrid [subject]="subject"></app-recurring-service-task-datagrid>
+
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-sm btn-link" [routerLink]="['/app/maintenance/subject', subject._id, 'add-task']">Add Service
+            Task</button>
+        <button class="btn btn-sm btn-link" [routerLink]="['/app/maintenance/subject', subject._id, 'add-recurring-task']">Add Recurring
+            Maintenance Task</button>
+        <button class="btn btn-sm btn-link" [routerLink]="['/app/maintenance/subject', subject._id]">Manage</button>
+    </div>
+</div>

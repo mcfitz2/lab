@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fidelity-calendar
+  namespace: misc
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: fidelity-calendar
+                port:
+                  number: 8989
+      host: "{{ fidelity_calendar_fqdn }}"

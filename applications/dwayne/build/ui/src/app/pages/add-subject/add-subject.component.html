@@ -1,0 +1,47 @@
+<app-page-wrapper [headerText]="'Add Subject'">
+    <cds-form-group>
+    <cds-input>
+        <label>Year</label>
+        <input #year="ngModel" type="text" name="name" class="full-width" [(ngModel)]="subject.year" placeholder="Year" required />
+    </cds-input>
+    <cds-input>
+        <label>Make></label>
+        <input #make="ngModel" type="text" name="name" class="full-width" [(ngModel)]="subject.brand" placeholder="Make" required />
+    </cds-input>
+    <cds-input>
+        <label>Model</label>
+        <input #model="ngModel" type="text" name="name" class="full-width" [(ngModel)]="subject.model" placeholder="Model" required />
+    </cds-input>
+    <cds-select>
+        <label>Type</label>
+        <select [(ngModel)]="subject.type">
+            <option>vehicle</option>
+            <option>generator</option>
+            <option>lawn mower</option>
+            <option>chainsaw</option>
+            <option>air conditioner</option>
+            <option>furnace</option>
+        </select>
+    </cds-select>
+    <cds-input>
+        <label>Current Meter Reading</label>
+        <input #meterValue="ngModel" type="text" name="name" class="full-width" [(ngModel)]="subject.meterValue" placeholder="Current Meter Reading" required />
+    </cds-input>
+    <cds-select>
+        <label>Meter Unit</label>
+        <select [(ngModel)]="subject.meterUnit">
+            <option>miles</option>
+            <option>kilometers</option>
+            <option>hours</option>
+        </select>
+    </cds-select>
+   
+    <cds-file #file cds-control status="neutral">
+        <label>Thumbnail</label>
+        <input type="file" (change)="changeListener($event)">
+    </cds-file>
+</cds-form-group>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="submit()">Add Subject</button>
+    </div>
+</app-page-wrapper>

@@ -1,0 +1,131 @@
+---
+- name: Test kubeconfig path
+  ansible.builtin.stat:
+    path: ~/.kube/config
+  register: kubeconfig_path
+
+- name: Replace host ip address in the kubeconfig
+  ansible.builtin.replace:
+    path: ~/.kube/config
+    regexp: "https://127.0.0.1:6443"
+    replace: "https://{{ master_ip }}:6443"
+  when: kubeconfig_path.stat.exists and copy_kubeconfig
+
+- name: Change k3s.yaml permissions to 644
+  ansible.builtin.file:
+    path: ~/.kube/config
+    mode: "600"
+  when: kubeconfig_path.stat.exists and copy_kubeconfig
+
+- name: Check if helm is installed /usr/local/bin/helm
+  ansible.builtin.stat:
+    path: $HOME/.config/helm/repositories.yaml
+  register: helm_check
+
+- name: Download get-helm-3
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    dest: ~/get-helm-3.sh
+    mode: "700"
+  when: not helm_check.stat.exists
+
+- name: Install helm if not exist
+  ansible.builtin.command: >-
+    ~/get-helm-3.sh
+  when: not helm_check.stat.exists
+  changed_when: true
+
+- name: Install python packages
+  ansible.builtin.pip:
+    name:
+      - kubernetes
+      - jsonpatch
+      - PyYAML
+    break_system_packages: true
+
+
+- name: "Create [{{ item }}] namespace"
+  kubernetes.core.k8s:
+    name: workflows
+    api_version: v1
+    kind: Namespace
+    state: present
+  with_items: "{{ k8s_namespaces }}"
+- name: "Setup GitLab Credentials in [{{ item }}] namespace"
+  kubernetes.core.k8s:
+    kubeconfig: '~/.kube/config'
+    state: present
+    resource_definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gitlab-credentials
+        namespace: "{{ item }}"
+      data:
+        .dockerconfigjson: "{{ lookup('ansible.builtin.template', './docker-config.json.j2') | to_nice_json | b64encode }}"
+      type: kubernetes.io/dockerconfigjson
+  with_items: "{{ k8s_namespaces }}"
+
+- name: Make local-path not the default storage class
+  kubernetes.core.k8s:
+    state: patched
+    kind: StorageClass
+    name: local-path
+    definition:
+      metadata:
+        annotations:
+          storageclass.kubernetes.io/is-default-class: 'false'
+- name: Apply storage class
+  kubernetes.core.k8s:
+    kubeconfig: '~/.kube/config'
+    state: present
+    template: "nfs-provisioner/class.yaml.j2"
+- name: Apply rbac
+  kubernetes.core.k8s:
+    kubeconfig: '~/.kube/config'
+    state: present
+    template: "nfs-provisioner/rbac.yaml.j2"
+- name: Apply deployment
+  kubernetes.core.k8s:
+    kubeconfig: '~/.kube/config'
+    state: present
+    template: "nfs-provisioner/deployment.yaml.j2"
+
+- name: Add chart repo
+  kubernetes.core.helm_repository:
+    name: strrl.dev
+    repo_url: "https://helm.strrl.dev"
+
+- name: Deploy cloudflare-tunnel-ingress-controller
+  kubernetes.core.helm:
+    name: cloudflare-tunnel-ingress-controller
+    chart_ref: strrl.dev/cloudflare-tunnel-ingress-controller
+    release_namespace: cloudflare-tunnel-ingress-controller
+    create_namespace: true
+    wait: true
+    update_repo_cache: true
+    disable_hook: true
+    values:
+      cloudflare:
+        apiToken: "{{ cloudflare_api_key }}"
+        accountId: "{{ cloudflare_account_id }}"
+        tunnelName: "{{ tunnel_name }}"
+- name: Add chart repo
+  kubernetes.core.helm_repository:
+    name: kubernetes-dashboard
+    repo_url: "https://kubernetes.github.io/dashboard/"
+- name: Deploy dashboard
+  kubernetes.core.helm:
+    name: kubernetes-dashboard
+    chart_ref: kubernetes-dashboard/kubernetes-dashboard
+    release_namespace: kubernetes-dashboard
+    create_namespace: true
+    wait: true
+    update_repo_cache: true
+    disable_hook: true
+
+- name: Apply dashboard ingress
+  kubernetes.core.k8s:
+    kubeconfig: '~/.kube/config'
+    state: present
+    template: "ingress/dashboard.yaml.j2"

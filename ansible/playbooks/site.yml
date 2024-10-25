@@ -1,0 +1,79 @@
+# Configure machines (VMs and Physical)
+
+- hosts: proxmox
+  name: Configure machine [proxmox]
+  roles:
+    - role: pve_backup
+
+# - hosts: development
+#   name: Configure machine [development]
+#   become: true
+#   tasks:
+#     - name: Install ansible
+#       ansible.builtin.apt:
+#         name:
+#           - ansible
+#           - ansible-lint
+#         state: present
+
+# - hosts: master:node
+#   name: Configure machine(s) [cluster]
+#   gather_facts: false
+#   roles:
+#     - k3s_infra
+#     - k3s_prereq
+#     - k3s_download
+
+# - hosts: cluster_nfs
+#   name: Configure machine [cluster nfs]
+#   gather_facts: false
+#   roles:
+#     - k3s_nfs_server
+#     - geerlingguy.nfs
+
+# - hosts: master
+#   name: Configure machine [cluster master]
+#   become: true
+#   roles:
+#     - name: k3s_install_master
+
+# - hosts: node
+#   name: Configure machine(s) [cluster nodes]
+#   become: true
+#   roles:
+#     - name: k3s_install_node
+
+- hosts: localhost
+  connection: local
+  become: false
+  roles:
+    - k3s_postconfig
+
+# - hosts: node_metrics
+#   name: Install node-exporter
+#   roles:
+#     - name: geerlingguy.node_exporter
+
+# - hosts: monitoring
+#   name: Configure machine(s) [monitoring]
+#   gather_facts: false
+#   roles:
+#     - name: monitoring_infra
+#     - name: prometheus.prometheus.prometheus
+#     - name: prometheus.prometheus.pushgateway
+
+# - hosts: greatlakes-db
+#   roles:
+#     - name: prometheus.prometheus.postgres_exporter
+
+- hosts: localhost
+  connection: local
+  roles:
+    - name: pve-exporter
+    - name: unpoller
+    - name: sonarr
+    - name: radarr
+    - name: tautulli
+    - name: overseer
+    - name: fidelity_calendar
+    - name: k8up

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: fidelity-calendar
+  name: fidelity-calendar
+  namespace: misc
+spec:
+  ports:
+    - name: "8989"
+      port: 8989
+      targetPort: 8989
+  selector:
+    app: fidelity-calendar

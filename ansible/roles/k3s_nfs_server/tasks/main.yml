@@ -1,0 +1,97 @@
+- name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+  community.crypto.openssh_keypair:
+    path: '~/.ssh/id_rsa'
+    regenerate: "full_idempotence"
+  delegate_to: localhost
+  run_once: true
+- name: Create container
+  community.general.proxmox:
+    vmid: "{{ vmid }}"
+    node: "{{ proxmox_node }}"
+    api_user: "{{ proxmox_user }}"
+    api_password: "{{ proxmox_pass }}"
+    api_host: "{{ proxmox_ip }}"
+    password: "{{ ansible_ssh_pass }}"
+    hostname: '{{ inventory_hostname }}'
+    nameserver: "{{ default_gateway  }}"
+    pubkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    unprivileged: false
+    disk: 'zfs-ssd:20'
+    ostemplate: 'local:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst'
+    cores: 2
+    memory: 2048
+    swap: 512
+    onboot: true
+    netif: '{"net0":"name=eth0,ip={{ ansible_host }}/24,gw=192.168.1.1,bridge=vmbr0"}'
+    timeout: 500
+    features:
+      - nesting=1
+  delegate_to: localhost
+  notify: container_created
+  throttle: 1
+- name: Add extra options to LXC config
+  block:
+    - name: Add cluster mount
+      ansible.builtin.lineinfile:
+        path: "/etc/pve/lxc/{{ vmid }}.conf"
+        regexp: '^mp0:'
+        line: "mp0: /primary/cluster,mp=/primary/cluster"
+      delegate_to: proxmox
+      register: mount0
+    - name: Add media mount
+      ansible.builtin.lineinfile:
+        path: "/etc/pve/lxc/{{ vmid }}.conf"
+        regexp: '^mp1:'
+        line: "mp1: /primary/media,mp=/primary/media"
+      delegate_to: proxmox
+      register: mount1
+- name: Stop Container
+  when: mount0.changed or mount1.changed
+  community.general.proxmox:
+    vmid: "{{ vmid }}"
+    node: "{{ proxmox_node }}"
+    api_user: "{{ proxmox_user }}"
+    api_password: "{{ proxmox_pass }}"
+    api_host: "{{ proxmox_ip }}"
+    hostname: '{{ inventory_hostname }}'
+    timeout: 500
+    state: stopped
+  delegate_to: localhost
+  throttle: 1
+- name: Start container
+  community.general.proxmox:
+    vmid: "{{ vmid }}"
+    node: "{{ proxmox_node }}"
+    api_user: "{{ proxmox_user }}"
+    api_password: "{{ proxmox_pass }}"
+    api_host: "{{ proxmox_ip }}"
+    hostname: '{{ inventory_hostname }}'
+    timeout: 500
+    state: started
+  delegate_to: localhost
+  notify: container_started
+  throttle: 1
+- name: Wait 10 seconds
+  ansible.builtin.pause:
+    seconds: 10
+  throttle: 1
+- name: Add host to known_hosts
+  ansible.builtin.known_hosts:
+    name: "{{ ansible_host }}"
+    state: present
+    key: "{{ lookup('pipe', 'ssh-keyscan {{ ansible_host }}') }}"
+    hash_host: true
+  retries: 3
+  delay: 3
+  register: result
+  until: result.failed == false
+- name: Wait 600 seconds for target connection to become reachable/usable
+  ansible.builtin.wait_for_connection:
+    timeout: 120
+- name: Gather Facts about hosts
+  ansible.builtin.gather_facts:
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ cluster_nfs_export }}"
+    state: directory
+    mode: "0644"

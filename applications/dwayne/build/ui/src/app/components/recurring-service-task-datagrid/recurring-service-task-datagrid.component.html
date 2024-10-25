@@ -1,0 +1,31 @@
+<clr-datagrid #datagrid class="limit-height">
+    <clr-dg-column [clrDgField]="'name'">Name</clr-dg-column>
+    <clr-dg-column [clrDgField]="'meterInterval'">Meter Interval</clr-dg-column>
+    <clr-dg-column [clrDgField]="'timeInterval'">Time Interval</clr-dg-column>
+
+    <clr-dg-column class="button-column"></clr-dg-column>
+    <clr-dg-row *clrDgItems="let task of subject.recurringTasks" [clrDgItem]="task">
+      <clr-dg-cell>{{ task.name }}</clr-dg-cell>
+      <clr-dg-cell *ngIf="task.meterInterval">{{task.meterInterval | number:'1.0':'en-US'}} {{subject.meterUnit}} </clr-dg-cell>
+      <clr-dg-cell *ngIf="!task.meterInterval"></clr-dg-cell>
+      <clr-dg-cell *ngIf="task.timeInterval">{{task.timeInterval}} days</clr-dg-cell>
+      <clr-dg-cell *ngIf="!task.timeInterval"></clr-dg-cell>
+
+    <clr-dg-cell>
+
+      <div *ngIf="task.confirm" class="btn-group">
+        <button  class="btn btn-sm" (click)="task.confirm = false">Cancel</button>
+        <button  class="btn btn-sm btn-danger"(click)="subjectStore.deleteRecurringTask(subject, task)">Confirm</button>
+      </div>
+      <div *ngIf="!task.confirm" class="btn-group">
+        <button *ngIf="!task.confirm" class="btn btn-sm" [routerLink]="['/app/maintenance/subject', subject._id, 'edit-recurring-task', task.name]">Edit</button>
+        <button *ngIf="!task.confirm" class="btn btn-sm" (click)="task.confirm = true">Delete</button>
+    </div>
+    </clr-dg-cell>
+    <clr-dg-row-detail *clrIfExpanded>
+      {{ task.notes }}
+        </clr-dg-row-detail> 
+    </clr-dg-row>
+ 
+  </clr-datagrid>
+  

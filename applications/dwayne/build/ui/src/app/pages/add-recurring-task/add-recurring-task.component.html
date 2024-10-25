@@ -1,0 +1,27 @@
+<app-page-wrapper [headerText]="'Add Task'">
+
+<cds-form-group>
+    <cds-input>
+        <label>Task Name</label>
+        <input #taskName="ngModel" type="text" name="name" class="full-width" [(ngModel)]="task.name"
+            placeholder="Task Name" required/>
+    </cds-input>
+    <cds-input>
+        <label>Meter Interval</label>
+        <input #meterInterval="ngModel" type="number" name="meterInterval" class="full-width"
+            [(ngModel)]="task.meterInterval" placeholder="Meter Interval" min="1" required/>
+    </cds-input>
+    <cds-input>
+        <label>Time Interval (days)</label>
+        <input #timeInterval="ngModel" type="number" name="timeInverval" class="full-width"
+            [(ngModel)]="task.timeInterval" placeholder="Time Interval" min="1" required/>
+    </cds-input>
+    <cds-textarea>
+        <label>Notes</label>
+        <textarea #notes="ngModel" type="text" name="notes" class="full-width" [(ngModel)]="task.notes" placeholder="Notes"></textarea>
+    </cds-textarea>
+</cds-form-group>
+<div class="modal-footer">
+<button type="button" class="btn btn-primary" [disabled]="taskName.invalid || (meterInterval.invalid && timeInterval.invalid)" (click)="submit()">Create Task</button>
+</div>
+</app-page-wrapper>

@@ -1,0 +1,44 @@
+<clr-datagrid #datagrid class="limit-height">
+  <clr-dg-column [clrDgField]="'name'">Name</clr-dg-column>
+  <clr-dg-column [clrDgField]="'completed'" [clrDgSortOrder]="descSort">Completed</clr-dg-column>
+  <clr-dg-column [clrDgField]="'dueDate'" [clrDgSortOrder]="descSort">Due Date</clr-dg-column>
+  <clr-dg-column [clrDgField]="'completedMeterValue'">Completed Meter Value</clr-dg-column>
+  <clr-dg-column [clrDgField]="'completedDate'">Completed Date</clr-dg-column>
+  <clr-dg-column class="delete-column"></clr-dg-column>
+
+  <clr-dg-row *clrDgItems="let task of subject.tasks" [clrDgItem]="task">
+    <clr-dg-cell>{{ task.name }}</clr-dg-cell>
+    <clr-dg-cell *ngIf="task.completed">Finished</clr-dg-cell>
+    <clr-dg-cell *ngIf="!task.completed">Not Started</clr-dg-cell>
+    <clr-dg-cell>{{ task.dueDate |date:'mediumDate'}}</clr-dg-cell>
+    <clr-dg-cell *ngIf="task.completed">{{ task.completedMeterValue | number:'1.0':'en-US'}} {{subject.meterUnit }}</clr-dg-cell>
+    <clr-dg-cell *ngIf="!task.completed"></clr-dg-cell>
+    <clr-dg-cell>{{ task.completedDate |date:'mediumDate'}}</clr-dg-cell>
+
+    <clr-dg-cell>
+
+        <div *ngIf="!task.confirm && !task.completed" class="btn-group">
+          <button  class="btn btn-sm" [routerLink]="['/app/maintenance/subject', subject._id, 'edit-task', task.name]">Edit</button>
+          <button  class="btn btn-sm" [routerLink]="['/app/maintenance/subject', subject._id, 'complete-task', task.name]">Complete</button>
+          <button *ngIf="!task.confirm" class="btn btn-sm" (click)="task.confirm = true">Delete</button>
+        </div>
+        <div *ngIf="task.confirm && !task.completed" class="btn-group">
+          <button  class="btn btn-sm" [routerLink]="['/app/maintenance/subject', subject._id, 'edit-task', task.name]">Edit</button>
+          <button  class="btn btn-sm" [routerLink]="['/app/maintenance/subject', subject._id, 'complete-task', task.name]">Complete</button>
+          <button  class="btn btn-sm" (click)="task.confirm = false">Cancel</button>
+          <button  class="btn btn-sm btn-danger"(click)="subjectStore.deleteTask(subject, task).subscribe()">Confirm</button>
+        </div>
+        <div *ngIf="task.confirm && task.completed" class="btn-group">
+          <button  class="btn btn-sm" (click)="task.confirm = false">Cancel</button>
+          <button  class="btn btn-sm btn-danger"(click)="subjectStore.deleteTask(subject, task).subscribe()">Confirm</button>
+        </div>
+        <div *ngIf="task.completed && !task.confirm" class="btn-group">
+          <button *ngIf="!task.confirm" class="btn btn-sm" (click)="task.confirm = true">Delete</button>
+      </div>
+    </clr-dg-cell>
+    <clr-dg-row-detail *clrIfExpanded>
+      {{ task?.notes }}
+          </clr-dg-row-detail>
+  </clr-dg-row>
+  <clr-dg-footer></clr-dg-footer>
+</clr-datagrid>

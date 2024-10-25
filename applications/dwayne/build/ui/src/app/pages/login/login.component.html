@@ -1,0 +1,37 @@
+<body>
+<div class="login-wrapper">
+    <form class="login">
+      <section class="title">
+        <!-- These could be heading elements. -->
+        <div class="welcome">Dwayne</div>
+        <div class="hint"></div>
+      </section>
+      <div class="login-group">
+        <clr-input-container>
+          <label class="clr-sr-only">E-mail</label>
+          <input
+            type="text"
+            autocomplete="username"
+            name="username"
+            clrInput
+            placeholder="Enter e-mail"
+            [(ngModel)]="email"
+          />
+        </clr-input-container>
+        <clr-password-container>
+          <label class="clr-sr-only">Password</label>
+          <input
+            type="password"
+            autocomplete="current-password"
+            name="password"
+            clrPassword
+            placeholder="Enter password"
+            [(ngModel)]="password"
+          />
+        </clr-password-container>
+        <div class="error">Invalid user name or password</div>
+        <button type="submit" (click)="login()" class="btn btn-primary">Log in</button>
+      </div>
+    </form>
+  </div>
+</body>

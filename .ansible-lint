@@ -1,0 +1,10 @@
+---
+profile: production
+exclude_paths:
+  - roles/geerlingguy.nfs
+  - roles/geerlingguy.node_exporter
+skip_list:
+  - no-handler
+  - name[play]
+  - ignore-errors
+offline: false

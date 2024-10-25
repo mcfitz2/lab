@@ -1,0 +1,13 @@
+.limit-height {
+    height: 300px;
+}
+
+.delete-column {
+    width: 300px;
+}
+.complete-column {
+    width: 100px;
+}
+.buy-button { 
+    margin-right: 30px;
+}

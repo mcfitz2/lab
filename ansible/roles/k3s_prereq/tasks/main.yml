@@ -1,0 +1,68 @@
+---
+
+- name: Enable IPv4 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    reload: true
+
+- name: Enable IPv6 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "1"
+    state: present
+    reload: true
+- name: "Set hostname"
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Install nfs-common on the servers
+  ansible.builtin.apt:
+    name: nfs-common
+    state: present
+- name: Install cifs-utils on the servers
+  ansible.builtin.apt:
+    name: cifs-utils
+    state: present
+- name: Copy rc.local
+  ansible.builtin.template:
+    src: "rc.local.j2"
+    dest: "/etc/rc.local"
+    owner: root
+    group: root
+    mode: "0755"
+  register: rc_local
+- name: Reboot container
+  when: rc_local.changed
+  block:
+    - name: Stop container
+      community.general.proxmox:
+        vmid: "{{ vmid }}"
+        node: pve-heavy
+        api_user: 'root@pam'
+        api_password: 'cl0ser2g0d'
+        api_host: 192.168.1.47
+        hostname: '{{ inventory_hostname }}'
+        timeout: 500
+        force: true
+        state: stopped
+      delegate_to: localhost
+      throttle: 1
+    - name: Start container
+      community.general.proxmox:
+        vmid: "{{ vmid }}"
+        node: pve-heavy
+        api_user: 'root@pam'
+        api_password: 'cl0ser2g0d'
+        api_host: 192.168.1.47
+        hostname: '{{ inventory_hostname }}'
+        timeout: 500
+        state: started
+      delegate_to: localhost
+      throttle: 1
+    - name: Wait 600 seconds for target connection to become reachable/usable
+      ansible.builtin.wait_for_connection:
+        timeout: 120
+    - name: Gather Facts about hosts
+      ansible.builtin.gather_facts:

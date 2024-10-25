@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pve-exporter-config
+  namespace: monitoring
+data:
+  pve.yml: |-
+    default:
+        user: "{{proxmox_user}}"
+        password: "{{proxmox_pass}}"
+        verify_ssl: false

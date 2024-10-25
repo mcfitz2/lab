@@ -1,0 +1,6 @@
+{
+  "/api": {
+    "target": "http://dwayne-backend:8000",
+    "secure": false
+  }
+}

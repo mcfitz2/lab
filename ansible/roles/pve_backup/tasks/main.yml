@@ -1,0 +1,50 @@
+- name: Install s3cmd via apt
+  apt:
+    name: "s3cmd"
+    state: present
+
+- name: Configure s3cmd for root
+  template:
+    src: s3cfg.j2
+    dest: "/root/.s3cfg"
+    owner: "root"
+    group: "root"
+
+- name: Install hook script
+  ansible.builtin.template:
+    src: "hook_script.pl.j2"
+    dest: "{{ hook_script_path }}"
+    owner: root
+    group: root
+    mode: '0755'
+- name: Install cleanup script
+  ansible.builtin.template:
+    src: "cleanup_script.sh.j2"
+    dest: "{{ cleanup_script_path }}"
+    owner: root
+    group: root
+    mode: '0755'
+- name: Install host backup script
+  ansible.builtin.template:
+    src: "backup_host.sh.j2"
+    dest: "{{ host_backup_script_path }}"
+    owner: root
+    group: root
+    mode: '0755'
+- name: Create cron job for host backup
+  ansible.builtin.cron:
+    name: "host backup"
+    minute: "45"
+    job: "bash {{ host_backup_script_path }}"
+- name: Add hook for every backup job
+  replace:
+    path: /etc/pve/jobs.cfg
+    after: 'vzdump:'
+    regexp: '\t(storage.+)'
+    replace: '\t\1\n\tscript {{ hook_script_path }}'
+
+- name: Create cron job for host backup
+  ansible.builtin.cron:
+    name: "sanoid"
+    minute: "50"
+    job: "sanoid --cron"

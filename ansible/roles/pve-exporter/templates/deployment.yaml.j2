@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  pve-exporter
+  name:  pve-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pve-exporter
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: pve-exporter
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+          image: prompve/prometheus-pve-exporter
+          name:  pve-exporter
+          ports:
+            - containerPort: 9122
+              protocol: TCP
+          volumeMounts:
+            - name: pve-exporter-cfg
+              mountPath: /etc/prometheus/
+      restartPolicy: Always
+      volumes:
+        - name: pve-exporter-cfg
+          configMap:
+            defaultMode: 420
+            name: pve-exporter-config

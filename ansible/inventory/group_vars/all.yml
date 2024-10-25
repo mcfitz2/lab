@@ -1,0 +1,144 @@
+bitwarden_state_dir: /tmp/bitwarden
+k3s_version: v1.31.1+k3s1
+systemd_dir: /etc/systemd/system
+extra_server_args: "--write-kubeconfig-mode=644"
+extra_agent_args: ""
+copy_kubeconfig: true
+cluster_nfs_host: k3snfs
+cluster_master: k3s1
+nfs_server_host: "{{ hostvars[cluster_nfs_host]['ansible_host'] }}"
+cluster_nfs_export: /cluster
+media_nfs_export: /primary/media
+master_ip: "{{ hostvars[cluster_master]['ansible_host'] }}"
+nfs_exports: [
+  "{{ cluster_nfs_export }}    *(rw,sync,no_root_squash)",
+  "{{ media_nfs_export }}    *(rw,sync,no_root_squash)"
+]
+
+cloudflare_tunnel_operator_url: https://github.com/adyanth/cloudflare-operator/config/default
+tunnel_name: k3s-tunnel
+tunnel_domain: "{{ lookup('bitwarden.secrets.lookup', '5fb55d28-9ca8-4c9f-8c02-b202013c6ae5', state_file_dir=bitwarden_state_dir) }}"
+cloudflare_email: "{{ lookup('bitwarden.secrets.lookup', 'b22ca726-b3eb-45ad-971e-b202013c21f3', state_file_dir=bitwarden_state_dir) }}"
+cloudflare_account_name: "{{ lookup('bitwarden.secrets.lookup', 'b22ca726-b3eb-45ad-971e-b202013c21f3', state_file_dir=bitwarden_state_dir) }}"
+cloudflare_account_id: "{{ lookup('bitwarden.secrets.lookup', '5d08031f-2aca-4bb4-a373-b20201315c25', state_file_dir=bitwarden_state_dir) }}"
+cloudflare_api_key: "{{ lookup('bitwarden.secrets.lookup', '863b2844-68c2-4292-9605-b202013943fa', state_file_dir=bitwarden_state_dir) }}"
+cloudflare_api_token: k3s-tunnel
+argocd_admin_pass: "{{ lookup('bitwarden.secrets.lookup', '8f9cc19e-e65d-4816-a277-b2020139abe6', state_file_dir=bitwarden_state_dir) }}"
+gitlab_token: "{{ lookup('bitwarden.secrets.lookup', 'fea627b6-00c0-4f03-b9c7-b2020139dc7d', state_file_dir=bitwarden_state_dir) }}"
+gitlab_user: mcfitz2
+node_exporter_version: '0.18.1'
+kubernetes_root: "{{ ansible_config_file | dirname }}/../kubernetes"
+radarr_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'cd6f122c-27df-4a82-88b5-b202013b8ba0', state_file_dir=bitwarden_state_dir) }}"
+sonarr_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'edcb2c18-5664-4dbc-afe6-b202013bf97e', state_file_dir=bitwarden_state_dir) }}"
+nzbgeek_api_key: "{{ lookup('bitwarden.secrets.lookup', '8449f4d7-0cc0-409b-a15a-b202013ea29e', state_file_dir=bitwarden_state_dir) }}"
+tvdb_api_key: "{{ lookup('bitwarden.secrets.lookup', '5fc9f51d-be6f-4a70-b8bd-b202013e8767', state_file_dir=bitwarden_state_dir) }}"
+tvdb_pin: "{{ lookup('bitwarden.secrets.lookup', '802b73a7-b1a0-4fbe-ad08-b202013eb434', state_file_dir=bitwarden_state_dir) }}"
+overseer_fqdn: "{{ lookup('bitwarden.secrets.lookup', '48e244de-31f0-4041-9179-b21101570a5d', state_file_dir=bitwarden_state_dir) }}"
+tautulli_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'f753ba32-c906-4974-b381-b21101573911', state_file_dir=bitwarden_state_dir) }}"
+fidelity_calendar_fqdn: "{{ lookup('bitwarden.secrets.lookup', '8374c542-8305-479d-8e02-b21200f65fb1', state_file_dir=bitwarden_state_dir) }}"
+
+greatlakes_host: "{{ hostvars['greatlakes-db']['ansible_host'] }}"
+greatlakes_user: "{{ lookup('bitwarden.secrets.lookup', 'e4313714-d00a-48e7-a29a-b20201410624', state_file_dir=bitwarden_state_dir) }}"
+greatlakes_port: 5432
+greatlakes_pass: "{{ lookup('bitwarden.secrets.lookup', '00df690f-e42c-4695-99ac-b20201412253', state_file_dir=bitwarden_state_dir) }}"
+greatlakes_db: greatlakes
+
+
+unifi_user: "{{ lookup('bitwarden.secrets.lookup', '86e83d12-01ea-4680-a7ca-b2020141977c', state_file_dir=bitwarden_state_dir) }}"
+unifi_pass: "{{ lookup('bitwarden.secrets.lookup', '3dcdb1df-d7d8-473c-8615-b2020141b315', state_file_dir=bitwarden_state_dir) }}"
+
+influxdb_token: "{{ lookup('bitwarden.secrets.lookup', '3011106e-b82d-4972-96a5-b20201422e51', state_file_dir=bitwarden_state_dir) }}"
+
+proxmox_host: proxmox
+proxmox_user: "{{ lookup('bitwarden.secrets.lookup', '188b17de-40d1-495d-b78f-b20201433f99', state_file_dir=bitwarden_state_dir) }}"
+proxmox_token_name: "{{ lookup('bitwarden.secrets.lookup', 'c1d0fad3-b9dd-470d-a2b5-b20201432b8d', state_file_dir=bitwarden_state_dir) }}"
+proxmox_token: "{{ lookup('bitwarden.secrets.lookup', '8baa6594-b2a0-44d6-a442-b20201431555', state_file_dir=bitwarden_state_dir) }}"
+proxmox_ip: "{{ hostvars[proxmox_host]['ansible_host'] }}"
+proxmox_node: "pve-heavy"
+proxmox_port: 8006
+proxmox_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5') }}"
+
+
+uptime_kuma_basic_auth: "{{ lookup('bitwarden.secrets.lookup', '7586ea6a-6e40-4199-9889-b2020144451a', state_file_dir=bitwarden_state_dir) }}"
+uptime_kuma_ip: "{{ hostvars['rescue']['ansible_host'] }}"
+docker_ip: "{{ hostvars['docker']['ansible_host'] }}"
+
+
+immich_db_user: "{{ lookup('bitwarden.secrets.lookup', '5d15e47c-b3eb-466c-9f8c-b2020145fb7a', state_file_dir=bitwarden_state_dir) }}"
+immich_db_pass: "{{ lookup('bitwarden.secrets.lookup', '022c7fea-91c2-4ed1-8aa6-b20201461645', state_file_dir=bitwarden_state_dir) }}"
+immich_db_name: "{{ lookup('bitwarden.secrets.lookup', 'c4d96c63-4db6-47b2-ad52-b2020146296b', state_file_dir=bitwarden_state_dir) }}"
+
+pgadmin_user: "{{ lookup('bitwarden.secrets.lookup', 'b22ca726-b3eb-45ad-971e-b202013c21f3', state_file_dir=bitwarden_state_dir) }}"
+pgadmin_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5', state_file_dir=bitwarden_state_dir) }}"
+
+homeassistant_ip: "{{ hostvars['homeassistant']['ansible_host'] }}"
+unifi_ip: "{{ hostvars['dream_machine']['ansible_host'] }}"
+
+
+b2_key_id: "{{ lookup('bitwarden.secrets.lookup', '5f4b653b-3c74-45f8-be93-b20a01320052', state_file_dir=bitwarden_state_dir) }}"
+b2_key_value: "{{ lookup('bitwarden.secrets.lookup', 'a397ed91-83b7-40ee-8ca3-b20a01321a06', state_file_dir=bitwarden_state_dir) }}"
+b2_endpoint: "s3.us-east-005.backblazeb2.com"
+proxmox_backup_bucket: mcfitz2-backups
+k8up_backup_repo_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5', state_file_dir=bitwarden_state_dir) }}"
+default_gateway: "{{ unifi_ip }}"
+pve_exporter_port: 30206
+node_exporter_port: 9100
+unpoller_port: 30207
+k8up_port: 30209
+prometheus_scrape_configs_raw: |
+  {% for target in groups['node_metrics'] +%}
+  - job_name: "{{ target }}"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+          - "{{ hostvars[target]['ansible_host'] }}:{{node_exporter_port}}"
+  {%+ endfor %}
+
+  - job_name: 'pve'
+    static_configs:
+      - targets:
+        - "{{ proxmox_ip }}"  # Proxmox VE node.
+    metrics_path: /pve
+    params:
+      module: [default]
+      cluster: ['1']
+      node: ['1']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: {{ master_ip }}:{{ pve_exporter_port }}
+  - job_name: 'unifipoller'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['{{ master_ip }}:{{ unpoller_port }}']
+  - job_name: 'k8up'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['{{ master_ip }}:{{ k8up_port }}']
+  - job_name: 'greatlakes-postgres'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['{{ greatlakes_host }}:9187']
+  - job_name: 'pushgateway'
+    honor_labels: true
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['localhost:9092']
+build_infra: false
+setup_monitoring: true
+prometheus_scrape_configs: "{{ prometheus_scrape_configs_raw | from_yaml }}"
+pushgateway_web_listen_address: "0.0.0.0:9092"
+
+
+k8s_namespaces:
+  - media
+  - k8up
+  - monitoring
+  - workflows
+  - awx-operator
+  - immich
+  - default
+  - misc
