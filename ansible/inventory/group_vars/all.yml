@@ -142,3 +142,4 @@ k8s_namespaces:
   - immich
   - default
   - misc
+  - greatlakes

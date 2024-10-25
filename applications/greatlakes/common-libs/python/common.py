@@ -105,9 +105,9 @@ def find_files_in_drive(pattern):
     )
     items = results.get("files", [])
     return [item for item in items if re.match(pattern, item['name'])]
-    
+
 def get_oauth_client():
-    return OauthClient(base_url="http://oauth:4002")
+    return OauthClient(base_url=os.environ['OAUTH_URL'])
 
 
 def get_dropbox_client():
