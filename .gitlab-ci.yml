@@ -36,4 +36,4 @@ build-workflows:
     - cd applications/greatlakes
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker compose build
-    - docker push
+    - docker compose push
