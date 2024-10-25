@@ -12,7 +12,7 @@ services:
       - 4002:4002
     environment:
       BASE_URL: "https://oauth.micahf.net"
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   uptime:
     image: registry.gitlab.com/mcfitz2/lab/uptime:latest
@@ -33,7 +33,7 @@ services:
       context: ./
       dockerfile: ./takeout/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   row-counts:
     image: registry.gitlab.com/mcfitz2/lab/row-counts:latest
@@ -42,7 +42,7 @@ services:
       context: ./
       dockerfile: ./row_counts/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   austin-energy:
     image: registry.gitlab.com/mcfitz2/lab/austin-energy:latest
@@ -51,7 +51,7 @@ services:
       context: ./
       dockerfile: ./austin_energy/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   fitbit-api:
     image: registry.gitlab.com/mcfitz2/lab/fitbit-api:latest
@@ -60,7 +60,7 @@ services:
       context: ./
       dockerfile: ./fitbit_api/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   sms:
     image: registry.gitlab.com/mcfitz2/lab/sms:latest
@@ -69,7 +69,7 @@ services:
       context: ./
       dockerfile: ./sms/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   calls:
     image: registry.gitlab.com/mcfitz2/lab/calls:latest
@@ -78,7 +78,7 @@ services:
       context: ./
       dockerfile: ./calls/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   ynab:
     image: registry.gitlab.com/mcfitz2/lab/ynab:latest
@@ -87,7 +87,7 @@ services:
       context: ./
       dockerfile: ynab/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   weather:
     image: registry.gitlab.com/mcfitz2/lab/weather:latest
@@ -96,7 +96,7 @@ services:
       context: ./
       dockerfile: weather/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   instagram:
     image: registry.gitlab.com/mcfitz2/lab/instagram:latest
@@ -105,7 +105,7 @@ services:
       context: ./
       dockerfile: ./instagram/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   stocks:
     image: registry.gitlab.com/mcfitz2/lab/stocks:latest
@@ -114,7 +114,7 @@ services:
       context: ./
       dockerfile: ./stocks/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
 
   gmail:
@@ -124,7 +124,7 @@ services:
       context: ./
       dockerfile: ./gmail/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   geocoding:
     image: registry.gitlab.com/mcfitz2/lab/geocoding:latest
@@ -133,7 +133,7 @@ services:
       context: ./
       dockerfile: ./geocoding/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   strava_api:
     image: registry.gitlab.com/mcfitz2/lab/strava_api:latest
@@ -142,7 +142,7 @@ services:
       context: ./
       dockerfile: ./strava_api/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   db_tasks:
     image: registry.gitlab.com/mcfitz2/lab/db_tasks:latest
@@ -151,7 +151,7 @@ services:
       context: ./
       dockerfile: ./db_tasks/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   wrench_a_part:
     image: registry.gitlab.com/mcfitz2/lab/wrench_a_part:latest
@@ -160,7 +160,7 @@ services:
       context: ./
       dockerfile: ./wrench_a_part/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   postgres_backup:
     image: registry.gitlab.com/mcfitz2/lab/postgres_backup:latest
@@ -169,5 +169,5 @@ services:
       context: ./
       dockerfile: ./postgres_backup/Dockerfile
     environment:
-      PREFECT_API_URL: ""{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}""
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
