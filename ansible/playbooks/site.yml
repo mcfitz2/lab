@@ -54,13 +54,13 @@
 #   roles:
 #     - name: geerlingguy.node_exporter
 
-- hosts: monitoring
-  name: Configure machine(s) [monitoring]
-  gather_facts: false
-  roles:
-    - name: monitoring_infra
-    - name: prometheus.prometheus.prometheus
-    - name: prometheus.prometheus.pushgateway
+# - hosts: monitoring
+#   name: Configure machine(s) [monitoring]
+#   gather_facts: false
+#   roles:
+#     - name: monitoring_infra
+#     - name: prometheus.prometheus.prometheus
+#     - name: prometheus.prometheus.pushgateway
 
 # - hosts: greatlakes-db
 #   roles:
@@ -77,4 +77,5 @@
     # - name: overseer
     # - name: fidelity_calendar
     # - name: k8up
-    - name: prefect-exporter
+    # - name: prefect-exporter
+    - name: greatlakes

@@ -36,6 +36,7 @@ tvdb_pin: "{{ lookup('bitwarden.secrets.lookup', '802b73a7-b1a0-4fbe-ad08-b20201
 overseer_fqdn: "{{ lookup('bitwarden.secrets.lookup', '48e244de-31f0-4041-9179-b21101570a5d', state_file_dir=bitwarden_state_dir) }}"
 tautulli_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'f753ba32-c906-4974-b381-b21101573911', state_file_dir=bitwarden_state_dir) }}"
 fidelity_calendar_fqdn: "{{ lookup('bitwarden.secrets.lookup', '8374c542-8305-479d-8e02-b21200f65fb1', state_file_dir=bitwarden_state_dir) }}"
+oauth_service_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'b50c9f63-d706-4c6b-87da-b2140178dcb5', state_file_dir=bitwarden_state_dir) }}"
 
 greatlakes_host: "{{ hostvars['greatlakes-db']['ansible_host'] }}"
 greatlakes_user: "{{ lookup('bitwarden.secrets.lookup', 'e4313714-d00a-48e7-a29a-b20201410624', state_file_dir=bitwarden_state_dir) }}"
