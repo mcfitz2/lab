@@ -1,17 +1,17 @@
 stages:
   - test
 #  - linting
+  - build-workflows
   - build
-
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
 
-ansible-lint:
-  stage: linting
-  image: registry.gitlab.com/pipeline-components/ansible-lint:latest
-  script:
-    - export ANSIBLE_ROLES_PATH=$(pwd)/ansible/roles
-    - ansible-lint --show-relpath ansible
+# ansible-lint:
+#   stage: linting
+#   image: registry.gitlab.com/pipeline-components/ansible-lint:latest
+#   script:
+#     - export ANSIBLE_ROLES_PATH=$(pwd)/ansible/roles
+#     - ansible-lint --show-relpath ansible
 
 build:
   image: docker:latest
