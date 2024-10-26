@@ -171,3 +171,12 @@ services:
     environment:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
+  amr:
+    image: registry.gitlab.com/mcfitz2/lab/amr:latest
+    restart: always
+    build:
+      context: ./
+      dockerfile: ./mortgage_rates/Dockerfile
+    environment:
+      PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
+      PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
