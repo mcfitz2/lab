@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: gmail
   namespace: greatlakes
-
 spec:
   replicas: 1
   selector:
@@ -15,7 +14,7 @@ spec:
       labels:
         app: gmail
     spec:
-      imagePullSecrets: 
+      imagePullSecrets:
         - name: gitlab-credentials
       containers:
         - env:

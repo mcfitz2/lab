@@ -1,19 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stocks
+  name: mortgage-rates
   namespace: greatlakes
-
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: stocks
+      app: mortgage-rates
   template:
     metadata:
-
       labels:
-        app: stocks
+        app: mortgage-rates
     spec:
       imagePullSecrets:
         - name: gitlab-credentials
@@ -25,6 +23,6 @@ spec:
               value: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
             - name: PREFECT_API_URL
               value: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
-          image: registry.gitlab.com/mcfitz2/lab/stocks:latest
-          name: stocks
+          image: registry.gitlab.com/mcfitz2/lab/amr:latest
+          name: mortgage-rates
       restartPolicy: Always

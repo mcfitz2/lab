@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  
-  
   name: db-tasks
   namespace: greatlakes
 
@@ -17,7 +15,7 @@ spec:
       labels:
         app: db-tasks
     spec:
-      imagePullSecrets: 
+      imagePullSecrets:
         - name: gitlab-credentials
       containers:
         - env:

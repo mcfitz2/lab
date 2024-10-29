@@ -11,4 +11,4 @@ def takeout_master():
 
 
 if __name__ == "__main__":
-    takeout_master.serve(name="takeout-master", cron="0 * * * *")
+    takeout_master.serve(name="takeout-master", cron="0 10 * * *")

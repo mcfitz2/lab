@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  
-  
   name: austin-energy
   namespace: greatlakes
 spec:
@@ -16,7 +14,7 @@ spec:
       labels:
         app: austin-energy
     spec:
-      imagePullSecrets: 
+      imagePullSecrets:
         - name: gitlab-credentials
       containers:
         - env:
