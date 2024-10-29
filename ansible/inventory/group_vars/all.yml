@@ -96,7 +96,13 @@ prometheus_scrape_configs_raw: |
       - targets:
           - "{{ hostvars[target]['ansible_host'] }}:{{node_exporter_port}}"
   {%+ endfor %}
-
+  {% for target in groups['esphome'] +%}
+  - job_name: "{{ target }}"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+          - "{{ hostvars[target]['ansible_host'] }}"
+  {%+ endfor %}
   - job_name: 'pve'
     static_configs:
       - targets:
@@ -121,6 +127,16 @@ prometheus_scrape_configs_raw: |
     scrape_interval: 30s
     static_configs:
       - targets: ['{{ master_ip }}:{{ k8up_port }}']
+  - job_name: "hass"
+    scrape_interval: 60s
+    metrics_path: /api/prometheus
+
+    # Long-Lived Access Token
+    bearer_token: "{{ lookup('bitwarden.secrets.lookup', 'e65cfc6d-311b-42bc-a307-b218011f994d', state_file_dir=bitwarden_state_dir) }}"
+
+    scheme: http
+    static_configs:
+      - targets: ["{{ hostvars['homeassistant']['ansible_host'] }}:8123"]
   - job_name: 'greatlakes-postgres'
     scrape_interval: 30s
     static_configs:
@@ -135,6 +151,91 @@ prometheus_scrape_configs_raw: |
     scrape_timeout: 30s
     static_configs:
       - targets: ['{{ master_ip }}:{{ prometheus_prefect_exporter_port }}']
+
+prometheus_alertmanager_config:
+  - static_configs:
+    - targets: ["127.0.0.1:9093"]
+prometheus_alert_rules:
+  - alert: InstanceDown
+    expr: 'up == 0'
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      description: '{% raw %}{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.{% endraw %}'
+      summary: '{% raw %}Instance {{ $labels.instance }} down{% endraw %}'
+  - alert: NodeFilesystemSpaceFillingUp
+    annotations:
+      description: '{% raw %}Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available space left and is filling up.{% endraw %}'
+      summary: 'Filesystem is predicted to run out of space within the next 24 hours.'
+    expr: "(\n  node_filesystem_avail_bytes{job=\"node\",fstype!=\"\"} / node_filesystem_size_bytes{job=\"node\",fstype!=\"\"} * 100 < 40\nand\n  predict_linear(node_filesystem_avail_bytes{job=\"node\",fstype!=\"\"}[6h], 24*60*60) < 0\nand\n  node_filesystem_readonly{job=\"node\",fstype!=\"\"} == 0\n)\n"
+    for: 1h
+    labels:
+      severity: warning
+  - alert: NodeFilesystemSpaceFillingUp
+    annotations:
+      description: '{% raw %}Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available space left and is filling up fast.{% endraw %}'
+      summary: 'Filesystem is predicted to run out of space within the next 4 hours.'
+    expr: "(\n  node_filesystem_avail_bytes{job=\"node\",fstype!=\"\"} / node_filesystem_size_bytes{job=\"node\",fstype!=\"\"} * 100 < 20\nand\n  predict_linear(node_filesystem_avail_bytes{job=\"node\",fstype!=\"\"}[6h], 4*60*60) < 0\nand\n  node_filesystem_readonly{job=\"node\",fstype!=\"\"} == 0\n)\n"
+    for: 1h
+    labels:
+      severity: critical
+  - alert: NodeFilesystemAlmostOutOfSpace
+    annotations:
+      description: '{% raw %}Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available space left.{% endraw %}'
+      summary: 'Filesystem has less than 5% space left.'
+    expr: "(\n  node_filesystem_avail_bytes{job=\"node\",fstype!=\"\"} / node_filesystem_size_bytes{job=\"node\",fstype!=\"\"} * 100 < 5\nand\n  node_filesystem_readonly{job=\"node\",fstype!=\"\"} == 0\n)\n"
+    for: 1h
+    labels:
+      severity: warning
+  - alert: NodeFilesystemAlmostOutOfSpace
+    annotations:
+      description: '{% raw %}Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available space left.{% endraw %}'
+      summary: 'Filesystem has less than 3% space left.'
+    expr: "(\n  node_filesystem_avail_bytes{job=\"node\",fstype!=\"\"} / node_filesystem_size_bytes{job=\"node\",fstype!=\"\"} * 100 < 3\nand\n  node_filesystem_readonly{job=\"node\",fstype!=\"\"} == 0\n)\n"
+    for: 1h
+    labels:
+      severity: critical
+  - alert: NodeFilesystemFilesFillingUp
+    annotations:
+      description: '{% raw %}Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available inodes left and is filling up.{% endraw %}'
+      summary: 'Filesystem is predicted to run out of inodes within the next 24 hours.'
+    expr: "(\n  node_filesystem_files_free{job=\"node\",fstype!=\"\"} / node_filesystem_files{job=\"node\",fstype!=\"\"} * 100 < 40\nand\n  predict_linear(node_filesystem_files_free{job=\"node\",fstype!=\"\"}[6h], 24*60*60) < 0\nand\n  node_filesystem_readonly{job=\"node\",fstype!=\"\"} == 0\n)\n"
+    for: 1h
+    labels:
+      severity: warning
+  - alert: NodeFilesystemFilesFillingUp
+    annotations:
+      description: '{% raw %}Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available inodes left and is filling up fast.{% endraw %}'
+      summary: 'Filesystem is predicted to run out of inodes within the next 4 hours.'
+    expr: "(\n  node_filesystem_files_free{job=\"node\",fstype!=\"\"} / node_filesystem_files{job=\"node\",fstype!=\"\"} * 100 < 20\nand\n  predict_linear(node_filesystem_files_free{job=\"node\",fstype!=\"\"}[6h], 4*60*60) < 0\nand\n  node_filesystem_readonly{job=\"node\",fstype!=\"\"} == 0\n)\n"
+    for: 1h
+    labels:
+      severity: critical
+  - alert: NodeFilesystemAlmostOutOfFiles
+    annotations:
+      description: '{% raw %}Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available inodes left.{% endraw %}'
+      summary: 'Filesystem has less than 5% inodes left.'
+    expr: "(\n  node_filesystem_files_free{job=\"node\",fstype!=\"\"} / node_filesystem_files{job=\"node\",fstype!=\"\"} * 100 < 5\nand\n  node_filesystem_readonly{job=\"node\",fstype!=\"\"} == 0\n)\n"
+    for: 1h
+    labels:
+      severity: warning
+  - alert: NodeFilesystemAlmostOutOfFiles
+    annotations:
+      description: '{% raw %}Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available inodes left.{% endraw %}'
+      summary: 'Filesystem has less than 3% inodes left.'
+    expr: "(\n  node_filesystem_files_free{job=\"node\",fstype!=\"\"} / node_filesystem_files{job=\"node\",fstype!=\"\"} * 100 < 3\nand\n  node_filesystem_readonly{job=\"node\",fstype!=\"\"} == 0\n)\n"
+    for: 1h
+    labels:
+      severity: critical
+
+alertmanager_receivers:
+  - name: pushover
+    pushover_configs:
+      - token: "{{ lookup('bitwarden.secrets.lookup', '22fc644e-2935-4680-b3d3-b217011928b6', state_file_dir=bitwarden_state_dir) }}"
+        user_key: "{{ lookup('bitwarden.secrets.lookup', '3b3498bf-4acc-4e4c-9949-b217011947a1', state_file_dir=bitwarden_state_dir) }}"
+alertmanager_route:
+  receiver: pushover
 build_infra: false
 setup_monitoring: true
 prometheus_scrape_configs: "{{ prometheus_scrape_configs_raw | from_yaml }}"
