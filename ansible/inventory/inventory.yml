@@ -129,6 +129,24 @@ all:
     dream_machine:
       ansible_host: 192.168.1.1
       metrics: false
+
+    cat_feeder:
+      ansible_host: 192.168.2.116
+      type: esphome
+      metrics: true
+    air_gradient:
+      ansible_host: 192.168.2.71
+      type: esphome
+      metrics: true
+    filament_scale:
+      ansible_host: 192.168.2.219
+      type: esphome
+      metrics: true
+esphome:
+  hosts:
+    cat_feeder:
+    air_gradient:
+    filament_scale:
 node_metrics:
   hosts:
     k3s1:
