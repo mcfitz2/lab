@@ -1,0 +1,4 @@
+requests==2.31.0
+prometheus_client==0.20.0
+pendulum
+prefect==2.20.1
