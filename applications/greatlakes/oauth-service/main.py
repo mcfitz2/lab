@@ -138,10 +138,10 @@ class OauthHandler:
         return Secret(value=value).save(name, overwrite=True)
 
     def reload_cache(self):
-        if (time.time() - self.cache_age) > 300 or not self.cached_access_token or not self.cached_refresh_token:
-            self.cached_access_token = self.get_secret_by_name(self.access_token_var)
-            self.cached_refresh_token = self.get_secret_by_name(self.refresh_token_var)
-            self.cache_age = time.time()
+        #if (time.time() - self.cache_age) > 300 or not self.cached_access_token or not self.cached_refresh_token:
+        self.cached_access_token = self.get_secret_by_name(self.access_token_var)
+        self.cached_refresh_token = self.get_secret_by_name(self.refresh_token_var)
+        self.cache_age = time.time()
 
     def get_access_token(self):
         self.reload_cache()

@@ -18,7 +18,7 @@ spec:
       containers:
         - env:
             - name: BASE_URL
-              value: "{{ oauth_service_fqdn }}"
+              value: "https://{{ oauth_service_fqdn }}"
             - name: PREFECT_API_KEY
               value: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
             - name: PREFECT_API_URL
