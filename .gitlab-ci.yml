@@ -2,7 +2,9 @@ stages:
   - test
 #  - linting
   - build-workflows
-  - build
+  - build-ansible
+  - build-fidelity-calendar
+  - built-habit
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
 
@@ -13,11 +15,14 @@ include:
 #     - export ANSIBLE_ROLES_PATH=$(pwd)/ansible/roles
 #     - ansible-lint --show-relpath ansible
 
-build:
+build-ansible:
   image: docker:latest
   services:
     - docker:dind
   stage: build
+  only:
+    changes:
+      - ansible/**
   script:
     - cd ansible
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -32,16 +37,23 @@ build-workflows:
   services:
     - docker:dind
   stage: build
+  only:
+    changes:
+      - applications/greatlakes/**
   script:
     - cd applications/greatlakes
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker compose build
     - docker compose push
+
 build-prefect-exporter:
   image: docker:latest
   services:
     - docker:dind
   stage: build
+  only:
+    changes:
+      - applications/prometheus-prefect-exporter/**
   script:
     - cd applications/prometheus-prefect-exporter
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -49,3 +61,36 @@ build-prefect-exporter:
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/prometheus-prefect-exporter:$CI_COMMIT_SHORT_SHA
     - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/prometheus-prefect-exporter:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/prometheus-prefect-exporter:latest
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/prometheus-prefect-exporter:latest
+
+build-fidelity-calendar:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: build
+  only:
+    changes:
+      - applications/fidelity_calendar/**
+  script:
+    - cd applications/fidelity_calendar
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/fidelity_calendar:$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/fidelity_calendar:$CI_COMMIT_SHORT_SHA
+    - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/fidelity_calendar:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/fidelity_calendar:latest
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/fidelity_calendar:latest
+
+
+build-habit:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: build
+  only:
+    changes:
+      - applications/habit/**
+  script:
+    - cd applications/habit
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/habit:$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/habit:$CI_COMMIT_SHORT_SHA
+    - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/habit:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/habit:latest
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/habit:latest
