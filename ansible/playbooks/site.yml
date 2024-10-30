@@ -67,9 +67,9 @@
 #   roles:
 #     - name: prometheus.prometheus.postgres_exporter
 
-# - hosts: localhost
-#   connection: local
-#   roles:
+- hosts: localhost
+  connection: local
+  roles:
 #     - name: pve-exporter
 #     - name: unpoller
 #     - name: sonarr
@@ -78,5 +78,5 @@
 #     - name: overseer
 #     - name: fidelity_calendar
 #     - name: k8up
-#     - name: prefect-exporter
-#     - name: greatlakes
+    - name: prefect-exporter
+    - name: greatlakes

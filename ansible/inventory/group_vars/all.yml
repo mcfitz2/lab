@@ -164,6 +164,14 @@ prometheus_alert_rules:
     annotations:
       description: '{% raw %}{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.{% endraw %}'
       summary: '{% raw %}Instance {{ $labels.instance }} down{% endraw %}'
+  - alert: PrefectFlowFailed
+    expr: 'prefect_deployment_up == 0'
+    for: 1h
+    labels:
+      severity: critical
+    annotations:
+      description: '{% raw %}Prefect deployment {{ $labels.deployment_name }} has been down for more than 5 minutes.{% endraw %}'
+      summary: '{% raw %}Prefect deployment {{ $labels.deployment_name }} down{% endraw %}'
   - alert: NodeFilesystemSpaceFillingUp
     annotations:
       description: '{% raw %}Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available space left and is filling up.{% endraw %}'
