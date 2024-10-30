@@ -1,0 +1,7 @@
+modules:
+  - url: https://github.com/sheyabernstein/MMM-connection-status.git
+  - url: https://github.com/jclarke0000/MMM-DarkSkyForecast.git
+  - url: https://github.com/cbrooker/MMM-Todoist.git
+  - url: https://github.com/brobergp/MMM-doomsDay.git
+  - url: https://github.com/jinserk/MMM-2Day-NOAA-Forecast
+    branch: main

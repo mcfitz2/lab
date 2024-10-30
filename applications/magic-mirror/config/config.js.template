@@ -1,0 +1,178 @@
+/* Magic Mirror Config Sample
+ *
+ * By Michael Teeuw https://michaelteeuw.nl
+ * MIT Licensed.
+ *
+ * For more information on how you can configure this file
+ * See https://github.com/MichMich/MagicMirror#configuration
+ *
+ */
+
+var config = {
+    address: "0.0.0.0", // Address to listen on, can be:
+    port: 8080,
+    basePath: "/", // The URL path where MagicMirror is hosted. If you are using a Reverse proxy
+    ipWhitelist: [], // Set [] to allow all IP addresses
+    useHttps: false, // Support HTTPS or not, default "false" will use HTTP
+    httpsPrivateKey: "", // HTTPS private key path, only require when useHttps is true
+    httpsCertificate: "", // HTTPS Certificate path, only require when useHttps is true
+    language: "en",
+    logLevel: ["INFO", "LOG", "WARN", "ERROR"],
+    timeFormat: 12,
+    units: "imperial",
+
+    modules: [{
+            module: "alert",
+        }, {
+            module: "updatenotification",
+            position: "top_bar"
+        }, {
+            module: "clock",
+            position: "top_center",
+            config: {
+                timeFormat: 12,
+                displaySeconds: true,
+                showSunTimes: true,
+                lat: 30.266926,
+                lon: -97.750519
+            }
+        }, 
+{
+    module:     'MMM-2Day-NOAA-Forecast',
+    position:   'top_center',
+	config: {
+		lat:        30.266926,
+		lon:        -97.750519,
+		units:      'imperial',
+		interval:   10 * 60 * 1000
+	}
+},
+{
+            module: "MMM-Jast",
+            position: "bottom_center",
+            config: {
+                currencyStyle: "code", // One of ["code", "symbol", "name"]
+                fadeSpeedInSeconds: 3.5,
+                lastUpdateFormat: "HH:mm",
+                maxChangeAge: 1 * 24 * 60 * 60 * 1000,
+                maxWidth: "100%",
+                numberDecimalsPercentages: 1,
+                numberDecimalsValues: 2,
+                scroll: "none", // One of ["none", "vertical", "horizontal"]
+                showColors: true,
+                showCurrency: true,
+                showChangePercent: true,
+                showChangeValue: false,
+                showChangeValueCurrency: false,
+                showLastUpdate: false,
+                showPortfolioValue: false,
+                showPortfolioGrowthPercent: false,
+                showPortfolioGrowth: false,
+                updateIntervalInSeconds: 300,
+                useGrouping: false,
+                virtualHorizontalMultiplier: 2,
+                stocks: [{
+                    name: "Broadcom",
+                    symbol: "AVGO"
+                }]
+            }
+        },
+{
+            module: 'MMM-Todoist',
+            position: 'top_left', // This can be any of the regions. Best results in left or right regions.
+            header: 'Personal', // This is optional
+            config: { // See 'Configuration options' for more information.
+                hideWhenEmpty: false,
+                accessToken: "${TODOIST_TOKEN}",
+                maximumEntries: 10,
+                updateInterval: 60 * 1000 * 10, // Update every 10 minutes
+                fade: false,
+                // projects and/or labels is mandatory:
+                showProject: true,
+                sortType: "dueDateAsc",
+                displayAvatar: true,
+                projects: [2253570768, 370524716, 2149478082, 377333651],
+                displayLastUpdate: true,
+                displaySubTasks: true,
+                labels: [] // Tasks for any projects with these labels will be shown.
+            }
+        },
+
+ {
+            module: "calendar",
+            header: "Shared Calendar",
+            position: "top_left",
+            config: {
+                fade: false,
+                timeFormat: "dateheaders",
+                fetchInterval: 30000,
+                maximumEntries: 6,
+                calendars: [{
+                        symbol: "calendar-check",
+                        url: "webcal://www.calendarlabs.com/ical-calendar/ics/76/US_Holidays.ics"
+                    }, {
+                        symbol: "calendar-check",
+                        url: "https://calendar.google.com/calendar/ical/ce62a286b8b15ec7410c0e75c5057fafe5e5d00db8df6b8cff3815ab02f9fbe6%40group.calendar.google.com/private-c393222be89f61605e37325412bc83ee/basic.ics"
+                    }, {
+                        symbol: "dumpster-fire",
+                        url: "https://recollect.a.ssl.fastly.net/api/places/831530C2-DF69-11E8-A3C7-5532682931C6/services/323/events.en-US.ics?client_id=8F26DF78-29BD-11EB-A0BB-9A36F1F25129"
+                    }, {
+                        symbol: "utensils",
+                        url: "https://icalendar.anylist.com/67ed4a30356743f8b00ed9a07dc18f8d.ics"
+                    }
+
+                ]
+            }
+        }, {
+            module: 'MMM-Todoist',
+            position: 'top_right', // This can be any of the regions. Best results in left or right regions.
+            header: 'Work', // This is optional
+            config: { // See 'Configuration options' for more information.
+                hideWhenEmpty: false,
+                accessToken: "${TODOIST_TOKEN}",
+                maximumEntries: 10,
+                updateInterval: 60 * 1000 * 10, // Update every 10 minutes
+                fade: false,
+                // projects and/or labels is mandatory:
+                showProject: true,
+                sortType: "dueDateAsc",
+                displayAvatar: true,
+                projects: [395536755],
+                displayLastUpdate: true,
+                displaySubTasks: true,
+                labels: [] // Tasks for any projects with these labels will be shown.
+            }
+        },
+
+        {
+            module: "calendar",
+            header: "Work Calendar",
+            position: "top_right",
+            config: {
+                fade: false,
+                timeFormat: "dateheaders",
+                fetchInterval: 30000,
+                maximumEntries: 6,
+                calendars: [{
+                        symbol: "calendar-check",
+                        url: "https://calendar.google.com/calendar/ical/avagotech.com_bg0up3r3juf2lun6hm8rgbgq54%40group.calendar.google.com/public/basic.ics"
+                    }, {
+                        symbol: "calendar-check",
+                        url: "https://calendar.google.com/calendar/ical/micah.fitzgerald%40broadcom.com/private-2589c2091619e064d128bd06f0f1a182/basic.ics"
+                    },
+
+                ]
+            }
+        }, {
+            module: 'MMM-auto-refresh',
+            config: {
+                refreshInterval: 7200000
+            }
+        }
+    ]
+};
+
+/*************** DO NOT EDIT THE LINE BELOW ***************/
+if (typeof module !== "undefined") {
+    module.exports = config;
+}
