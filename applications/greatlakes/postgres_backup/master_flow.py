@@ -1,5 +1,5 @@
 import pprint
-
+import os
 import psycopg2
 import requests
 from prefect import flow, task, variables
@@ -23,6 +23,7 @@ def backup_greatlakes():
 #    with open(dest_file, 'w') as f:
 #        f.write("dummy")
     upload_sftp_backups(dest_file, "greatlakes_db")
+    os.remove(dest_file)
 def backup_postgres_db(host, database_name, port, user, password, dest_file, verbose):
     """ Backup postgres db to a file. """ 
     if verbose:
