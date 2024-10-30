@@ -1,10 +1,7 @@
 stages:
   - test
 #  - linting
-  - build-workflows
-  - build-ansible
-  - build-fidelity-calendar
-  - built-habit
+  - build
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
 
