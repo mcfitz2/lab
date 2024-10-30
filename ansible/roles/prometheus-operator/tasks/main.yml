@@ -1,0 +1,23 @@
+- name: Create [monitoring] namespace
+  kubernetes.core.k8s:
+    name: monitoring
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: Add chart repo
+  kubernetes.core.helm_repository:
+    name: prometheus-community
+    repo_url: "https://prometheus-community.github.io/helm-charts"
+- name: Deploy prometheus-community
+  kubernetes.core.helm:
+    name: prometheus-community
+    chart_ref: prometheus-community/prometheus
+    release_namespace: monitoring
+    wait: true
+    update_repo_cache: true
+    disable_hook: true
+    values:
+      server:
+        remoteWrite:
+          - url: "http://{{ hostvars['monitoring']['ansible_host'] }}:9090/api/v1/write"

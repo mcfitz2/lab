@@ -83,7 +83,7 @@ proxmox_backup_bucket: mcfitz2-backups
 k8up_backup_repo_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5', state_file_dir=bitwarden_state_dir) }}"
 default_gateway: "{{ unifi_ip }}"
 pve_exporter_port: 30206
-node_exporter_port: 9100
+node_exporter_port: 9101
 unpoller_port: 30207
 k8up_port: 30209
 prometheus_prefect_exporter_port: 30210
@@ -123,10 +123,6 @@ prometheus_scrape_configs_raw: |
     scrape_interval: 30s
     static_configs:
       - targets: ['{{ master_ip }}:{{ unpoller_port }}']
-  - job_name: 'k8up'
-    scrape_interval: 30s
-    static_configs:
-      - targets: ['{{ master_ip }}:{{ k8up_port }}']
   - job_name: "hass"
     scrape_interval: 60s
     metrics_path: /api/prometheus
@@ -155,6 +151,8 @@ prometheus_scrape_configs_raw: |
 prometheus_alertmanager_config:
   - static_configs:
     - targets: ["127.0.0.1:9093"]
+prometheus_config_flags_extra:
+  web.enable-remote-write-receiver:
 prometheus_alert_rules:
   - alert: InstanceDown
     expr: 'up == 0'
