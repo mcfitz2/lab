@@ -21,8 +21,8 @@
         unprivileged: false
         disk: 'zfs-ssd:20'
         ostemplate: 'local:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst'
-        cores: 1
-        memory: 1024
+        cores: 4
+        memory: 2048
         swap: 512
         onboot: true
         netif: '{"net0":"name=eth0,ip={{ ansible_host }}/24,gw={{ default_gateway }},bridge=vmbr0"}'
