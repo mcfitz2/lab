@@ -119,8 +119,7 @@ class Release(BaseModel):
             return common_mappings.get(raw)
         fixed = (
             " ".join(
-                re.findall("[A-Z][^A-Z]*",
-                           raw.replace("GP", "").replace(".", " "))
+                re.findall("[A-Z][^A-Z]*", raw.replace("GP", "").replace(".", " "))
             )
             .replace("  ", " ")
             .replace("-", " ")
@@ -263,8 +262,7 @@ class ReleaseFetcher:
         with self.lock:
             seconds = time.time() - self.last_check
             if self.last_check and seconds < 600:
-                print(f"Last check was {
-                      seconds} ago, returning cached releases")
+                print(f"Last check was {seconds} ago, returning cached releases")
                 return [
                     (release, entry, ep)
                     for release, entry, ep in self.releases
@@ -319,8 +317,7 @@ class ReleaseFetcher:
                             ]
                             or allow_weekend
                         ):
-                            ep = get_episode_for_round(
-                                seasons[release.year], release)
+                            ep = get_episode_for_round(seasons[release.year], release)
                             if ep is not None:
                                 if (
                                     (

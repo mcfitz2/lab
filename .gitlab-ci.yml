@@ -18,7 +18,7 @@ black:
   stage: linting
   image: registry.gitlab.com/mafda/python-linting
   script:
-    - black applications/formula1
+    - black --check applications/formula1
   only:
     changes:
       - applications/formula1/**/*
