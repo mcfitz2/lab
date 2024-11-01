@@ -37,6 +37,7 @@ ansible-lint:
   image: registry.gitlab.com/pipeline-components/ansible-lint:latest
   script:
     - export ANSIBLE_ROLES_PATH=$(pwd)/ansible/roles
+    - ansible-galaxy install -r ansible/requirements.yml
     - ansible-lint --show-relpath ansible
   only:
     changes:
