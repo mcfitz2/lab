@@ -2,18 +2,6 @@
 version: "3.8"
 name: media
 services:
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr:latest
-    container_name: prowlarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-    volumes:
-      - ./prowlarr:/config
-    ports:
-      - 9696:9696
-    restart: unless-stopped
   formula1:
     image: registry.gitlab.com/mcfitz2/formula1:latest
     container_name: formula1

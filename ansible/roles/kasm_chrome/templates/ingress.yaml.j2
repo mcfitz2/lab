@@ -1,0 +1,22 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kasm-chrome
+  namespace: misc
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: https
+    cloudflare-tunnel-ingress-controller.strrl.dev/proxy-ssl-verify: 'off'
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kasm-chrome
+                port:
+                  number: 6901
+      host: "dhsjkdf.micahf.net"

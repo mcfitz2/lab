@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  grafana
+  name:  grafana
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+            - name: GF_INSTALL_PLUGINS
+              value: "grafana-worldmap-panel,vonage-status-panel"
+            - name: GF_SERVER_PROTOCOL
+              value: "http"
+            - name: GF_FEATURE_TOGGLES_ENABLE
+              value: "regressionTransformation"
+          image: grafana/grafana:latest
+          name:  grafana
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-config
+      restartPolicy: Always
+      volumes:
+        - name: grafana-config
+          persistentVolumeClaim:
+            claimName: grafana-config

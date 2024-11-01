@@ -2,20 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app:  overseer
-  name:  overseer
+    app:  prowlarr
+  name:  prowlarr
   namespace: media
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: overseer
+      app: prowlarr
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: overseer
+        app: prowlarr
     spec:
       containers:
         - env:
@@ -25,16 +25,16 @@ spec:
               value: "1000"
             - name: TZ
               value: America/Chicago
-          image: sctx/overseerr:latest
-          name:  overseer
+          image: lscr.io/linuxserver/prowlarr:latest
+          name:  prowlarr
           ports:
-            - containerPort: 5055
+            - containerPort: 9696
               protocol: TCP
           volumeMounts:
-            - mountPath: /app/config
-              name: overseer-config
+            - mountPath: /config
+              name: prowlarr-config
       restartPolicy: Always
       volumes:
-        - name: overseer-config
+        - name: prowlarr-config
           persistentVolumeClaim:
-            claimName: overseer-config
+            claimName: prowlarr-config

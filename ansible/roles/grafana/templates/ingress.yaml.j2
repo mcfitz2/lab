@@ -2,8 +2,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: tautulli
-  namespace: media
+  name: grafana
+  namespace: monitoring
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
@@ -13,7 +13,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: tautulli
+                name: grafana
                 port:
-                  number: 8181
-      host: "{{ tautulli_fqdn }}"
+                  number: 3000
+      host: "{{ grafana_fqdn }}"

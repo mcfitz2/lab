@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  kasm-chrome
+  name:  kasm-chrome
+  namespace: misc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kasm-chrome
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: kasm-chrome
+    spec:
+      containers:
+        - env:
+            - name: VNC_PW
+              value: "cl0ser2g0d"
+          image: kasmweb/chrome:1.16.0
+          name:  kasm-chrome
+          ports:
+            - containerPort: 6901
+              protocol: TCP
+      restartPolicy: Always

@@ -37,6 +37,9 @@ overseer_fqdn: "{{ lookup('bitwarden.secrets.lookup', '48e244de-31f0-4041-9179-b
 tautulli_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'f753ba32-c906-4974-b381-b21101573911', state_file_dir=bitwarden_state_dir) }}"
 fidelity_calendar_fqdn: "{{ lookup('bitwarden.secrets.lookup', '8374c542-8305-479d-8e02-b21200f65fb1', state_file_dir=bitwarden_state_dir) }}"
 oauth_service_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'b50c9f63-d706-4c6b-87da-b2140178dcb5', state_file_dir=bitwarden_state_dir) }}"
+grafana_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'd3135c61-68a1-4b70-a25b-b21a0131236b', state_file_dir=bitwarden_state_dir) }}"
+pgadmin_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'e572ab98-6169-40e7-a226-b21a0136fd21', state_file_dir=bitwarden_state_dir) }}"
+prowlarr_fqdn: "{{ lookup('bitwarden.secrets.lookup', '6c325bdf-005c-4589-bca6-b21a014c089d', state_file_dir=bitwarden_state_dir) }}"
 
 greatlakes_host: "{{ hostvars['greatlakes-db']['ansible_host'] }}"
 greatlakes_user: "{{ lookup('bitwarden.secrets.lookup', 'e4313714-d00a-48e7-a29a-b20201410624', state_file_dir=bitwarden_state_dir) }}"
@@ -147,16 +150,55 @@ prometheus_scrape_configs_raw: |
     scrape_timeout: 30s
     static_configs:
       - targets: ['{{ master_ip }}:{{ prometheus_prefect_exporter_port }}']
-
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]  # Look for a HTTP 200 response.
+    static_configs:
+      - targets:
+        - https://homeassistant.micahf.net
+        - "http://{{ hostvars['homeassistant']['ansible_host'] }}:8123"
+        - http://192.168.1.139:8081
+        - https://magic-mirror-living-room.micahf.net
+        - https://radarr.micahf.net
+        - https://transmission.micahf.net
+        - https://sonarr.micahf.net
+        - https://proxmox.micahf.net
+        - https://{{radarr_fqdn}}
+        - https://{{sonarr_fqdn}}
+        - https://{{tautulli_fqdn}}
+        - https://{{fidelity_calendar_fqdn}}/fidelity.ics
+        - https://{{overseer_fqdn}}
+        - https://{{oauth_service_fqdn}}
+        - https://{{grafana_fqdn}}
+        - https://{{pgadmin_fqdn}}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115  # The blackbox exporter's real hostname:port.
+  - job_name: 'blackbox_exporter'  # collect blackbox exporter's operational metrics.
+    static_configs:
+      - targets: ['127.0.0.1:9115']
 prometheus_alertmanager_config:
   - static_configs:
     - targets: ["127.0.0.1:9093"]
 prometheus_config_flags_extra:
   web.enable-remote-write-receiver:
 prometheus_alert_rules:
+  - alert: ProbeFailure
+    expr: 'probe_success == 0'
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      description: '{% raw %}Probe for {{ $labels.instance }} has been failing for more than 30 minutes.{% endraw %}'
+      summary: '{% raw %}Probe for {{ $labels.instance }} failed{% endraw %}'
   - alert: InstanceDown
     expr: 'up == 0'
-    for: 5m
+    for: 30m
     labels:
       severity: critical
     annotations:
@@ -242,6 +284,19 @@ alertmanager_receivers:
         user_key: "{{ lookup('bitwarden.secrets.lookup', '3b3498bf-4acc-4e4c-9949-b217011947a1', state_file_dir=bitwarden_state_dir) }}"
 alertmanager_route:
   receiver: pushover
+
+blackbox_exporter_configuration_modules:
+  http_2xx:
+    http:
+      follow_redirects: true
+      method: "GET"
+      preferred_ip_protocol: ip4
+      valid_status_codes:
+        - 200
+      tls_config:
+        insecure_skip_verify: true
+    prober: "http"
+    timeout: "30s"
 build_infra: false
 setup_monitoring: true
 prometheus_scrape_configs: "{{ prometheus_scrape_configs_raw | from_yaml }}"

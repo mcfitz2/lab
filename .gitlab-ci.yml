@@ -1,17 +1,46 @@
 stages:
   - test
-#  - linting
+  - linting
   - build
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
 
-# ansible-lint:
-#   stage: linting
-#   image: registry.gitlab.com/pipeline-components/ansible-lint:latest
-#   script:
-#     - export ANSIBLE_ROLES_PATH=$(pwd)/ansible/roles
-#     - ansible-lint --show-relpath ansible
+isort:
+  stage: linting
+  image: registry.gitlab.com/mafda/python-linting
+  script:
+    - isort applications/formula1 --check-only
+  only:
+    changes:
+      - applications/formula1/**/*
 
+black:
+  stage: linting
+  image: registry.gitlab.com/mafda/python-linting
+  script:
+    - black applications/formula1
+  only:
+    changes:
+      - applications/formula1/**/*
+
+flake8:
+  stage: linting
+  image: registry.gitlab.com/mafda/python-linting
+  script:
+    - flake8 applications/formula1
+  only:
+    changes:
+      - applications/formula1/**/*
+
+ansible-lint:
+  stage: linting
+  image: registry.gitlab.com/pipeline-components/ansible-lint:latest
+  script:
+    - export ANSIBLE_ROLES_PATH=$(pwd)/ansible/roles
+    - ansible-lint --show-relpath ansible
+  only:
+    changes:
+      - ansible/**/*
 build-ansible:
   image: docker:latest
   services:
@@ -122,3 +151,19 @@ build-mm-living-room:
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-living-room:$CI_COMMIT_SHORT_SHA
     - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-living-room:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-living-room:latest
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-living-room:latest
+
+build-formula1:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: build
+  only:
+    changes:
+      - applications/formula1/**/*
+  script:
+    - cd applications/habit
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/formula1:$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/formula1:$CI_COMMIT_SHORT_SHA
+    - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/formula1:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/formula1:latest
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/formula1:latest
