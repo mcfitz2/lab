@@ -3,7 +3,6 @@ import xml.etree.ElementTree as ET
 from io import BytesIO
 
 from flask import Flask, Response, request
-
 from formula1.feeds import ReleaseFetcher
 
 rss_url = "https://torrentgalaxy.mx/rss?magnet&user=48718"
