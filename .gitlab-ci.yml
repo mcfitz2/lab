@@ -38,7 +38,7 @@ ansible-lint:
   script:
     - cd ansible
     - export ANSIBLE_ROLES_PATH=$(pwd)/roles
-    - ansible-lint --show-relpath ansible
+    - ansible-lint --show-relpath .
   allow_failure: true
   only:
     changes:
