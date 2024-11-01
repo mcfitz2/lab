@@ -85,5 +85,7 @@
     - greatlakes
     - prometheus_operator
     - prowlarr
-    - kasm_chrome
+#    - kasm_chrome # Disabled until I figure out the websocket issue
     - formula1
+    - jackett
+
