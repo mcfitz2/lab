@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  formula1
+  name:  formula1
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: formula1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: formula1
+    spec:
+      imagePullSecrets:
+        - name: gitlab-credentials
+      containers:
+        - env:
+            - name: NZBGEEK_API_KEY
+              value: "{{ nzbgeek_api_key }}"
+            - name: TVDB_KEY
+              value: "{{ tvdb_api_key }}"
+            - name: TVDB_PIN
+              value: "{{ tvdb_pin }}"
+          image: registry.gitlab.com/mcfitz2/lab/formula1:latest
+          name:  formula1
+          ports:
+            - containerPort: 9999
+              protocol: TCP
+      restartPolicy: Always

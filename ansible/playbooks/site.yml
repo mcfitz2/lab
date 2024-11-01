@@ -1,73 +1,73 @@
-# Configure machines (VMs and Physical)
+# # Configure machines (VMs and Physical)
 
-- hosts: proxmox
-  name: Configure machine [proxmox]
-  roles:
-    - pve_backup
+# - hosts: proxmox
+#   name: Configure machine [proxmox]
+#   roles:
+#     - pve_backup
 
-- hosts: development
-  name: Configure machine [development]
-  become: true
-  tasks:
-    - name: Install ansible
-      ansible.builtin.apt:
-        name:
-          - ansible
-          - ansible-lint
-        state: present
+# - hosts: development
+#   name: Configure machine [development]
+#   become: true
+#   tasks:
+#     - name: Install ansible
+#       ansible.builtin.apt:
+#         name:
+#           - ansible
+#           - ansible-lint
+#         state: present
 
-- hosts: master:node
-  name: Configure machine(s) [cluster]
-  gather_facts: false
-  roles:
-    - k3s_infra
-    - k3s_prereq
-    - k3s_download
+# - hosts: master:node
+#   name: Configure machine(s) [cluster]
+#   gather_facts: false
+#   roles:
+#     - k3s_infra
+#     - k3s_prereq
+#     - k3s_download
 
-- hosts: cluster_nfs
-  name: Configure machine [cluster nfs]
-  gather_facts: false
-  roles:
-    - k3s_nfs_server
-    - geerlingguy.nfs
+# - hosts: cluster_nfs
+#   name: Configure machine [cluster nfs]
+#   gather_facts: false
+#   roles:
+#     - k3s_nfs_server
+#     - geerlingguy.nfs
 
-- hosts: master
-  name: Configure machine [cluster master]
-  become: true
-  roles:
-    - k3s_install_master
+# - hosts: master
+#   name: Configure machine [cluster master]
+#   become: true
+#   roles:
+#     - k3s_install_master
 
-- hosts: node
-  name: Configure machine(s) [cluster nodes]
-  become: true
-  roles:
-    - k3s_install_node
+# - hosts: node
+#   name: Configure machine(s) [cluster nodes]
+#   become: true
+#   roles:
+#     - k3s_install_node
 
-- hosts: localhost
-  connection: local
-  become: false
-  roles:
-    - k3s_postconfig
+# - hosts: localhost
+#   connection: local
+#   become: false
+#   roles:
+#     - k3s_postconfig
 
-- hosts: node_metrics
-  name: Install node-exporter
-  roles:
-    - geerlingguy.node_exporter
+# - hosts: node_metrics
+#   name: Install node-exporter
+#   roles:
+#     - geerlingguy.node_exporter
 
-- hosts: monitoring
-  name: Configure machine(s) [monitoring]
-  gather_facts: false
-  roles:
-    - monitoring_infra
-    - prometheus.prometheus.prometheus
-    - prometheus.prometheus.pushgateway
-    - prometheus.prometheus.alertmanager
-    - prometheus.prometheus.blackbox_exporter
+# - hosts: monitoring
+#   name: Configure machine(s) [monitoring]
+#   gather_facts: false
+#   roles:
+#     - monitoring_infra
+#     - prometheus.prometheus.prometheus
+#     - prometheus.prometheus.pushgateway
+#     - prometheus.prometheus.alertmanager
+#     - prometheus.prometheus.blackbox_exporter
 
 
-- hosts: greatlakes-db
-  roles:
-    - prometheus.prometheus.postgres_exporter
+# - hosts: greatlakes-db
+#   roles:
+#     - prometheus.prometheus.postgres_exporter
 
 - hosts: localhost
   connection: local
@@ -86,3 +86,4 @@
     - prometheus_operator
     - prowlarr
     - kasm_chrome
+    - formula1
