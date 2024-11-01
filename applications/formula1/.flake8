@@ -1,0 +1,5 @@
+[flake8]
+per-file-ignores =
+    # line too long
+    main.py: E501,
+    feeds.py: E501,

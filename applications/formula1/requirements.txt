@@ -1,0 +1,5 @@
+feedparser
+Flask
+tvdb-v4-official~=1.0.9
+Werkzeug==2.2.2
+pydantic==2.6.4
