@@ -36,7 +36,7 @@ ansible-lint:
   stage: linting
   image: registry.gitlab.com/pipeline-components/ansible-lint:latest
   script:
-    - ansible-galaxy install -r ansible/requirements.yml
+#    - ansible-galaxy install -r ansible/requirements.yml
     - export ANSIBLE_ROLES_PATH=$(pwd)/ansible/roles
     - ansible-galaxy install -r ansible/requirements.yml
     - ansible-lint --show-relpath ansible
