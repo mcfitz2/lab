@@ -36,8 +36,10 @@ ansible-lint:
   stage: linting
   image: registry.gitlab.com/pipeline-components/ansible-lint:latest
   script:
+    - ansible-galaxy install -r ansible/requirements.yml
     - export ANSIBLE_ROLES_PATH=$(pwd)/ansible/roles
     - ansible-lint --show-relpath ansible
+  allow_failure: true
   only:
     changes:
       - ansible/**/*

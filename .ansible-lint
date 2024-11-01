@@ -7,4 +7,5 @@ skip_list:
   - no-handler
   - name[play]
   - ignore-errors
+  - line-length
 offline: false

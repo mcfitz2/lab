@@ -1,14 +1,15 @@
 - name: Install s3cmd via apt
-  apt:
+  ansible.builtin.apt:
     name: "s3cmd"
     state: present
 
 - name: Configure s3cmd for root
-  template:
+  ansible.builtin.template:
     src: s3cfg.j2
     dest: "/root/.s3cfg"
     owner: "root"
     group: "root"
+    mode: "0640"
 
 - name: Install hook script
   ansible.builtin.template:
@@ -37,7 +38,7 @@
     minute: "45"
     job: "bash {{ host_backup_script_path }}"
 - name: Add hook for every backup job
-  replace:
+  ansible.builtin.replace:
     path: /etc/pve/jobs.cfg
     after: 'vzdump:'
     regexp: '\t(storage.+)'

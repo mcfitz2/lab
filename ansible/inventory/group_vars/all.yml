@@ -97,7 +97,7 @@ prometheus_scrape_configs_raw: |
     metrics_path: "/metrics"
     static_configs:
       - targets:
-          - "{{ hostvars[target]['ansible_host'] }}:{{node_exporter_port}}"
+          - "{{ hostvars[target]['ansible_host'] }}:{{ node_exporter_port }}"
   {%+ endfor %}
   {% for target in groups['esphome'] +%}
   - job_name: "{{ target }}"
@@ -164,14 +164,14 @@ prometheus_scrape_configs_raw: |
         - https://transmission.micahf.net
         - https://sonarr.micahf.net
         - https://proxmox.micahf.net
-        - https://{{radarr_fqdn}}
-        - https://{{sonarr_fqdn}}
-        - https://{{tautulli_fqdn}}
-        - https://{{fidelity_calendar_fqdn}}/fidelity.ics
-        - https://{{overseer_fqdn}}
-        - https://{{oauth_service_fqdn}}
-        - https://{{grafana_fqdn}}
-        - https://{{pgadmin_fqdn}}
+        - https://{{ radarr_fqdn }}
+        - https://{{ sonarr_fqdn }}
+        - https://{{ tautulli_fqdn }}
+        - https://{{ fidelity_calendar_fqdn }}/fidelity.ics
+        - https://{{ overseer_fqdn }}
+        - https://{{ oauth_service_fqdn }}
+        - https://{{ grafana_fqdn }}
+        - https://{{ pgadmin_fqdn }}
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -184,7 +184,7 @@ prometheus_scrape_configs_raw: |
       - targets: ['127.0.0.1:9115']
 prometheus_alertmanager_config:
   - static_configs:
-    - targets: ["127.0.0.1:9093"]
+      - targets: ["127.0.0.1:9093"]
 prometheus_config_flags_extra:
   web.enable-remote-write-receiver:
 prometheus_alert_rules:

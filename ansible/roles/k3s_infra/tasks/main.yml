@@ -13,7 +13,7 @@
     api_host: "{{ proxmox_ip }}"
     password: "{{ ansible_ssh_pass }}"
     hostname: '{{ inventory_hostname }}'
-    nameserver: "{{ default_gateway  }}"
+    nameserver: "{{ default_gateway }}"
     pubkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
     unprivileged: false
     disk: 'zfs-ssd:50'

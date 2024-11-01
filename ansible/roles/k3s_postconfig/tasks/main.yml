@@ -44,14 +44,14 @@
     break_system_packages: true
 
 
-- name: "Create [{{ item }}] namespace"
+- name: "Create namespace"
   kubernetes.core.k8s:
     name: workflows
     api_version: v1
     kind: Namespace
     state: present
   with_items: "{{ k8s_namespaces }}"
-- name: "Setup GitLab Credentials in [{{ item }}] namespace"
+- name: "Setup GitLab Credentials in namespace"
   kubernetes.core.k8s:
     kubeconfig: '~/.kube/config'
     state: present
