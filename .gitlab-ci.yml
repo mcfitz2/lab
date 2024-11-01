@@ -38,6 +38,7 @@ ansible-lint:
   script:
     - ansible-galaxy install -r ansible/requirements.yml
     - export ANSIBLE_ROLES_PATH=$(pwd)/ansible/roles
+    - ansible-galaxy install -r ansible/requirements.yml
     - ansible-lint --show-relpath ansible
   allow_failure: true
   only:
