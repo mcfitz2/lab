@@ -113,7 +113,13 @@ all:
       ansible_ssh_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5', state_file_dir=bitwarden_state_dir) }}"
       type: lxc
       metrics: true
-
+    k3s4:
+      ansible_user: root
+      ansible_host: 192.168.1.233
+      vmid: 704
+      ansible_ssh_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5', state_file_dir=bitwarden_state_dir) }}"
+      type: lxc
+      metrics: true
     k3snfs:
       vmid: 706
       ansible_user: root
@@ -152,11 +158,12 @@ node_metrics:
     k3s1:
     k3s2:
     k3s3:
+    k3s4:
     k3snfs:
     rescue:
     proxmox:
     greatlakes-db:
-    docker:
+#    docker:
     cloudflared:
     gitlab-runner:
     plex:
@@ -173,6 +180,7 @@ cluster:
       hosts:
         k3s2:
         k3s3:
+        k3s4:
     cluster_nfs:
       hosts:
         k3snfs:
