@@ -43,23 +43,41 @@ ansible-lint:
   only:
     changes:
       - ansible/**/*
-build-ansible:
+
+
+build-image:
+  parallel:
+    matrix:
+      - DIR: ansible
+        IMAGE_SUFFIX: ansible
+      - DIR: applications/prometheus-prefect-exporter
+        IMAGE_SUFFIX: prometheus-prefect-exporter
+      - DIR: applications/fidelity_calendar
+        IMAGE_SUFFIX: fidelity_calendar
+      - DIR: applications/habit
+        IMAGE_SUFFIX: habit
+      - DIR: applications/magic-mirror
+        IMAGE_SUFFIX: mm-office
+      - DIR: applications/magic-mirror-home
+        IMAGE_SUFFIX: mm-living-room
+      - DIR: applications/formula1
+        IMAGE_SUFFIX: formula1
   image:
     name: gcr.io/kaniko-project/executor:v1.23.2-debug
     entrypoint: [""]
   script:
     - /kaniko/executor
-      --context ansible
-      --dockerfile ansible/Dockerfile
-      --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"
+      --context $DIR
+      --dockerfile $DIR/Dockerfile
+      --destination "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$IMAGE_SUFFIX:${CI_COMMIT_TAG}"
     - /kaniko/executor
       --context ansible
       --dockerfile ansible/Dockerfile
-      --destination "${CI_REGISTRY_IMAGE}:latest"
+      --destination "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$IMAGE_SUFFIX:latest"
   stage: build
-  # only:
-  #   changes:
-  #     - ansible/**/*
+  only:
+    changes:
+      - $DIR/**/*
 
 
 build-workflows:
@@ -75,99 +93,3 @@ build-workflows:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker compose build
     - docker compose push
-
-build-prefect-exporter:
-  image: docker:latest
-  services:
-    - docker:dind
-  stage: build
-  only:
-    changes:
-      - applications/prometheus-prefect-exporter/**/*
-  script:
-    - cd applications/prometheus-prefect-exporter
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/prometheus-prefect-exporter:$CI_COMMIT_SHORT_SHA .
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/prometheus-prefect-exporter:$CI_COMMIT_SHORT_SHA
-    - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/prometheus-prefect-exporter:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/prometheus-prefect-exporter:latest
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/prometheus-prefect-exporter:latest
-
-build-fidelity-calendar:
-  image: docker:latest
-  services:
-    - docker:dind
-  stage: build
-  only:
-    changes:
-      - applications/fidelity_calendar/**/*
-  script:
-    - cd applications/fidelity_calendar
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/fidelity_calendar:$CI_COMMIT_SHORT_SHA .
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/fidelity_calendar:$CI_COMMIT_SHORT_SHA
-    - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/fidelity_calendar:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/fidelity_calendar:latest
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/fidelity_calendar:latest
-
-
-build-habit:
-  image: docker:latest
-  services:
-    - docker:dind
-  stage: build
-  only:
-    changes:
-      - applications/habit/**/*
-  script:
-    - cd applications/habit
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/habit:$CI_COMMIT_SHORT_SHA .
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/habit:$CI_COMMIT_SHORT_SHA
-    - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/habit:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/habit:latest
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/habit:latest
-
-build-mm-office:
-  image: docker:latest
-  services:
-    - docker:dind
-  stage: build
-  only:
-    changes:
-      - applications/magic-mirror/**/*
-  script:
-    - cd applications/habit
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-office:$CI_COMMIT_SHORT_SHA .
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-office:$CI_COMMIT_SHORT_SHA
-    - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-office:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-office:latest
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-office:latest
-build-mm-living-room:
-  image: docker:latest
-  services:
-    - docker:dind
-  stage: build
-  only:
-    changes:
-      - applications/magic-mirror-home/**/*
-  script:
-    - cd applications/magic-mirror-home
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-living-room:$CI_COMMIT_SHORT_SHA .
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-living-room:$CI_COMMIT_SHORT_SHA
-    - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-living-room:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-living-room:latest
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/mm-living-room:latest
-
-build-formula1:
-  image: docker:latest
-  services:
-    - docker:dind
-  stage: build
-  only:
-    changes:
-      - applications/formula1/**/*
-  script:
-    - cd applications/formula1
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/formula1:$CI_COMMIT_SHORT_SHA .
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/formula1:$CI_COMMIT_SHORT_SHA
-    - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/formula1:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/formula1:latest
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/formula1:latest
