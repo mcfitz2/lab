@@ -45,7 +45,7 @@ ansible-lint:
       - ansible/**/*
 build-ansible:
   image:
-    name: gcr.io/kaniko-project/executor:latest
+    name: gcr.io/kaniko-project/executor:v1.23.2-debug
     entrypoint: [""]
   script:
     - /kaniko/executor
