@@ -57,9 +57,9 @@ build-ansible:
       --dockerfile ansible/Dockerfile"
       --destination "${CI_REGISTRY_IMAGE}:latest"
   stage: build
-  only:
-    changes:
-      - ansible/**/*
+  # only:
+  #   changes:
+  #     - ansible/**/*
 
 
 build-workflows:
