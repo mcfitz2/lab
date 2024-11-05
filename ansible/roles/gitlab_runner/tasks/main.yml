@@ -19,7 +19,7 @@
     disable_hook: true
     values:
       runnerToken: "{{ gitlab_runner_token }}"
-      replicas: 4
+      replicas: 1
       gitlabUrl: https://gitlab.com
       rbac:
         create: true

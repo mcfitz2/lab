@@ -51,73 +51,103 @@ build-image:
     matrix:
       - DIR: ansible
         IMAGE_SUFFIX: ansible
+        DOCKERFILE: ansible/Dockerfile
       - DIR: applications/prometheus-prefect-exporter
         IMAGE_SUFFIX: prometheus-prefect-exporter
+        DOCKERFILE: applications/prometheus-prefect-exporter/Dockerfile
       - DIR: applications/fidelity_calendar
         IMAGE_SUFFIX: fidelity_calendar
+        DOCKERFILE: applications/fidelity_calendar/Dockerfile
       - DIR: applications/habit
         IMAGE_SUFFIX: habit
+        DOCKERFILE: applications/habit/Dockerfile
       - DIR: applications/magic-mirror
         IMAGE_SUFFIX: mm-office
+        DOCKERFILE: applications/magic-mirror-home/Dockerfile
       - DIR: applications/magic-mirror-home
         IMAGE_SUFFIX: mm-living-room
+        DOCKERFILE: applications/magic-mirror-home/Dockerfile
       - DIR: applications/formula1
         IMAGE_SUFFIX: formula1
-      - DIR: applications/greatlakes/airport_locations
+        DOCKERFILE: applications/formula1/Dockerfile
+
+
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: airport-locations
-      - DIR: applications/greatlakes/oauth-service
+        DOCKERFILE: applications/greatlakes/airport_locations/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: oauth
-      - DIR: applications/greatlakes/uptime-service
+        DOCKERFILE: applications/greatlakes/oauth-service/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: uptime
-      - DIR: applications/greatlakes/takeout
+        DOCKERFILE: applications/greatlakes/uptime-service/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: takeout
-      - DIR: applications/greatlakes/row_counts
+        DOCKERFILE: applications/greatlakes/takeout/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: row-counts
-      - DIR: applications/greatlakes/austin_energy
+        DOCKERFILE: applications/greatlakes/row_counts/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: austin-energy
-      - DIR: applications/greatlakes/fitbit_api
+        DOCKERFILE: applications/greatlakes/austin_energy/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: fitbit-api
-      - DIR: applications/greatlakes/sms
+        DOCKERFILE: applications/greatlakes/fitbit_api/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: sms
-      - DIR: applications/greatlakes/calls
+        DOCKERFILE: applications/greatlakes/sms/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: calls
-      - DIR: applications/greatlakes/ynab
+        DOCKERFILE: applications/greatlakes/calls/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: ynab
-      - DIR: applications/greatlakes/weather
+        DOCKERFILE: applications/greatlakes/ynab/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: weather
-      - DIR: applications/greatlakes/instagram
+        DOCKERFILE: applications/greatlakes/weather/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: instagram
-      - DIR: applications/greatlakes/stocks
+        DOCKERFILE: applications/greatlakes/instagram/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: stocks
-      - DIR: applications/greatlakes/gmail
+        DOCKERFILE: applications/greatlakes/stocks/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: gmail
-      - DIR: applications/greatlakes/geocoding
+        DOCKERFILE: applications/greatlakes/gmail/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: geocoding
-      - DIR: applications/greatlakes/strava_api
+        DOCKERFILE: applications/greatlakes/geocoding/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: strava_api
-      - DIR: applications/greatlakes/db_tasks
+        DOCKERFILE: applications/greatlakes/strava_api/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: db_tasks
-      - DIR: applications/greatlakes/wrench_a_part
+        DOCKERFILE: applications/greatlakes/db_tasks/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: wrench_a_part
-      - DIR: applications/greatlakes/postgres_backup
+        DOCKERFILE: applications/greatlakes/wrench_a_part/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: postgres_backup
-      - DIR: applications/greatlakes/mortgage_rates
+        DOCKERFILE: applications/greatlakes/postgres_backup/Dockerfile
+      - DIR: applications/greatlakes
         IMAGE_SUFFIX: amr
+        DOCKERFILE: applications/greatlakes/mortgage_rates/Dockerfile
   image:
     name: gcr.io/kaniko-project/executor:v1.23.2-debug
     entrypoint: [""]
+  retry: 2
   script:
     - /kaniko/executor
       --context $DIR
       --cache-repo=$CI_REGISTRY
       --cache=true
-      --dockerfile $DIR/Dockerfile
+      --dockerfile $DOCKERFILE
       --destination "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$IMAGE_SUFFIX:${CI_COMMIT_TAG}"
     - /kaniko/executor
       --context $DIR
       --cache-repo=$CI_REGISTRY
       --cache=true
-      --dockerfile $DIR/Dockerfile
+      --dockerfile $DOCKERFILE
       --destination "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$IMAGE_SUFFIX:latest"
   stage: build
   only:
