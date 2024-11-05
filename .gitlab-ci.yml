@@ -81,9 +81,9 @@ build-image:
         IMAGE_SUFFIX: sms
       - DIR: applications/greatlakes/calls
         IMAGE_SUFFIX: calls
-      - DIR: applications/greatlakes/Dockerfile
+      - DIR: applications/greatlakes/ynab
         IMAGE_SUFFIX: ynab
-      - DIR: applications/greatlakes/Dockerfile
+      - DIR: applications/greatlakes/weather
         IMAGE_SUFFIX: weather
       - DIR: applications/greatlakes/instagram
         IMAGE_SUFFIX: instagram
