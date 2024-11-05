@@ -92,4 +92,5 @@
 #     - nzbget
     # - tube_archivist
     # - monica
-    - magic_mirror
+    #- magic_mirror
+    - gitlab_runner

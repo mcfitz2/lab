@@ -320,3 +320,7 @@ k8s_namespaces:
   - default
   - misc
   - greatlakes
+  - gitlab-runner
+
+
+gitlab_runner_token: "{{ lookup('bitwarden.secrets.lookup', 'a7dc9ad3-9239-410a-8f86-b21f0116b6fa', state_file_dir=bitwarden_state_dir) }}"
