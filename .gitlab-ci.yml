@@ -13,7 +13,7 @@ isort:
   only:
     changes:
       - applications/formula1/**/*
-      - .gitlab-ci.yaml
+      - .gitlab-ci.yml
 black:
   stage: linting
   image: registry.gitlab.com/mafda/python-linting
@@ -22,7 +22,7 @@ black:
   only:
     changes:
       - applications/formula1/**/*
-      - .gitlab-ci.yaml
+      - .gitlab-ci.yml
 flake8:
   stage: linting
   image: registry.gitlab.com/mafda/python-linting
@@ -31,7 +31,7 @@ flake8:
   only:
     changes:
       - applications/formula1/**/*
-      - .gitlab-ci.yaml
+      - .gitlab-ci.yml
 
 ansible-lint:
   stage: linting
@@ -44,7 +44,7 @@ ansible-lint:
   only:
     changes:
       - ansible/**/*
-      - .gitlab-ci.yaml
+      - .gitlab-ci.yml
 
 build-image:
   parallel:
@@ -119,4 +119,4 @@ build-image:
   only:
     changes:
       - $DIR/**/*
-      - .gitlab-ci.yaml
+      - .gitlab-ci.yml
