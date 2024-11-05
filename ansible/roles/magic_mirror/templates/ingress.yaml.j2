@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: magic-mirror-home
+  namespace: misc
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: magic-mirror-home
+                port:
+                  number: 8080
+      host: "{{ magic_mirror_home_fqdn }}"

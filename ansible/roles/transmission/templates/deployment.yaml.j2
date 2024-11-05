@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  transmission
+  name:  transmission
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: transmission
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: transmission
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+          image: lscr.io/linuxserver/transmission:latest
+          name:  transmission
+          ports:
+            - containerPort: 9091
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: transmission-config
+            - mountPath: /downloads
+              name: transmission-downloads
+      restartPolicy: Always
+      volumes:
+        - name: transmission-config
+          persistentVolumeClaim:
+            claimName: transmission-config
+        - name: transmission-downloads
+          nfs:
+            server: "{{ nfs_server_host }}"
+            path:  "{{ media_nfs_export }}/downloads/transmission"

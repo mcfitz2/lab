@@ -28,18 +28,24 @@ gitlab_token: "{{ lookup('bitwarden.secrets.lookup', 'fea627b6-00c0-4f03-b9c7-b2
 gitlab_user: mcfitz2
 node_exporter_version: '0.18.1'
 kubernetes_root: "{{ ansible_config_file | dirname }}/../kubernetes"
-radarr_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'cd6f122c-27df-4a82-88b5-b202013b8ba0', state_file_dir=bitwarden_state_dir) }}"
-sonarr_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'edcb2c18-5664-4dbc-afe6-b202013bf97e', state_file_dir=bitwarden_state_dir) }}"
+radarr_fqdn: radarr.micahf.net
+sonarr_fqdn: sonarr.micahf.net
 nzbgeek_api_key: "{{ lookup('bitwarden.secrets.lookup', '8449f4d7-0cc0-409b-a15a-b202013ea29e', state_file_dir=bitwarden_state_dir) }}"
 tvdb_api_key: "{{ lookup('bitwarden.secrets.lookup', '5fc9f51d-be6f-4a70-b8bd-b202013e8767', state_file_dir=bitwarden_state_dir) }}"
 tvdb_pin: "{{ lookup('bitwarden.secrets.lookup', '802b73a7-b1a0-4fbe-ad08-b202013eb434', state_file_dir=bitwarden_state_dir) }}"
-overseer_fqdn: "{{ lookup('bitwarden.secrets.lookup', '48e244de-31f0-4041-9179-b21101570a5d', state_file_dir=bitwarden_state_dir) }}"
-tautulli_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'f753ba32-c906-4974-b381-b21101573911', state_file_dir=bitwarden_state_dir) }}"
-fidelity_calendar_fqdn: "{{ lookup('bitwarden.secrets.lookup', '8374c542-8305-479d-8e02-b21200f65fb1', state_file_dir=bitwarden_state_dir) }}"
-oauth_service_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'b50c9f63-d706-4c6b-87da-b2140178dcb5', state_file_dir=bitwarden_state_dir) }}"
-grafana_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'd3135c61-68a1-4b70-a25b-b21a0131236b', state_file_dir=bitwarden_state_dir) }}"
-pgadmin_fqdn: "{{ lookup('bitwarden.secrets.lookup', 'e572ab98-6169-40e7-a226-b21a0136fd21', state_file_dir=bitwarden_state_dir) }}"
-prowlarr_fqdn: "{{ lookup('bitwarden.secrets.lookup', '6c325bdf-005c-4589-bca6-b21a014c089d', state_file_dir=bitwarden_state_dir) }}"
+
+
+
+overseer_fqdn: "overseerr.{{ tunnel_domain }}"
+tautulli_fqdn: "tautulli.{{ tunnel_domain }}"
+fidelity_calendar_fqdn: "shares.{{ tunnel_domain }}"
+oauth_service_fqdn: "oauth.{{ tunnel_domain }}"
+grafana_fqdn: "grafana.{{ tunnel_domain }}"
+pgadmin_fqdn: "pgadmin.{{ tunnel_domain }}"
+prowlarr_fqdn: "prowlarr.{{ tunnel_domain }}"
+nzbget_fqdn: "nzbget.{{ tunnel_domain }}"
+transmission_fqdn: "transmission.{{ tunnel_domain }}"
+
 
 greatlakes_host: "{{ hostvars['greatlakes-db']['ansible_host'] }}"
 greatlakes_user: "{{ lookup('bitwarden.secrets.lookup', 'e4313714-d00a-48e7-a29a-b20201410624', state_file_dir=bitwarden_state_dir) }}"
@@ -158,11 +164,8 @@ prometheus_scrape_configs_raw: |
       - targets:
         - https://homeassistant.micahf.net
         - "http://{{ hostvars['homeassistant']['ansible_host'] }}:8123"
-        - http://192.168.1.139:8081
         - https://magic-mirror-living-room.micahf.net
-        - https://radarr.micahf.net
         - https://transmission.micahf.net
-        - https://sonarr.micahf.net
         - https://proxmox.micahf.net
         - https://{{ radarr_fqdn }}
         - https://{{ sonarr_fqdn }}
@@ -297,15 +300,19 @@ blackbox_exporter_configuration_modules:
         insecure_skip_verify: true
     prober: "http"
     timeout: "30s"
-build_infra: false
+build_infra: true
 setup_monitoring: true
 prometheus_scrape_configs: "{{ prometheus_scrape_configs_raw | from_yaml }}"
 pushgateway_web_listen_address: "0.0.0.0:9092"
 
-
+tube_archivist_fqdn: tube.{{ tunnel_domain }}
+tube_archivist_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5', state_file_dir=bitwarden_state_dir) }}"
+tube_archivist_user: micah
+monica_fqdn: monica.{{ tunnel_domain }}
+magic_mirror_home_fqdn: magic-mirror-living-room.{{ tunnel_domain}}
+todoist_token: "{{ lookup('bitwarden.secrets.lookup', 'a1f4073a-235d-442b-a982-b21901137aa8', state_file_dir=bitwarden_state_dir) }}"
 k8s_namespaces:
   - media
-  - k8up
   - monitoring
   - workflows
   - awx-operator

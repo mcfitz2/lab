@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tubearchivist
+  namespace: media
+spec:
+  ingressClassName: cloudflare-tunnel
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tubearchivist
+                port:
+                  number: 8000
+      host: "{{ tube_archivist_fqdn }}"

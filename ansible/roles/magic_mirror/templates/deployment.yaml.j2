@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  magic-mirror-home
+  name:  magic-mirror-home
+  namespace: misc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: magic-mirror-home
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: magic-mirror-home
+    spec:
+      imagePullSecrets:
+        - name: gitlab-credentials
+      containers:
+        - env:
+            - name: TODOIST_TOKEN
+              value: "{{ todoist_token }}"
+          image: registry.gitlab.com/mcfitz2/lab/mm-living-room:latest
+          name:  magic-mirror-home
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always

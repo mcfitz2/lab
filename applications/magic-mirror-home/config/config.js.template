@@ -28,18 +28,18 @@ var config = {
             position: "top_bar"
         }, {
             module: "clock",
-            position: "top_left",
+            position: "top_center",
             config: {
                 timeFormat: 12,
                 displaySeconds: true,
-                showSunTimes: true,
+                showSunTimes: false,
                 lat: 30.266926,
                 lon: -97.750519
             }
         }, 
 {
     module:     'MMM-2Day-NOAA-Forecast',
-    position:   'top_center',
+    position:   'top_left',
         config: {
                 lat:        30.266926,
                 lon:        -97.750519,
@@ -47,6 +47,14 @@ var config = {
                 interval:   10 * 60 * 1000
         }
 },
+{
+    module: "MMM-Formula1",
+    position: "top_center",
+    header: "Formula 1",
+    config: {
+        showStanding: "BOTH"
+    }
+  },
 
          {
             module: "calendar",

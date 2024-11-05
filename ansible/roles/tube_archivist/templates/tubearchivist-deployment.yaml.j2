@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tubearchivist
+  name: tubearchivist
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tubearchivist
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: tubearchivist
+    spec:
+      containers:
+        - env:
+            - name: ELASTIC_PASSWORD
+              value: {{ tube_archivist_pass }}
+            - name: ES_JAVA_OPTS
+              value: -Xms1g -Xmx1g
+            - name: discovery.type
+              value: single-node
+            - name: path.repo
+              value: /usr/share/elasticsearch/data/snapshot
+            - name: xpack.security.enabled
+              value: "true"
+          image: bbilly1/tubearchivist-es
+          name: archivist-es
+          ports:
+            - containerPort: 9200
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: es
+        - image: redis/redis-stack-server
+          name: archivist-redis
+          ports:
+            - containerPort: 6379
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /data
+              name: redis
+        - env:
+            - name: ELASTIC_PASSWORD
+              value: {{ tube_archivist_pass }}
+            - name: ES_URL
+              value: http://localhost:9200
+            - name: HOST_GID
+              value: "1000"
+            - name: HOST_UID
+              value: "1000"
+            - name: REDIS_HOST
+              value: localhost
+            - name: TA_HOST
+              value: {{ tube_archivist_fqdn }}
+            - name: TA_PASSWORD
+              value: {{ tube_archivist_pass }}
+            - name: TA_USERNAME
+              value: {{ tube_archivist_user }}
+            - name: TZ
+              value: America/Chicago
+          image: bbilly1/tubearchivist
+          livenessProbe:
+            exec:
+              command:
+                - curl
+                - -f
+                - http://localhost:8000/health
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 120
+            timeoutSeconds: 10
+          name: tubearchivist
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /youtube
+              name: youtube
+            - mountPath: /cache
+              name: cache
+      restartPolicy: Always
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: cache
+        - name: es
+          persistentVolumeClaim:
+            claimName: es
+        - name: redis
+          persistentVolumeClaim:
+            claimName: redis
+        - name: youtube
+          nfs:
+            server: "{{ nfs_server_host }}"
+            path:  "{{ media_nfs_export }}/youtube"

@@ -72,20 +72,24 @@
 - hosts: localhost
   connection: local
   roles:
-    - grafana
-    - pgadmin
-    - pve_exporter
-    - unpoller
-    - sonarr
-    - radarr
-    - tautulli
-    - overseer
-    - fidelity_calendar
-    - prefect_exporter
-    - greatlakes
-    - prometheus_operator
-    - prowlarr
-#    - kasm_chrome # Disabled until I figure out the websocket issue
-    - formula1
-    - jackett
-
+#     - grafana
+#     - pgadmin
+#     - pve_exporter
+#     - unpoller
+#     - sonarr
+#     - radarr
+#     - tautulli
+#     - overseer
+#     - fidelity_calendar
+#     - prefect_exporter
+#     - greatlakes
+#     - prometheus_operator
+#     - prowlarr
+# #    - kasm_chrome # Disabled until I figure out the websocket issue
+#     - formula1
+#     - jackett
+#     - transmission
+#     - nzbget
+    # - tube_archivist
+    # - monica
+    - magic_mirror

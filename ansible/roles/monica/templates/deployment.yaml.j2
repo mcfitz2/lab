@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: monica
+  name: monica
+  namespace: misc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monica
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: monica
+    spec:
+      containers:
+        - env:
+          - name: MYSQL_RANDOM_ROOT_PASSWORD
+            value: "true"
+          - name: MYSQL_DATABASE
+            value: monica
+          - name: MYSQL_USER
+            value: monica
+          - name: MYSQL_PASSWORD
+            value: secret
+          image: mariadb:11
+          name: monica-db
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: monica-db
+
+        - env:
+          - name: APP_KEY
+            value: "base64:5TQ0slSO7JeVH0DeDU/SghE1vocz/kuvrUpcYU5dCMg="
+          - name: DB_HOST
+            value: "127.0.0.1"
+          - name: DB_USERNAME
+            value: monica
+          - name: DB_PASSWORD
+            value: secret
+          image: monica:latest
+          name: monica
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/www/html/storage
+              name: monica
+      restartPolicy: Always
+      volumes:
+        - name: monica-db
+          persistentVolumeClaim:
+            claimName: monica-db
+        - name: monica
+          persistentVolumeClaim:
+            claimName: monica
