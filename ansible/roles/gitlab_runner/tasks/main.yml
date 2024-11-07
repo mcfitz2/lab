@@ -18,7 +18,7 @@
     update_repo_cache: true
     disable_hook: true
     values:
-      runnerToken: "{{ gitlab_runner_token }}"
+      runnerToken: "{{ gitlab_runner_token_kubernetes }}"
       replicas: 1
       concurrent: 1
       gitlabUrl: https://gitlab.com

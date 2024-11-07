@@ -206,6 +206,20 @@ all:
       ansible_host: 192.168.2.219
       type: esphome
       metrics: true
+    gitlab-runner:
+      ansible_user: root
+      ansible_host: 192.168.1.15
+      ansible_ssh_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5') }}"
+      type: lxc
+      metrics: true
+      vmid: 300
+      cores: 1
+      memory: 2048
+      swap: 512
+      mount_points:
+      storage: "zfs-ssd"
+      disk_size: 10
+      unprivileged: false
 esphome:
   hosts:
     cat_feeder:

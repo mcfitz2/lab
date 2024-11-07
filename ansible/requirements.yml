@@ -10,3 +10,4 @@ roles:
   - name: geerlingguy.nfs
   - name: geerlingguy.node_exporter
   - name: LukasGibb.s3cmd
+  - name: riemers.gitlab-runner

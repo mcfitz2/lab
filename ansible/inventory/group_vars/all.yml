@@ -322,7 +322,25 @@ k8s_namespaces:
   - greatlakes
   - gitlab-runner
 
-
-gitlab_runner_token: "{{ lookup('bitwarden.secrets.lookup', 'a7dc9ad3-9239-410a-8f86-b21f0116b6fa', state_file_dir=bitwarden_state_dir) }}"
-
+gitlab_runner_token_kubernetes: "{{ lookup('bitwarden.secrets.lookup', 'a7dc9ad3-9239-410a-8f86-b21f0116b6fa', state_file_dir=bitwarden_state_dir) }}"
+gitlab_runner_token_lxc: "{{ lookup('bitwarden.secrets.lookup', '844a7701-7f2d-412a-a399-b221017cd13e', state_file_dir=bitwarden_state_dir) }}"
 default_lxc_template: 'local:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst'
+gitlab_runner_registration_token_type: "authentication-token"
+gitlab_runner_coordinator_url: https://gitlab.com
+gitlab_runner_runners:
+  - name: 'local-lxc-runner'
+    # url is an optional override to the global gitlab_runner_coordinator_url
+    url: 'https://gitlab.com'
+    token: "{{ gitlab_runner_token_lxc }}"
+    executor: docker
+    docker_image: 'alpine'
+    tags:
+      - docker
+    docker_volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/cache"
+    extra_configs:
+      runners.docker:
+        memory: 512m
+      runners.docker.sysctls:
+        net.ipv4.ip_forward: "1"
