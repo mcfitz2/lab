@@ -1,3 +1,6 @@
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
 stages:
   - test
   - linting
@@ -47,6 +50,9 @@ ansible-lint:
       - .gitlab-ci.yml
 
 build-image:
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
   parallel:
     matrix:
       - DIR: ansible
@@ -132,23 +138,14 @@ build-image:
       - DIR: applications/greatlakes
         IMAGE_SUFFIX: amr
         DOCKERFILE: applications/greatlakes/mortgage_rates/Dockerfile
-  image:
-    name: gcr.io/kaniko-project/executor:v1.23.2-debug
-    entrypoint: [""]
   retry: 2
   script:
-    - /kaniko/executor
-      --context $DIR
-      --cache-repo=$CI_REGISTRY
-      --cache=true
-      --dockerfile $DOCKERFILE
-      --destination "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$IMAGE_SUFFIX:${CI_COMMIT_TAG}"
-    - /kaniko/executor
-      --context $DIR
-      --cache-repo=$CI_REGISTRY
-      --cache=true
-      --dockerfile $DOCKERFILE
-      --destination "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$IMAGE_SUFFIX:latest"
+    - cd $DIR
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -f $DOCKERFILE -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$IMAGESUFFIX:$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$IMAGESUFFIX:$CI_COMMIT_SHORT_SHA
+    - docker tag $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$IMAGESUFFIX:$CI_COMMIT_SHORT_SHA $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$IMAGESUFFIX:latest
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$IMAGESUFFIX:latest
   stage: build
   only:
     changes:

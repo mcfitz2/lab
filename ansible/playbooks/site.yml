@@ -90,7 +90,12 @@
 #     - jackett
 #     - transmission
 #     - nzbget
-    # - tube_archivist
-    # - monica
-    #- magic_mirror
+#     - tube_archivist
+#     - monica
+#     - magic_mirror
     - gitlab_runner
+
+# - hosts: plex
+#   gather_facts: false
+#   roles:
+#     - plex

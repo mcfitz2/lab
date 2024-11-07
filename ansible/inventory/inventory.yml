@@ -5,7 +5,14 @@ all:
       ansible_host: 192.168.1.36
       type: lxc
       metrics: true
-
+      cores: 1
+      memory: 512
+      swap: 512
+      mount_points:
+      storage: "zfs-hdd"
+      disk_size: 2
+      unprivileged: false
+      vmid: 100
     loud:
       ansible_user: root
       ansible_host: 192.168.1.236
@@ -13,23 +20,81 @@ all:
       metrics: false
 
     file-server:
+      vmid: 101
       ansible_user: root
       ansible_host: 192.168.1.17
       type: lxc
       metrics: true
-
+      cores: 1
+      memory: 512
+      swap: 512
+      mount_points:
+        - src: /primary/archive
+          target: /primary/archive
+        - src: /primary/media
+          target: /primary/media
+        - src: /primary/backups
+          target: /primary/backups
+        - src: /primary/geocoder
+          target: /primary/geocoder
+        - src: /primary/lauren
+          target: /primary/lauren
+        - src: /primary/lake
+          target: /primary/lake
+        - src: /primary/dropbox
+          target: /primary/dropbox
+        - src: /primary/s3
+          target: /primary/s3
+      storage: "zfs-ssd"
+      disk_size: 2
+      unprivileged: false
     geocoder-lxc:
+      vmid: 103
       ansible_user: root
       ansible_host: 192.168.1.201
       type: lxc
       metrics: true
-
+      cores: 4
+      memory: 8192
+      swap: 512
+      mount_points:
+        - src: /primary/geocoder
+          target: /primary/geocoder
+      storage: "local-lvm"
+      disk_size: 24
+      unprivileged: false
     plex:
       ansible_user: root
       ansible_host: 192.168.1.13
       ansible_ssh_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5') }}"
       type: lxc
       metrics: true
+      cores: 2
+      memory: 8192
+      swap: 512
+      mount_points:
+        - src: /primary/media
+          target: /primary/media
+      storage: "zfs-ssd"
+      disk_size: 72
+      unprivileged: false
+      vmid: 600
+    plex-dev:
+      ansible_user: root
+      ansible_host: 192.168.1.14
+      ansible_ssh_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5') }}"
+      type: lxc
+      metrics: true
+      vmid: 600
+      cores: 2
+      memory: 8192
+      swap: 512
+      mount_points:
+        - src: /primary/media
+          target: /primary/media
+      storage: "zfs-ssd"
+      disk_size: 72
+      unprivileged: false
 
     monitoring:
       vmid: 800
@@ -38,20 +103,13 @@ all:
       ansible_ssh_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5') }}"
       type: lxc
       metrics: true
-
-    gitlab-runner:
-      ansible_user: root
-      ansible_host: 192.168.1.204
-      ansible_ssh_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5') }}"
-      type: lxc
-      metrics: true
-
-    docker:
-      ansible_user: root
-      ansible_host: 192.168.1.139
-      ansible_ssh_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5', state_file_dir=bitwarden_state_dir) }}"
-      type: lxc
-      metrics: true
+      cores: 4
+      memory: 2048
+      swap: 0
+      mount_points:
+      storage: "zfs-ssd"
+      disk_size: 20
+      unprivileged: false
 
     greatlakes-db:
       ansible_user: micah
@@ -163,9 +221,7 @@ node_metrics:
     rescue:
     proxmox:
     greatlakes-db:
-#    docker:
     cloudflared:
-    gitlab-runner:
     plex:
     geocoder-lxc:
     file-server:

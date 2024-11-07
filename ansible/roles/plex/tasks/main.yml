@@ -18,12 +18,12 @@
         hostname: '{{ inventory_hostname }}'
         nameserver: "{{ default_gateway }}"
         pubkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-        unprivileged: false
-        disk: 'zfs-ssd:20'
+        unprivileged: "{{ unprivileged }}"
+        disk: '{{ storage }}:{{ disk_size }}'
         ostemplate: "{{ default_lxc_template }}"
-        cores: 4
-        memory: 2048
-        swap: 512
+        cores: "{{ cores }}"
+        memory: "{{ memory }}"
+        swap: "{{ swap }}"
         onboot: true
         netif: '{"net0":"name=eth0,ip={{ ansible_host }}/24,gw={{ default_gateway }},bridge=vmbr0"}'
         timeout: 500
@@ -32,7 +32,29 @@
       delegate_to: localhost
       register: creation
       throttle: 1
-
+    - name: Add cluster mount
+      ansible.builtin.lineinfile:
+        path: "/etc/pve/lxc/{{ vmid }}.conf"
+        regexp: '^mp{{ idx }}:'
+        line: "mp{{ idx }}: {{ item.src }},mp={{ item.target }}"
+      delegate_to: proxmox
+      loop: "{{ mount_points }}"
+      loop_control:
+        index_var: idx
+      register: mounts
+    - name: Stop Container
+      when: mounts.changed
+      community.general.proxmox:
+        vmid: "{{ vmid }}"
+        node: "{{ proxmox_node }}"
+        api_user: "{{ proxmox_user }}"
+        api_password: "{{ proxmox_pass }}"
+        api_host: "{{ proxmox_ip }}"
+        hostname: '{{ inventory_hostname }}'
+        timeout: 500
+        state: stopped
+      delegate_to: localhost
+      throttle: 1
     - name: Start container
       community.general.proxmox:
         vmid: "{{ vmid }}"
@@ -77,3 +99,59 @@
         timeout: 120
 - name: Gather Facts about hosts
   ansible.builtin.gather_facts:
+- name: Install Dependencies
+  ansible.builtin.apt:
+    state: present
+    update_cache: true
+    name:
+      - curl
+      - sudo
+      - mc
+      - gpg
+      - va-driver-all
+      - ocl-icd-libopencl1
+      - intel-opencl-icd
+      - vainfo
+      - intel-gpu-tools
+- name: Check if /dev/dri exists
+  ansible.builtin.stat:
+    path: /dev/dri
+  register: dri
+- name: Change file ownership, group and permissions
+  ansible.builtin.file:
+    path: /dev/dri
+    group: video
+    mode: '0755'
+  when: dri.stat.exists
+- name: Change file ownership, group and permissions
+  ansible.builtin.file:
+    path: "{{ item }}"
+    group: video
+    mode: '0600'
+  with_fileglob:
+    - "/dev/dri/*"
+  when: dri.stat.exists
+- name: Adding user to required groups
+  ansible.builtin.user:
+    name: '{{ ansible_user }}'
+    groups:
+      - video
+      - render
+    append: true
+
+- name: Add Plex Repository
+  block:
+    - name: Get Key
+      ansible.builtin.get_url:
+        url: https://downloads.plex.tv/plex-keys/PlexSign.key
+        dest: /usr/share/keyrings/PlexSign.asc
+        mode: "0600"
+    - name: Add Repo
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/PlexSign.asc] https://downloads.plex.tv/repo/deb/ public main"
+        state: present
+- name: Install Plex
+  ansible.builtin.apt:
+    name: plexmediaserver
+    update_cache: true
+    state: present

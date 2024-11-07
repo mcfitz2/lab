@@ -324,3 +324,5 @@ k8s_namespaces:
 
 
 gitlab_runner_token: "{{ lookup('bitwarden.secrets.lookup', 'a7dc9ad3-9239-410a-8f86-b21f0116b6fa', state_file_dir=bitwarden_state_dir) }}"
+
+default_lxc_template: 'local:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst'

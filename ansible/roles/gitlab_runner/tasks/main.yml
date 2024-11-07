@@ -20,6 +20,7 @@
     values:
       runnerToken: "{{ gitlab_runner_token }}"
       replicas: 1
+      concurrent: 1
       gitlabUrl: https://gitlab.com
       rbac:
         create: true
@@ -29,6 +30,8 @@
             [runners.kubernetes]
               namespace = "gitlab-runner"
               image = "alpine"
+              privileged = true
+
 
               [runners.kubernetes.pod_labels]
                 app = "gitlab-runner"
