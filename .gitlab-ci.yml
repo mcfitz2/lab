@@ -53,8 +53,7 @@ build-image:
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
-  tags:
-    - docker
+
   parallel:
     matrix:
       - DIR: ansible

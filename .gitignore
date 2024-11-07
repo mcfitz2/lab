@@ -28,3 +28,5 @@ ansible/roles/geerlingguy.nfs
 ansible/roles/geerlingguy.node_exporter
 ansible/roles/bastiaanvanassche.s3fs-fuse
 ansible/roles/riemers.gitlab-runner
+ansible/roles/geerlingguy.docker
+
