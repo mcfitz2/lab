@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: transmission-exporter
+  name: transmission-exporter
+  namespace: monitoring
+spec:
+  type: NodePort
+  ports:
+    - name: "19091"
+      port: 19091
+      targetPort: 19091
+      nodePort: {{ transmission_exporter_port }}
+      protocol: TCP
+  selector:
+    app: transmission-exporter

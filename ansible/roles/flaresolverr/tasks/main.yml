@@ -1,7 +1,7 @@
-- name: Install manifests
+- name: Deploy Manifests
   kubernetes.core.k8s:
     kubeconfig: '~/.kube/config'
-    state: absent
+    state: present
     template: "{{ item }}"
     apply: true
   loop: "{{ lookup('fileglob', 'templates/*.yaml.j2', wantlist=true) }}"

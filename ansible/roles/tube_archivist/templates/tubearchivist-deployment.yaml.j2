@@ -30,6 +30,11 @@ spec:
             - name: xpack.security.enabled
               value: "true"
           image: bbilly1/tubearchivist-es
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           name: archivist-es
           ports:
             - containerPort: 9200
@@ -65,6 +70,11 @@ spec:
             - name: TZ
               value: America/Chicago
           image: bbilly1/tubearchivist
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           livenessProbe:
             exec:
               command:

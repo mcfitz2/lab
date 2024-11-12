@@ -96,6 +96,9 @@ node_exporter_port: 9101
 unpoller_port: 30207
 k8up_port: 30209
 prometheus_prefect_exporter_port: 30210
+nzbget_exporter_port: 30211
+transmission_exporter_port: 30212
+
 
 prometheus_scrape_configs_raw: |
   {% for target in groups['node_metrics'] +%}
@@ -156,6 +159,16 @@ prometheus_scrape_configs_raw: |
     scrape_timeout: 30s
     static_configs:
       - targets: ['{{ master_ip }}:{{ prometheus_prefect_exporter_port }}']
+  - job_name: 'nzbget'
+    scrape_interval: 1m
+    scrape_timeout: 30s
+    static_configs:
+      - targets: ['{{ master_ip }}:{{ nzbget_exporter_port }}']
+  - job_name: 'transmission'
+    scrape_interval: 1m
+    scrape_timeout: 30s
+    static_configs:
+      - targets: ['{{ master_ip }}:{{ transmission_exporter_port }}']
   - job_name: 'blackbox'
     metrics_path: /probe
     params:
@@ -344,3 +357,6 @@ gitlab_runner_runners:
         memory: 512m
       runners.docker.sysctls:
         net.ipv4.ip_forward: "1"
+
+nzbget_user: "{{ lookup('bitwarden.secrets.lookup', '90123e76-944c-42a4-87c4-b22601658e81', state_file_dir=bitwarden_state_dir) }}"
+nzbget_pass: "{{ lookup('bitwarden.secrets.lookup', 'f49dccea-9193-4076-b21c-b22601659d06', state_file_dir=bitwarden_state_dir) }}"

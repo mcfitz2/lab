@@ -26,6 +26,11 @@ spec:
             - name: TZ
               value: America/Chicago
           image: lscr.io/linuxserver/nzbget:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           name:  nzbget
           ports:
             - containerPort: 7878

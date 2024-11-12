@@ -28,6 +28,11 @@ spec:
             - name: TZ
               value: America/Chicago
           image: registry.gitlab.com/mcfitz2/lab/fidelity_calendar:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           name:  fidelity-calendar
           ports:
             - containerPort: 8989

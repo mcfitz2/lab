@@ -32,6 +32,11 @@ spec:
             - name: GF_FEATURE_TOGGLES_ENABLE
               value: "regressionTransformation"
           image: grafana/grafana:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           name:  grafana
           ports:
             - containerPort: 3000

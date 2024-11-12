@@ -54,15 +54,15 @@
 #   roles:
 #     - geerlingguy.node_exporter
 
-# - hosts: monitoring
-#   name: Configure machine(s) [monitoring]
-#   gather_facts: false
-#   roles:
-#     - monitoring_infra
-#     - prometheus.prometheus.prometheus
-#     - prometheus.prometheus.pushgateway
-#     - prometheus.prometheus.alertmanager
-#     - prometheus.prometheus.blackbox_exporter
+- hosts: monitoring
+  name: Configure machine(s) [monitoring]
+  gather_facts: false
+  roles:
+    - monitoring_infra
+    - prometheus.prometheus.prometheus
+    - prometheus.prometheus.pushgateway
+    - prometheus.prometheus.alertmanager
+    - prometheus.prometheus.blackbox_exporter
 
 
 # - hosts: greatlakes-db
@@ -72,30 +72,51 @@
 - hosts: localhost
   connection: local
   roles:
-#     - grafana
-#     - pgadmin
-#     - pve_exporter
-#     - unpoller
-#     - sonarr
-#     - radarr
-#     - tautulli
-#     - overseer
-#     - fidelity_calendar
-#     - prefect_exporter
-#     - greatlakes
-#     - prometheus_operator
-#     - prowlarr
-# #    - kasm_chrome # Disabled until I figure out the websocket issue
-#     - formula1
-#     - jackett
-#     - transmission
-#     - nzbget
-#     - tube_archivist
-#     - monica
-#     - magic_mirror
-    - gitlab_runner
+    # - grafana
+    # - pgadmin
+    # - pve_exporter
+    # - unpoller
+    # - sonarr
+    # - radarr
+    # - tautulli
+    # - overseer
+    # - fidelity_calendar
+    # - prefect_exporter
+    # - greatlakes
+    # - prometheus_operator
+    # - prowlarr
+    # - kasm_chrome # Disabled until I figure out the websocket issue
+    # - formula1
+    # - jackett
+    # - transmission
+    # - nzbget
+    # - tube_archivist
+    # - monica
+    # - magic_mirror
+    # - gitlab_runner
+    # - flaresolverr
+    - nzbget_exporter
+    - transmission_exporter
 
 # - hosts: plex
 #   gather_facts: false
 #   roles:
 #     - plex
+
+# - hosts: gitlab-runner
+#   gather_facts: false
+#   roles:
+#     - create_lxc
+# - hosts: gitlab-runner
+#   gather_facts: false
+#   pre_tasks:
+#     - name: Install apparmor-utils
+#       ansible.builtin.apt:
+#         name:
+#           - apparmor-utils
+#           - apparmor
+#         state: present
+#         update_cache: true
+#   roles:
+#     - geerlingguy.docker
+#     - riemers.gitlab-runner

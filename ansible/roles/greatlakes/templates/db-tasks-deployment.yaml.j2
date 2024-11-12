@@ -26,5 +26,10 @@ spec:
             - name: PREFECT_API_URL
               value: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
           image: registry.gitlab.com/mcfitz2/lab/db_tasks:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           name: db-tasks
       restartPolicy: Always

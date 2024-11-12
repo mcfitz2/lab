@@ -26,6 +26,11 @@ spec:
             - name: TZ
               value: America/Chicago
           image: lscr.io/linuxserver/jackett:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           name:  jackett
           ports:
             - containerPort: 9117

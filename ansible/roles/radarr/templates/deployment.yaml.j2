@@ -27,6 +27,11 @@ spec:
               value: America/Chicago
           image: lscr.io/linuxserver/radarr:latest
           name:  radarr
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "2Gi"
           ports:
             - containerPort: 7878
               protocol: TCP

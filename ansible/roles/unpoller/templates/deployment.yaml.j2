@@ -44,6 +44,11 @@ spec:
             - name: UP_PROMETHEUS_NAMESPACE
               value: unifipoller
           image: ghcr.io/unpoller/unpoller:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           name:  unpoller
           ports:
             - containerPort: 9130

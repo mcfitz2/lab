@@ -28,6 +28,11 @@ spec:
           - name: MYSQL_PASSWORD
             value: secret
           image: mariadb:11
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           name: monica-db
           ports:
             - containerPort: 3306

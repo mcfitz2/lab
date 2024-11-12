@@ -2,20 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app:  overseer
-  name:  overseer
+    app:  flaresolverr
+  name:  flaresolverr
   namespace: media
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: overseer
+      app: flaresolverr
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: overseer
+        app: flaresolverr
     spec:
       containers:
         - env:
@@ -25,21 +25,14 @@ spec:
               value: "1000"
             - name: TZ
               value: America/Chicago
-          image: sctx/overseerr:latest
-          name:  overseer
+          image: ghcr.io/flaresolverr/flaresolverr:latest
+          name:  flaresolverr
           resources:
             requests:
               memory: "1Gi"
             limits:
-              memory: "2Gi"
+              memory: "4Gi"
           ports:
-            - containerPort: 5055
+            - containerPort: 8191
               protocol: TCP
-          volumeMounts:
-            - mountPath: /app/config
-              name: overseer-config
       restartPolicy: Always
-      volumes:
-        - name: overseer-config
-          persistentVolumeClaim:
-            claimName: overseer-config

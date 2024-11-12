@@ -26,6 +26,11 @@ spec:
             - name: TZ
               value: America/Chicago
           image: lscr.io/linuxserver/transmission:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           name:  transmission
           ports:
             - containerPort: 9091

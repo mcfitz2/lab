@@ -24,6 +24,11 @@ spec:
             - name: TODOIST_TOKEN
               value: "{{ todoist_token }}"
           image: registry.gitlab.com/mcfitz2/lab/mm-living-room:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           name:  magic-mirror-home
           securityContext:
             allowPrivilegeEscalation: false

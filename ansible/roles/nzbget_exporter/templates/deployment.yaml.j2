@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  nzbget-exporter
+  name:  nzbget-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nzbget-exporter
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nzbget-exporter
+    spec:
+      imagePullSecrets:
+        - name: gitlab-credentials
+      containers:
+        - env:
+          - name: NZBGET_HOST
+            value: http://nzbget.media.svc.cluster.local:6789
+          - name: NZBGET_USERNAME
+            value: "{{ nzbget_user }}"
+          - name: NZBGET_PASSWORD
+            value: "{{ nzbget_pass }}"
+          image: frebib/nzbget-exporter:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
+          name:  nzbget-exporter
+          ports:
+            - containerPort: 9452
+              protocol: TCP
+      restartPolicy: Always

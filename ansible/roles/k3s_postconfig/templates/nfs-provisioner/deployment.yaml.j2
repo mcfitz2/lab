@@ -22,6 +22,11 @@ spec:
       containers:
         - name: nfs-client-provisioner
           image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           volumeMounts:
             - name: nfs-client-root
               mountPath: /persistentvolumes

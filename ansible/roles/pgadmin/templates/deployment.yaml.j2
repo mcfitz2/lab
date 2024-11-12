@@ -24,6 +24,11 @@ spec:
             - name: PGADMIN_DEFAULT_PASSWORD
               value: "{{ pgadmin_pass }}"
           image: dpage/pgadmin4
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
           name:  pgadmin
           ports:
             - containerPort: 80

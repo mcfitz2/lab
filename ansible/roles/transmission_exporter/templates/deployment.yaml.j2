@@ -2,39 +2,35 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app:  formula1
-  name:  formula1
-  namespace: media
+    app:  transmission-exporter
+  name:  transmission-exporter
+  namespace: monitoring
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: formula1
+      app: transmission-exporter
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: formula1
+        app: transmission-exporter
     spec:
       imagePullSecrets:
         - name: gitlab-credentials
       containers:
         - env:
-            - name: NZBGEEK_API_KEY
-              value: "{{ nzbgeek_api_key }}"
-            - name: TVDB_KEY
-              value: "{{ tvdb_api_key }}"
-            - name: TVDB_PIN
-              value: "{{ tvdb_pin }}"
-          image: registry.gitlab.com/mcfitz2/lab/formula1:latest
+          - name: TRANSMISSION_ADDR
+            value: http://transmission.media.svc.cluster.local:9091
+          image: metalmatze/transmission-exporter:latest
           resources:
              requests:
                memory: "150Mi"
              limits:
                memory: "2Gi"
-          name:  formula1
+          name:  transmission-exporter
           ports:
-            - containerPort: 9999
+            - containerPort: 19091
               protocol: TCP
       restartPolicy: Always
