@@ -8,7 +8,7 @@ import time
 from enum import Enum
 from threading import Lock
 from typing import Optional
-
+import os
 import feedparser
 import tvdb_v4_official
 from formula1 import demonyms
@@ -280,7 +280,7 @@ class ReleaseFetcher:
 
             self.last_check = time.time()
             tvdb = tvdb_v4_official.TVDB(
-                "316d9ad1-71cf-47a0-9ad1-689bb598522c", pin="AVUYMSV3"
+                os.environ['TVDB_KEY'], pin=os.environ['TVDB_PIN']
             )
             series = tvdb.get_series_extended(387219)
             seasons = {
