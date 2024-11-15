@@ -149,5 +149,5 @@ build-image:
   stage: build
   only:
     changes:
-      - $DIR/**/*
+      - applications/**/*
       - .gitlab-ci.yml

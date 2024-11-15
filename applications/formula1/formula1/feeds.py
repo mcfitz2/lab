@@ -3,17 +3,19 @@
 # pylint: disable=missing-function-docstring
 # pylint: disable=missing-class-docstring
 
+import os
 import re
 import time
 from enum import Enum
 from threading import Lock
 from typing import Optional
-import os
+
 import feedparser
 import tvdb_v4_official
+from pydantic import BaseModel, ValidationError, field_validator
+
 from formula1 import demonyms
 from formula1.grand_prix import GrandPrix
-from pydantic import BaseModel, ValidationError, field_validator
 
 
 class Processor:
@@ -280,7 +282,7 @@ class ReleaseFetcher:
 
             self.last_check = time.time()
             tvdb = tvdb_v4_official.TVDB(
-                os.environ['TVDB_KEY'], pin=os.environ['TVDB_PIN']
+                os.environ["TVDB_KEY"], pin=os.environ["TVDB_PIN"]
             )
             series = tvdb.get_series_extended(387219)
             seasons = {
