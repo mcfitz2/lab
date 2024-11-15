@@ -360,3 +360,4 @@ gitlab_runner_runners:
 
 nzbget_user: "{{ lookup('bitwarden.secrets.lookup', '90123e76-944c-42a4-87c4-b22601658e81', state_file_dir=bitwarden_state_dir) }}"
 nzbget_pass: "{{ lookup('bitwarden.secrets.lookup', 'f49dccea-9193-4076-b21c-b22601659d06', state_file_dir=bitwarden_state_dir) }}"
+polygon_api_key: "{{ lookup('bitwarden.secrets.lookup', '134cac6b-b117-42a3-9565-b229013bf33f', state_file_dir=bitwarden_state_dir) }}"

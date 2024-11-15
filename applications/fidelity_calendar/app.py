@@ -1,6 +1,7 @@
 from ics import Calendar, Event
 from flask import Flask
 import yaml
+import os
 import requests
 import time
 import pprint
@@ -13,7 +14,7 @@ def get_avgo_price():
     global last_price
     if not last_price_fetch or (time.time() - last_price_fetch) > 60*60*24:
          print("Fetching price of AVGO")
-         r = requests.get("https://api.polygon.io/v2/aggs/ticker/AVGO/prev", params={"adjusted":"true", "apiKey":""})
+         r = requests.get("https://api.polygon.io/v2/aggs/ticker/AVGO/prev", params={"adjusted":"true", "apiKey":os.environ['POLYGON_API_KEY']})
          last_price_fetch = time.time()
          last_price = float(r.json()['results'][0]['c'])
          print(f"Got price of AVGO at {last_price}")
