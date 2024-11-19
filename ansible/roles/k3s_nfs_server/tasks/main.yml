@@ -45,8 +45,15 @@
         line: "mp1: /primary/media,mp=/primary/media"
       delegate_to: proxmox
       register: mount1
+    - name: Add geocoder mount
+      ansible.builtin.lineinfile:
+        path: "/etc/pve/lxc/{{ vmid }}.conf"
+        regexp: '^mp1:'
+        line: "mp2: /primary/geocoder,mp=/primary/geocoder"
+      delegate_to: proxmox
+      register: mount3
 - name: Stop Container
-  when: mount0.changed or mount1.changed
+  when: mount0.changed or mount1.changed or mount3.changed
   community.general.proxmox:
     vmid: "{{ vmid }}"
     node: "{{ proxmox_node }}"

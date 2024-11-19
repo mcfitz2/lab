@@ -9,9 +9,11 @@ cluster_master: k3s1
 nfs_server_host: "{{ hostvars[cluster_nfs_host]['ansible_host'] }}"
 cluster_nfs_export: /cluster
 media_nfs_export: /primary/media
+geocoder_nfs_export: /primary/geocoder
 master_ip: "{{ hostvars[cluster_master]['ansible_host'] }}"
 nfs_exports: [
   "{{ cluster_nfs_export }}    *(rw,sync,no_root_squash)",
+  "{{ geocoder_nfs_export }}    *(rw,sync,no_root_squash)",
   "{{ media_nfs_export }}    *(rw,sync,no_root_squash)"
 ]
 
@@ -99,6 +101,24 @@ prometheus_prefect_exporter_port: 30210
 nzbget_exporter_port: 30211
 transmission_exporter_port: 30212
 
+alertable_entities:
+  - sensor.tz3000_bguser20_ts0201_humidity_3
+  - sensor.tz3000_bguser20_ts0201_humidity_2
+  - sensor.tz3000_bguser20_ts0201_temperature_3
+  - sensor.tz3000_bguser20_ts0201_temperature_2
+  - sensor.tz3000_bguser20_ts0201_temperature
+  - sensor.tz3000_bguser20_ts0201_humidity
+  - binary_sensor.tz3000_ayc0ccuk_ts0203_opening
+  - binary_sensor.tz3000_bnai1qnw_ts0203_opening
+  - sensor.ewelink_wb01_battery
+  - lock.touchscreen_deadbolt
+  - sensor.senseair_co2_value
+  - binary_sensor.cheese_bowl_limit_switch
+  - sensor.filament_scale_calibrated_weight
+
+
+
+
 
 prometheus_scrape_configs_raw: |
   {% for target in groups['node_metrics'] +%}
@@ -176,9 +196,8 @@ prometheus_scrape_configs_raw: |
     static_configs:
       - targets:
         - https://homeassistant.micahf.net
-        - "http://{{ hostvars['homeassistant']['ansible_host'] }}:8123"
-        - https://magic-mirror-living-room.micahf.net
-        - https://transmission.micahf.net
+        - http://{{ hostvars['homeassistant']['ansible_host'] }}:8123
+        - https://{{ magic_mirror_home_fqdn }}
         - https://proxmox.micahf.net
         - https://{{ radarr_fqdn }}
         - https://{{ sonarr_fqdn }}
@@ -188,6 +207,9 @@ prometheus_scrape_configs_raw: |
         - https://{{ oauth_service_fqdn }}
         - https://{{ grafana_fqdn }}
         - https://{{ pgadmin_fqdn }}
+        - http://{{ hostvars['plex']['ansible_host'] }}:32400/web
+        - https://{{ transmission_fqdn }}
+
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -203,7 +225,17 @@ prometheus_alertmanager_config:
       - targets: ["127.0.0.1:9093"]
 prometheus_config_flags_extra:
   web.enable-remote-write-receiver:
-prometheus_alert_rules:
+prometheus_alert_rules: |
+  {% for entity in alertable_entities +%}
+  - alert: EntityUnavailable[{{ entity }}]
+    expr: 'homeassistant_entity_available{entity="{{ entity }}""}'
+    for: 1h
+    labels:
+      severity: warning
+    annotations:
+      description: '{% raw %}{{ $labels.entity }} has been unavailable for 1 hour{% endraw %}'
+      summary: '{% raw %}{{ $labels.entity }} is not available{% endraw %}'
+  {%+ endfor %}
   - alert: ProbeFailure
     expr: 'probe_success == 0'
     for: 5m
@@ -218,7 +250,7 @@ prometheus_alert_rules:
     labels:
       severity: critical
     annotations:
-      description: '{% raw %}{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.{% endraw %}'
+      description: '{% raw %}{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 30 minutes.{% endraw %}'
       summary: '{% raw %}Instance {{ $labels.instance }} down{% endraw %}'
   - alert: PrefectFlowFailed
     expr: 'prefect_deployment_up == 0'
@@ -226,7 +258,7 @@ prometheus_alert_rules:
     labels:
       severity: critical
     annotations:
-      description: '{% raw %}Prefect deployment {{ $labels.deployment_name }} has been down for more than 5 minutes.{% endraw %}'
+      description: '{% raw %}Prefect deployment {{ $labels.deployment_name }} has been down for more than 1 hour.{% endraw %}'
       summary: '{% raw %}Prefect deployment {{ $labels.deployment_name }} down{% endraw %}'
   - alert: NodeFilesystemSpaceFillingUp
     annotations:
