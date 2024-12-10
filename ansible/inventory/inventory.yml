@@ -222,7 +222,6 @@ all:
       unprivileged: false
 esphome:
   hosts:
-    cat_feeder:
     air_gradient:
     filament_scale:
 node_metrics:

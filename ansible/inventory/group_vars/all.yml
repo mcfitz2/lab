@@ -112,7 +112,6 @@ alertable_entities:
   - binary_sensor.tz3000_bnai1qnw_ts0203_opening
   - sensor.ewelink_wb01_battery
   - lock.touchscreen_deadbolt
-  - sensor.senseair_co2_value
   - binary_sensor.cheese_bowl_limit_switch
   - sensor.filament_scale_calibrated_weight
 
@@ -225,17 +224,15 @@ prometheus_alertmanager_config:
       - targets: ["127.0.0.1:9093"]
 prometheus_config_flags_extra:
   web.enable-remote-write-receiver:
-prometheus_alert_rules: |
-  {% for entity in alertable_entities +%}
-  - alert: EntityUnavailable[{{ entity }}]
-    expr: 'homeassistant_entity_available{entity="{{ entity }}""}'
+prometheus_alert_rules:
+  - alert: EntityUnavailable
+    expr: homeassistant_entity_available{entity=~"{{ alertable_entities|join('|') }}"} == 0
     for: 1h
     labels:
       severity: warning
     annotations:
       description: '{% raw %}{{ $labels.entity }} has been unavailable for 1 hour{% endraw %}'
       summary: '{% raw %}{{ $labels.entity }} is not available{% endraw %}'
-  {%+ endfor %}
   - alert: ProbeFailure
     expr: 'probe_success == 0'
     for: 5m

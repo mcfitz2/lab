@@ -12,3 +12,21 @@ spec:
       targetPort: 9091
   selector:
     app: transmission
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: transmission
+  name: transmission-peer
+  namespace: media
+spec:
+  type: NodePort
+  ports:
+    - name: "51413"
+      port: 51413
+      targetPort: 51413
+      nodePort: 32000
+      protocol: TCP
+  selector:
+    app: transmission

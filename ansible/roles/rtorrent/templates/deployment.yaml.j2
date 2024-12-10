@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  rtorrent
+  name:  rtorrent
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rtorrent
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: rtorrent
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+          image: crazymax/rtorrent-rutorrent:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
+          name:  rtorrent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /config
+              name: rtorrent-config
+            - mountPath: /downloads
+              name: rtorrent-downloads
+      restartPolicy: Always
+      volumes:
+        - name: rtorrent-config
+          persistentVolumeClaim:
+            claimName: rtorrent-config
+        - name: rtorrent-downloads
+          nfs:
+            server: "{{ nfs_server_host }}"
+            path:  "{{ media_nfs_export }}/downloads/rtorrent"
