@@ -41,7 +41,10 @@ def load_database(url, suffix):
                 DO UPDATE SET
                     rate = EXCLUDED.rate;
                 """
-            cursor.execute(insert_query, (date, rate))
+            try:
+                cursor.execute(insert_query, (date, rate))
+            except Exception as e:
+                print(e)
 
         # Commit changes and close connection
         conn.commit()
