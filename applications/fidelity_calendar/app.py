@@ -60,7 +60,47 @@ def generate_calendar():
             print(exc)
 
 
-
+@app.get("/json")
+def generate_calendar_json():
+    global last_price_fetch
+    global last_price
+    data = {"grants":[], "totals":[]}
+    print("Got request for calendar")
+    with open("vests.yaml", "r") as stream:
+        try:
+            vests = yaml.safe_load(stream)
+            get_avgo_price()
+            totals = {}
+            total_value = {}
+            for vest in vests['vests']:
+                shares = float(vest['units'])
+                if not totals.get(vest['date']):
+                    totals[vest['date']] = {'shares':0, 'value':0}
+                totals[vest['date']]['shares'] += shares
+                e = Event()
+                value = shares * last_price
+                totals[vest['date']]['value'] += value
+                data['grants'].append({
+                    "shares": shares,
+                    "value":value,
+                    "date": vest['date']
+                })
+            pprint.pprint(totals)
+            for date, values in totals.items():
+                shares = values['shares']
+                value = values['value']
+                after_tax = value * (1-vests['tax_rate'])
+                data['totals'].append(
+                    {
+                        "date":date, 
+                        "shares": shares,
+                        "value": value,
+                        "after_tx": after_tax
+                    }
+                )
+            return data
+        except yaml.YAMLError as exc:
+            print(exc)
 
 
 if __name__ == '__main__':
