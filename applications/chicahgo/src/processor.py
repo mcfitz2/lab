@@ -225,7 +225,7 @@ class HouseProcessor:
         gmaps = googlemaps.Client(key=os.environ['GOOGLE_API_KEY'])
 
         api = overpy.Overpass()
-        south, west, north, east = boundingBox(house.latitude, house.longitude, 3)
+        south, west, north, east = boundingBox(house.latitude, house.longitude, 4.828032)
         query = f'nwr["public_transport"="station"]["subway"="yes"]["network"="CTA"]({south}, {west}, {north}, {east});out;'
         result = api.query(query)
         now = datetime.datetime.now()
@@ -265,6 +265,41 @@ class HouseProcessor:
                  "distance_walking": self._meters_to_miles(walking['distance']['value']), "duration_driving": driving['duration']['value'] / 60,
                  "distance_driving": self._meters_to_miles(driving['distance']['value'])})
         return house
+    async def _process_grocery_stores(self, session: AsyncSession, house: House, radius: int) -> House:
+        gmaps = googlemaps.Client(key=os.environ['GOOGLE_API_KEY'])
+
+        api = overpy.Overpass()
+        south, west, north, east = boundingBox(house.latitude, house.longitude, radius)
+        query = f'''
+                (
+                    nwr["shop"="supermarket"]["name"~"jewel", i]({south}, {west}, {north}, {east});
+                    nwr["shop"="supermarket"]["name"~"aldi", i]({south}, {west}, {north}, {east});
+                    nwr["shop"="supermarket"]["name"~"whole foods", i]({south}, {west}, {north}, {east});
+                    nwr["shop"="supermarket"]["name"~"kroger", i]({south}, {west}, {north}, {east});
+                    nwr["shop"="supermarket"]["name"~"walmart", i]({south}, {west}, {north}, {east});
+                    nwr["shop"="supermarket"]["name"~"trader", i]({south}, {west}, {north}, {east});
+                    nwr["shop"="supermarket"]["name"~"costco", i]({south}, {west}, {north}, {east});
+                );
+                out;
+                '''
+        query = f'{query}({south}, {west}, {north}, {east});out;'
+        result = api.query(query)
+        now = datetime.datetime.now()
+        for node in result.nodes[:5]:
+            walking = gmaps.directions((house.latitude, house.longitude),
+                                      (float(node.lat), float(node.lon)),
+                                      mode="walking",
+                                      departure_time=now)[0]['legs'][0]
+            driving = gmaps.directions((house.latitude, house.longitude),
+                                      (float(node.lat), float(node.lon)),
+                                      mode="driving",
+                                      departure_time=now)[0]['legs'][0]
+            getattr(house, "nearest_grocery_stores").append(
+                {"lat": float(node.lat), "lon": float(node.lon),
+                 "name": node.tags.get('name'), "duration_walking": walking['duration']['value'] / 60,
+                 "distance_walking": self._meters_to_miles(walking['distance']['value']), "duration_driving": driving['duration']['value'] / 60,
+                 "distance_driving": self._meters_to_miles(driving['distance']['value'])})
+        return house
     async def _find_bus_stops(self, lat, lon, radius=500):
         keys = ["name", "routes", "direction", "lon", "lat", "distance"]
         async with AsyncSession(self.engine) as session:
@@ -280,7 +315,7 @@ class HouseProcessor:
     async def _process_bus_stops(self, session: AsyncSession, house: House) -> House:
         gmaps = googlemaps.Client(key=os.environ['GOOGLE_API_KEY'])
         now = datetime.datetime.now()
-        for stop in await self._find_bus_stops(house.latitude, house.longitude, radius=1000):
+        for stop in await self._find_bus_stops(house.latitude, house.longitude, radius=1609):
             routes = gmaps.directions((house.latitude, house.longitude),
                                       (float(stop['lat']), float(stop['lon'])),
                                       mode="walking",
@@ -296,17 +331,19 @@ class HouseProcessor:
     async def upsert_house_to_sheet(self, house):
         def format_l_stops(stops):
             stops = sorted(stops, key=lambda x: x['duration_walking'])
+            if len(stops) == 0:
+                return "No L stations within 3 miles"
             out = ""
             for stop in stops:
                 out += f"{stop['name']}: {stop['duration_walking']:.1f} min ({','.join(stop['lines_served'])})\n"
-            print(out)
             return out
         def format_bus_stops(stops):
             stops = sorted(stops, key=lambda x: x['duration_walking'])
+            if len(stops) == 0:
+                return "No bus stops within 1 mile"
             out = ""
             for stop in stops:
                 out += f"{stop['name']} {stop['direction']}: {stop['duration_walking']:.1f} min ({','.join(stop['routes'])})\n"
-            print(out)
             return out
         def format_non_transit(places):
             stops = sorted(places, key=lambda x: x['duration_walking'])
@@ -505,7 +542,8 @@ class HouseProcessor:
             house = await self._process_neighborhood(session, house)
             house = await self._process_l_stops(session, house)
             house = await self._process_bus_stops(session, house)
-            house = await self._process_non_transit(session, house, "nearest_bakeries", 'nwr["shop"="bakery"]', 5)
+            house = await self._process_non_transit(session, house, "nearest_bakeries", 'nwr["shop"="bakery"]', 4.828032)
+            house = await self._process_grocery_stores(session, house, 8.04672)
             await House.upsert(house, session)
             await session.commit()
         await self.upsert_house_to_sheet(house)

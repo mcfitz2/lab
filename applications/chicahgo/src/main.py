@@ -41,34 +41,15 @@ async def lifespan(app: FastAPI):
     SQLModel.metadata.drop_all(engine)
     SQLModel.metadata.create_all(engine)
 
-    #await ingester.ingest_datasets()
 
     processor = HouseProcessor(async_engine)
     await processor.initialize()
-#   house = await processor.process("1508 N Karlov Ave, Chicago, IL 60651")
     yield
 
 def log_info(req_body):
     logging.info(req_body)
 
 app = FastAPI(lifespan=lifespan)
-
-# @app.middleware('http')
-# async def some_middleware(request: Request, call_next):
-#     req_body = await request.body()
-#     #await set_body(request, req_body)  # not needed when using FastAPI>=0.108.0.
-#     print(req_body)
-    
-    
-    
-#     task = BackgroundTask(log_info, req_body)
-#     response = await call_next(request)
-#     chunks = []
-#     async for chunk in response.body_iterator:
-#         chunks.append(chunk)
-#     res_body = b''.join(chunks)
-#     return Response(content=res_body, status_code=response.status_code, 
-#         headers=dict(response.headers), media_type=response.media_type, background=task)
 app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://localhost:8000", "http://localhost:5173"],
@@ -91,9 +72,3 @@ async def get_houses() -> List[House]:
 @app.post("/houses", tags=["houses"])
 async def process_house(house_process_request: ProcessHouseRequest) -> House:
     return await house_service.process_house(house_process_request.address)
-
-
-# @app.post("/ingest", tags=["tasks"])
-# async def ingest():
-#     await ingester.ingest_datasets()
-#     return {"message": "OK"}
