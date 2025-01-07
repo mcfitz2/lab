@@ -53,22 +53,22 @@ def log_info(req_body):
 
 app = FastAPI(lifespan=lifespan)
 
-@app.middleware('http')
-async def some_middleware(request: Request, call_next):
-    req_body = await request.body()
-    #await set_body(request, req_body)  # not needed when using FastAPI>=0.108.0.
+# @app.middleware('http')
+# async def some_middleware(request: Request, call_next):
+#     req_body = await request.body()
+#     #await set_body(request, req_body)  # not needed when using FastAPI>=0.108.0.
+#     print(req_body)
     
     
     
-    
-    task = BackgroundTask(log_info, req_body)
-    response = await call_next(request)
-    chunks = []
-    async for chunk in response.body_iterator:
-        chunks.append(chunk)
-    res_body = b''.join(chunks)
-    return Response(content=res_body, status_code=response.status_code, 
-        headers=dict(response.headers), media_type=response.media_type, background=task)
+#     task = BackgroundTask(log_info, req_body)
+#     response = await call_next(request)
+#     chunks = []
+#     async for chunk in response.body_iterator:
+#         chunks.append(chunk)
+#     res_body = b''.join(chunks)
+#     return Response(content=res_body, status_code=response.status_code, 
+#         headers=dict(response.headers), media_type=response.media_type, background=task)
 app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://localhost:8000", "http://localhost:5173"],

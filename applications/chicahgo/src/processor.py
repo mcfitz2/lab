@@ -130,9 +130,9 @@ class HouseProcessor:
                 }, timeout=120
             )
             result = r.json()[0]
-        except IndexError as e:
+        except Exception as e:
             print(r.status_code)
-            pprint.pprint(r.json())
+            pprint.pprint(r.content)
             raise e
         lat, lon = result["lat"], result["lon"]
         time.sleep(2)
