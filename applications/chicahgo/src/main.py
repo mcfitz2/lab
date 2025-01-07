@@ -1,6 +1,7 @@
+import logging
 from typing import List
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from sqlmodel import SQLModel, create_engine
 from sqlalchemy.ext.asyncio import create_async_engine
 from processor import HouseProcessor
@@ -10,6 +11,7 @@ import pprint
 from models import House, ProcessHouseRequest
 from house_service import HouseService
 import os
+from starlette.background import BackgroundTask
 
 db_host = os.environ['POSTGRES_HOST']
 db_user = os.environ['POSTGRES_USER']
@@ -46,7 +48,26 @@ async def lifespan(app: FastAPI):
 #   house = await processor.process("1508 N Karlov Ave, Chicago, IL 60651")
     yield
 
+def log_info(req_body, res_body):
+    logging.info(req_body)
+    logging.info(res_body)
+
 app = FastAPI(lifespan=lifespan)
+
+@app.middleware('http')
+async def some_middleware(request: Request, call_next):
+    req_body = await request.body()
+    #await set_body(request, req_body)  # not needed when using FastAPI>=0.108.0.
+    response = await call_next(request)
+    
+    chunks = []
+    async for chunk in response.body_iterator:
+        chunks.append(chunk)
+    res_body = b''.join(chunks)
+    
+    task = BackgroundTask(log_info, req_body, res_body)
+    return Response(content=res_body, status_code=response.status_code, 
+        headers=dict(response.headers), media_type=response.media_type, background=task)
 app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://localhost:8000", "http://localhost:5173"],
