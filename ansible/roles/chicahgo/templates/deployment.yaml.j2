@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  chicahgo
+  name:  chicahgo
+  namespace: misc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chicahgo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: chicahgo
+    spec:
+      imagePullSecrets:
+        - name: gitlab-credentials
+      containers:
+        - env:
+            - name: POSTGRES_HOST
+              value: localhost
+            - name: POSTGRES_PORT
+              value: 5432
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_DB
+              value: chicahgo
+            - name: POSTGRES_USER
+              value: postgres
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+            - name: GOOGLE_API_KEY
+              value: "{{ lookup('bitwarden.secrets.lookup', '954fca35-cf9e-49d0-bd41-b202014d0bb1', state_file_dir=bitwarden_state_dir) }}"
+            - name: CHICAGO_DATA_TOKEN
+              value: "{{ lookup('bitwarden.secrets.lookup', '5fdc5a90-2c6c-46ec-9192-b25e01249f4e', state_file_dir=bitwarden_state_dir) }}"
+            - name: MAPS_CO_TOKEN
+              value: "{{ lookup('bitwarden.secrets.lookup', 'faf55ae0-2ea8-4f0f-8a6d-b25e01250744', state_file_dir=bitwarden_state_dir) }}"
+            - name: SPREADSHEET_ID
+              value: ""1SSdffzZ70ycNnDlqBhW7IjeZJvB7qtvFXoLIWj_887g"
+            - name: SERVICE_ACCOUNT_CREDENTIAL_FILE
+              value: /credentials/service_account.json
+          image: registry.gitlab.com/mcfitz2/lab/chicahgo:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
+          name:  chicahgo
+          ports:
+            - containerPort: 8989
+              protocol: TCP
+          volumeMounts:
+          - mountPath: "/credentials"
+            name: service-account
+            readOnly: true
+      
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: America/Chicago
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_DB
+              value: chicahgo
+          image: postgis/postgis:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
+          name:  chicahgo
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+      restartPolicy: Always
+      volumes:
+        - name: service-account
+          secret:
+            secretName: google-service-account

@@ -77,8 +77,9 @@ build-image:
       - DIR: applications/formula1
         IMAGE_SUFFIX: formula1
         DOCKERFILE: applications/formula1/Dockerfile
-
-
+      - DIR: applications/chicahgo
+        IMAGE_SUFFIX: chicahgo
+        DOCKERFILE: applications/chicahgo/Dockerfile
       - DIR: applications/greatlakes
         IMAGE_SUFFIX: airport-locations
         DOCKERFILE: applications/greatlakes/airport_locations/Dockerfile

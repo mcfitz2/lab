@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: backend
+Version: 0.1.0
+Summary: Add your description here
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: asyncpg>=0.30.0
+Requires-Dist: fastapi[standard]>=0.115.6
+Requires-Dist: geoalchemy2>=0.16.0
+Requires-Dist: geojson>=3.1.0
+Requires-Dist: homeharvest>=0.4.4
+Requires-Dist: psycopg2-binary>=2.9.10
+Requires-Dist: requests>=2.32.3
+Requires-Dist: sadel>=0.1.0
+Requires-Dist: shapely>=2.0.6
+Requires-Dist: sqlmodel>=0.0.22
+Requires-Dist: greenlet>=3.1.1
+Requires-Dist: numpy>=2.2.0
+Requires-Dist: numpy-financial>=1.0.0
+Requires-Dist: openrouteservice>=2.3.3
+Requires-Dist: overpy>=0.7
+Requires-Dist: googlemaps>=4.10.0
+Requires-Dist: gspread>=6.1.4
