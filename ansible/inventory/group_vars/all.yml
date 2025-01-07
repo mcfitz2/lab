@@ -47,6 +47,7 @@ pgadmin_fqdn: "pgadmin.{{ tunnel_domain }}"
 prowlarr_fqdn: "prowlarr.{{ tunnel_domain }}"
 nzbget_fqdn: "nzbget.{{ tunnel_domain }}"
 transmission_fqdn: "transmission.{{ tunnel_domain }}"
+chicahgo_fqdn: "chicahgo.{{ tunnel_domain }}"
 
 
 greatlakes_host: "{{ hostvars['greatlakes-db']['ansible_host'] }}"

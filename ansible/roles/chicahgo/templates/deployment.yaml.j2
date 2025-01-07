@@ -24,8 +24,8 @@ spec:
             - name: POSTGRES_HOST
               value: localhost
             - name: POSTGRES_PORT
-              value: 5432
-            - name: POSTGRES_PASSWORD
+              value: "5432"
+            - name: POSTGRES_PASS
               value: postgres
             - name: POSTGRES_DB
               value: chicahgo
@@ -44,16 +44,16 @@ spec:
             - name: MAPS_CO_TOKEN
               value: "{{ lookup('bitwarden.secrets.lookup', 'faf55ae0-2ea8-4f0f-8a6d-b25e01250744', state_file_dir=bitwarden_state_dir) }}"
             - name: SPREADSHEET_ID
-              value: ""1SSdffzZ70ycNnDlqBhW7IjeZJvB7qtvFXoLIWj_887g"
+              value: "1SSdffzZ70ycNnDlqBhW7IjeZJvB7qtvFXoLIWj_887g"
             - name: SERVICE_ACCOUNT_CREDENTIAL_FILE
-              value: /credentials/service_account.json
+              value: "/credentials/service_account.json"
           image: registry.gitlab.com/mcfitz2/lab/chicahgo:latest
           resources:
              requests:
                memory: "150Mi"
              limits:
                memory: "2Gi"
-          name:  chicahgo
+          name: chicahgo
           ports:
             - containerPort: 8989
               protocol: TCP
@@ -79,7 +79,7 @@ spec:
                memory: "150Mi"
              limits:
                memory: "2Gi"
-          name:  chicahgo
+          name:  postgis
           ports:
             - containerPort: 5432
               protocol: TCP

@@ -20,7 +20,7 @@ db_db = os.environ['POSTGRES_DB']
 
 
 async_engine = create_async_engine(
-    "postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_db}",
+    f"postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_db}",
     echo=True,
     future=True,
 )
@@ -31,7 +31,7 @@ house_service = HouseService(async_engine)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     engine = create_engine(
-        "postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_db}", echo=True, future=True
+        f"postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_db}", echo=True, future=True
     )
 
     SQLModel.metadata.drop_all(engine)
