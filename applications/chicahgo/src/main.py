@@ -18,7 +18,7 @@ db_port = os.environ['POSTGRES_PORT']
 db_db = os.environ['POSTGRES_DB']
 
 
-
+print(f"Creating async engine for postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_db}")
 async_engine = create_async_engine(
     f"postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_db}",
     echo=True,
@@ -30,6 +30,8 @@ house_service = HouseService(async_engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    print(f"Creating sync engine for postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_db}")
+
     engine = create_engine(
         f"postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_db}", echo=True, future=True
     )
