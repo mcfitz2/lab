@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI):
     print(f"Creating sync engine for postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_db}")
 
     engine = create_engine(
-        f"postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_db}", echo=True, future=True
+        f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_db}", echo=True, future=True
     )
 
     SQLModel.metadata.drop_all(engine)
