@@ -48,9 +48,8 @@ async def lifespan(app: FastAPI):
 #   house = await processor.process("1508 N Karlov Ave, Chicago, IL 60651")
     yield
 
-def log_info(req_body, res_body):
+def log_info(req_body):
     logging.info(req_body)
-    logging.info(res_body)
 
 app = FastAPI(lifespan=lifespan)
 
@@ -58,14 +57,16 @@ app = FastAPI(lifespan=lifespan)
 async def some_middleware(request: Request, call_next):
     req_body = await request.body()
     #await set_body(request, req_body)  # not needed when using FastAPI>=0.108.0.
-    response = await call_next(request)
     
+    
+    
+    
+    task = BackgroundTask(log_info, req_body)
+    response = await call_next(request)
     chunks = []
     async for chunk in response.body_iterator:
         chunks.append(chunk)
     res_body = b''.join(chunks)
-    
-    task = BackgroundTask(log_info, req_body, res_body)
     return Response(content=res_body, status_code=response.status_code, 
         headers=dict(response.headers), media_type=response.media_type, background=task)
 app.add_middleware(
