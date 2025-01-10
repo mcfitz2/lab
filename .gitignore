@@ -31,3 +31,6 @@ ansible/roles/riemers.gitlab-runner
 ansible/roles/geerlingguy.docker
 applications/**/node_modules
 applications/chicahgo/.python-version
+applications/chicahgo/service_account.json
+applications/chicahgo/src/__pycache__/
+applications/chicahgo/env.sh

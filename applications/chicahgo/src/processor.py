@@ -151,7 +151,7 @@ class HouseProcessor:
         result_reverse = r.json()
         house = {
             "house_id": str(uuid.uuid4()),
-            "address": address,
+            "address": f"{str(result_reverse['address']['house_number'])} {result_reverse['address']["road"]}, {result_reverse['address']["city"]}, {result_reverse['address']["state"]} {str(result_reverse['address']["postcode"])}",
             "latitude": lat,
             "longitude": lon,
             "house_number": str(result_reverse['address']['house_number']),
@@ -190,7 +190,8 @@ class HouseProcessor:
         house.home_type = mls["style"]
         house.year_built = mls["year_built"]
         house.lot_size = mls["lot_sqft"]
-        house.price_per_sqft = mls["list_price"] / mls["sqft"]
+        if mls.get('sqft') and mls.get('list_price'):
+            house.price_per_sqft = mls["list_price"] / mls["sqft"]
         house.hoa_fees = mls["hoa_fee"]
         house.description = mls["text"]
         house.days_on_mls = mls["days_on_mls"]
@@ -282,7 +283,7 @@ class HouseProcessor:
                 );
                 out;
                 '''
-        query = f'{query}({south}, {west}, {north}, {east});out;'
+        #query = f'{query}({south}, {west}, {north}, {east});out;'
         result = api.query(query)
         now = datetime.datetime.now()
         for node in result.nodes[:5]:
@@ -327,10 +328,40 @@ class HouseProcessor:
                  "distance_walking": self._meters_to_miles(leg['distance']['value']), "direction": stop['direction'],
                  "routes": stop['routes']})
         return house
+    async def _process_soul_cycles(self, session: AsyncSession, house: House) -> House:
+        gmaps = googlemaps.Client(key=os.environ['GOOGLE_API_KEY'])
+        now = datetime.datetime.now()
 
+        locations = [
+                {'name': "SoulCycle Old Town",'lat': 41.906254740856305, 'lon': -87.63334885692286},
+                {'name': "SoulCycle LOOP",    'lat':41.8881359739359, 'lon':-87.62890937888268}
+            ]
+        for stop in locations:
+            walking = gmaps.directions((house.latitude, house.longitude),
+                                      (float(stop['lat']), float(stop['lon'])),
+                                      mode="walking",
+                                      departure_time=now)[0]['legs'][0]
+            driving = gmaps.directions((house.latitude, house.longitude),
+                                      (float(stop['lat']), float(stop['lon'])),
+                                      mode="driving",
+                                      departure_time=now)[0]['legs'][0]
+            transit = gmaps.directions((house.latitude, house.longitude),
+                                      (float(stop['lat']), float(stop['lon'])),
+                                      mode="transit",
+                                      departure_time=now)[0]['legs'][0]
+            getattr(house, "nearest_soul_cycles").append(
+                {"lat": float(stop['lat']), "lon": float(stop['lon']),
+                 "name": stop['name'], 
+                 "duration_walking": walking['duration']['value'] / 60,
+                 "distance_walking": self._meters_to_miles(walking['distance']['value']),
+                 "duration_transit": transit['duration']['value'] / 60,
+                 "distance_transit": self._meters_to_miles(transit['distance']['value']), 
+                 "duration_driving": driving['duration']['value'] / 60,
+                 "distance_driving": self._meters_to_miles(driving['distance']['value'])})
+        return house
     async def upsert_house_to_sheet(self, house):
         def format_l_stops(stops):
-            stops = sorted(stops, key=lambda x: x['duration_walking'])
+            stops = sorted(stops, key=lambda x: x['duration_walking'])[:5]
             if len(stops) == 0:
                 return "No L stations within 3 miles"
             out = ""
@@ -338,7 +369,7 @@ class HouseProcessor:
                 out += f"{stop['name']}: {stop['duration_walking']:.1f} min ({','.join(stop['lines_served'])})\n"
             return out
         def format_bus_stops(stops):
-            stops = sorted(stops, key=lambda x: x['duration_walking'])
+            stops = sorted(stops, key=lambda x: x['duration_walking'])[:5]
             if len(stops) == 0:
                 return "No bus stops within 1 mile"
             out = ""
@@ -346,10 +377,13 @@ class HouseProcessor:
                 out += f"{stop['name']} {stop['direction']}: {stop['duration_walking']:.1f} min ({','.join(stop['routes'])})\n"
             return out
         def format_non_transit(places):
-            stops = sorted(places, key=lambda x: x['duration_walking'])
+            stops = sorted(places, key=lambda x: x['duration_walking'])[:5]
             out = ""
             for place in places:
-                out += f"{place['name']}: {place['duration_walking']:.1f} min walk, {place['duration_driving']:.1f} min drive\n"
+                if place.get('duration_transit'):
+                    out += f"{place['name']}: {place['duration_walking']:.1f} min walk, {place['duration_driving']:.1f} min drive, {place['duration_transit']:.1f} min by transit\n"
+                else:
+                    out += f"{place['name']}: {place['duration_walking']:.1f} min walk, {place['duration_driving']:.1f} min drive\n"
             print(out)
             return out
 
@@ -438,6 +472,12 @@ class HouseProcessor:
             "nearest_bakeries": {"friendly": "Bakeries",
                                   "format": {"numberFormat": {"type": "TEXT"}, "textFormat": {"fontSize": 12}, "verticalAlignment": "TOP"},
                                   "transformer": format_non_transit},
+            "nearest_grocery_stores": {"friendly": "Grocery Stores",
+                                  "format": {"numberFormat": {"type": "TEXT"}, "textFormat": {"fontSize": 12}, "verticalAlignment": "TOP"},
+                                  "transformer": format_non_transit},
+             "nearest_soul_cycles": {"friendly": "Soul Cycles",
+                                  "format": {"numberFormat": {"type": "TEXT"}, "textFormat": {"fontSize": 12}, "verticalAlignment": "TOP"},
+                                  "transformer": format_non_transit},
             "home_type": {"friendly": "Type", "format": {"numberFormat": {"type": "TEXT"}, "textFormat": {"fontSize": 12}, "verticalAlignment": "TOP"}},
         })
 
@@ -477,7 +517,6 @@ class HouseProcessor:
                 }
             }
         })
-        worksheet.set_basic_filter(f"B1:{number_to_excel_column(len(fields.keys()))}1")
         sheet_id = worksheet._properties['sheetId']
         body = {
             "requests": [
@@ -494,12 +533,7 @@ class HouseProcessor:
                         },
                         "fields": "pixelSize"
                     }
-                }
-            ]
-        }
-        res = sh.batch_update(body)
-        body = {
-            "requests": [
+                },
                 {
                     "updateDimensionProperties": {
                         "range": {
@@ -534,16 +568,42 @@ class HouseProcessor:
         resp = worksheet.append_row([convert_fields(house, field, options) for field, options in fields.items()],
                                     value_input_option="USER_ENTERED")
         worksheet.columns_auto_resize(start_column_index=2, end_column_index=len(fields.keys()))
+        worksheet.clear_basic_filter()
+        worksheet.set_basic_filter(f"B1:{number_to_excel_column(len(fields.keys()))}1")
+
     async def process(self, address: str) -> House:
         async with AsyncSession(self.engine) as session:
             house = await self._geocode(session, address)
             house = await self._process_mls(session, house)
-            house = await self._process_financials(session, house)
-            house = await self._process_neighborhood(session, house)
-            house = await self._process_l_stops(session, house)
-            house = await self._process_bus_stops(session, house)
-            house = await self._process_non_transit(session, house, "nearest_bakeries", 'nwr["shop"="bakery"]', 4.828032)
-            house = await self._process_grocery_stores(session, house, 8.04672)
+            try:
+                house = await self._process_financials(session, house)
+            except Exception as e:
+                pass
+            try:
+                house = await self._process_neighborhood(session, house)
+            except Exception as e:
+                pass
+            try:
+                house = await self._process_l_stops(session, house)
+            except Exception as e:
+                pass
+            try:
+                house = await self._process_bus_stops(session, house)
+            except Exception as e:
+                pass
+            try:
+                house = await self._process_non_transit(session, house, "nearest_bakeries", 'nwr["shop"="bakery"]', 4.828032)
+            except Exception as e:
+                pass
+            try:
+                house = await self._process_grocery_stores(session, house, 8.04672)
+            except Exception as e:
+                pass
+            try:
+                house = await self._process_soul_cycles(session, house)
+            except Exception as e:
+                pass
+
             await House.upsert(house, session)
             await session.commit()
         await self.upsert_house_to_sheet(house)

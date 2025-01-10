@@ -1,0 +1,10 @@
+export POSTGRES_HOST=localhost
+export POSTGRES_PORT="5432"
+export POSTGRES_PASS=postgres
+export POSTGRES_DB=chicahgo
+export POSTGRES_USER=postgres
+export GOOGLE_API_KEY="{{ lookup('bitwarden.secrets.lookup', '954fca35-cf9e-49d0-bd41-b202014d0bb1', state_file_dir=bitwarden_state_dir) }}"
+export CHICAGO_DATA_TOKEN="{{ lookup('bitwarden.secrets.lookup', '5fdc5a90-2c6c-46ec-9192-b25e01249f4e', state_file_dir=bitwarden_state_dir) }}"
+export MAPS_CO_TOKEN="{{ lookup('bitwarden.secrets.lookup', 'faf55ae0-2ea8-4f0f-8a6d-b25e01250744', state_file_dir=bitwarden_state_dir) }}"
+export SPREADSHEET_ID="1SSdffzZ70ycNnDlqBhW7IjeZJvB7qtvFXoLIWj_887g"
+export SERVICE_ACCOUNT_CREDENTIALS_FILE="service_account.json"
