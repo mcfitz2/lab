@@ -81,7 +81,7 @@ requires-dist = [
     { name = "googlemaps", specifier = ">=4.10.0" },
     { name = "greenlet", specifier = ">=3.1.1" },
     { name = "gspread", specifier = ">=6.1.4" },
-    { name = "homeharvest", specifier = ">=0.4.4" },
+    { name = "homeharvest", git = "https://github.com/mcfitz2/HomeHarvest.git" },
     { name = "numpy", specifier = ">=2.2.0" },
     { name = "numpy-financial", specifier = ">=1.0.0" },
     { name = "openrouteservice", specifier = ">=2.3.3" },
@@ -348,16 +348,12 @@ wheels = [
 [[package]]
 name = "homeharvest"
 version = "0.4.5"
-source = { registry = "https://pypi.org/simple" }
+source = { git = "https://github.com/mcfitz2/HomeHarvest.git#0de916e5904c06a494b586eb591c75a8f7a52122" }
 dependencies = [
     { name = "pandas" },
     { name = "pydantic" },
     { name = "requests" },
     { name = "tenacity" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/58/e6/2710ac19bfe613babbb67777fe2910134c90e2c6a4a5ec7f473554437c1e/homeharvest-0.4.5.tar.gz", hash = "sha256:3cd403fee2d9dfa9e16514f90b3f0069714f5c6d4411f72e09c2518e5c1eb18d", size = 17678 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/f3/1c/77780bc865add50730b7e2a1f4e3ea5fe734d30bad22baddf538435a7b54/homeharvest-0.4.5-py3-none-any.whl", hash = "sha256:12085c413c0524942dbb3ca9a836a4eef0eaec5c68bf62da04ccbd48e9d9108b", size = 19322 },
 ]
 
 [[package]]

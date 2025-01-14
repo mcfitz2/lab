@@ -90,8 +90,8 @@
         state: present
         key: "{{ lookup('pipe', 'ssh-keyscan {{ ansible_host }}') }}"
         hash_host: true
-      retries: 3
-      delay: 3
+      retries: 10
+      delay: 10
       register: result
       until: result.failed == false
     - name: Wait 600 seconds for target connection to become reachable/usable

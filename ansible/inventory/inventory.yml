@@ -213,12 +213,12 @@ all:
       type: lxc
       metrics: true
       vmid: 300
-      cores: 1
-      memory: 2048
+      cores: 4
+      memory: 4096
       swap: 512
       mount_points:
       storage: "zfs-ssd"
-      disk_size: 10
+      disk_size: 50
       unprivileged: false
 esphome:
   hosts:

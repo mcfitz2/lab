@@ -50,9 +50,9 @@ ansible-lint:
       - .gitlab-ci.yml
 
 build-image:
-  image: docker:24.0.5
+  image: docker:27
   services:
-    - docker:24.0.5-dind
+    - docker:27-dind
 
   parallel:
     matrix:
