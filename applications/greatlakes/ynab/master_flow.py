@@ -183,7 +183,15 @@ def load_database():
                                        transactions,
                                        template='(%(id)s,%(date)s,%(amount)s,%(memo)s,%(cleared)s,%(approved)s,%(flag_color)s,%(flag_name)s,%(account_id)s,%(account_name)s,%(payee_id)s,%(payee_name)s,%(category_id)s,%(category_name)s,%(transfer_account_id)s,%(transfer_transaction_id)s,%(matched_transaction_id)s,%(import_id)s,%(import_payee_name)s,%(import_payee_name_original)s,%(debt_transaction_type)s,%(deleted)s,%(parent_transaction_id)s)',
                                        page_size=1)
-
+        ids_in_ynab = [transaction['id'] for transaction in transactions]
+        print(ids_in_ynab[:10])
+        cursor.execute("select id from raw.ynab_transactions;")
+        ids_in_db = [row[0] for row in cursor.fetchall()]
+        print(ids_in_db[:10])
+        deleted_in_ynab = list(set(ids_in_db).difference(ids_in_ynab))
+        print("Marking these transactions as deleted")
+        print(deleted_in_ynab)
+        cursor.executemany("update raw.ynab_transactions set deleted = true where id = %s;", [[i] for i in deleted_in_ynab])
 
         print("Loading categories to DB")
         psycopg2.extras.execute_values(cursor,
