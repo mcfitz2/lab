@@ -181,4 +181,3 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image_suffix }}:${{ github.sha }}
             ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image_suffix }}:latest
-        retries: 2
