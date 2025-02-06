@@ -201,6 +201,7 @@ class HouseProcessor:
         house.new_construction = mls["new_construction"]
         house.garage_spaces = mls["parking_garage"]
         house.stories = mls["stories"]
+        pprint.pprint(mls)
         return house
 
     async def _process_neighborhood(self, session: AsyncSession, house: House) -> House:

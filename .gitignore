@@ -34,3 +34,7 @@ applications/chicahgo/.python-version
 applications/chicahgo/service_account.json
 applications/chicahgo/src/__pycache__/
 applications/chicahgo/env.sh
+applications/namada_exporter/.idea/.gitignore
+applications/namada_exporter/.idea/modules.xml
+applications/namada_exporter/.idea/namada_exporter.iml
+applications/namada_exporter/.idea/vcs.xml
