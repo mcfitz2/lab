@@ -80,6 +80,9 @@ jobs:
           - dir: applications/fidelity_calendar
             image_suffix: fidelity_calendar
             dockerfile: applications/fidelity_calendar/Dockerfile
+          - dir: applications/namada_exporter
+            image_suffix: namada_exporter
+            dockerfile: applications/namada_exporter/Dockerfile
           - dir: applications/habit
             image_suffix: habit
             dockerfile: applications/habit/Dockerfile
