@@ -1,0 +1,22 @@
+storage: /primary/geocoder/storage
+version: 4.2
+places:
+  - continent: north-america
+    country: us
+  - continent: north-america
+    country: canada
+  - continent: europe
+    country: austria
+  - continent: europe
+    country: germany
+  - continent: europe
+    country: spain
+  - continent: europe
+    country: france
+  - continent: africa
+    country: kenya
+  - continent: africa
+    country: mauritius
+
+
+

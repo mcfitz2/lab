@@ -1,0 +1,223 @@
+---
+services:
+  nominatim-north-america-us:
+    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-north-america-us
+    build: nominatim-docker/4.2
+    container_name: geocoder-nominatim-north-america-us
+    volumes:
+      - /primary/geocoder/storage/north-america-us/nominatim-flatnode:/nominatim-flatnode
+      - /primary/geocoder/storage/north-america-us/nominatim:/nominatim
+      - /primary/geocoder/storage/north-america-us/nominatim-data:/var/lib/postgresql/14/main
+    environment:
+      - PGCTLTIMEOUT=600
+      - PBF_URL=https://download.geofabrik.de/north-america/us-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/north-america/us-updates/
+      - REVERSE_ONLY=true
+      - IMPORT_US_POSTCODES=true
+      - THREADS=32
+      - IMPORT_MODE=address
+    restart: always
+    shm_size: 10g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 1m
+      timeout: 10s
+      retries: 10000
+      start_period: 1m
+  nominatim-north-america-canada:
+    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-north-america-canada
+    build: nominatim-docker/4.2
+    container_name: geocoder-nominatim-north-america-canada
+    volumes:
+      - /primary/geocoder/storage/north-america-canada/nominatim-flatnode:/nominatim-flatnode
+      - /primary/geocoder/storage/north-america-canada/nominatim:/nominatim
+      - /primary/geocoder/storage/north-america-canada/nominatim-data:/var/lib/postgresql/14/main
+    environment:
+      - PGCTLTIMEOUT=600
+      - PBF_URL=https://download.geofabrik.de/north-america/canada-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/north-america/canada-updates/
+      - REVERSE_ONLY=true
+      - IMPORT_US_POSTCODES=true
+      - THREADS=32
+      - IMPORT_MODE=address
+    restart: always
+    shm_size: 10g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 1m
+      timeout: 10s
+      retries: 10000
+      start_period: 1m
+    depends_on:
+      nominatim-north-america-us:
+        condition: service_healthy
+  nominatim-europe-austria:
+    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-europe-austria
+    build: nominatim-docker/4.2
+    container_name: geocoder-nominatim-europe-austria
+    volumes:
+      - /primary/geocoder/storage/europe-austria/nominatim-flatnode:/nominatim-flatnode
+      - /primary/geocoder/storage/europe-austria/nominatim:/nominatim
+      - /primary/geocoder/storage/europe-austria/nominatim-data:/var/lib/postgresql/14/main
+    environment:
+      - PGCTLTIMEOUT=600
+      - PBF_URL=https://download.geofabrik.de/europe/austria-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/europe/austria-updates/
+      - REVERSE_ONLY=true
+      - IMPORT_US_POSTCODES=true
+      - THREADS=32
+      - IMPORT_MODE=address
+    restart: always
+    shm_size: 10g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 1m
+      timeout: 10s
+      retries: 10000
+      start_period: 1m
+    depends_on:
+      nominatim-north-america-canada:
+        condition: service_healthy
+  nominatim-europe-germany:
+    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-europe-germany
+    build: nominatim-docker/4.2
+    container_name: geocoder-nominatim-europe-germany
+    volumes:
+      - /primary/geocoder/storage/europe-germany/nominatim-flatnode:/nominatim-flatnode
+      - /primary/geocoder/storage/europe-germany/nominatim:/nominatim
+      - /primary/geocoder/storage/europe-germany/nominatim-data:/var/lib/postgresql/14/main
+    environment:
+      - PGCTLTIMEOUT=600
+      - PBF_URL=https://download.geofabrik.de/europe/germany-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/europe/germany-updates/
+      - REVERSE_ONLY=true
+      - IMPORT_US_POSTCODES=true
+      - THREADS=32
+      - IMPORT_MODE=address
+    restart: always
+    shm_size: 10g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 1m
+      timeout: 10s
+      retries: 10000
+      start_period: 1m
+    depends_on:
+      nominatim-europe-austria:
+        condition: service_healthy
+  nominatim-europe-spain:
+    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-europe-spain
+    build: nominatim-docker/4.2
+    container_name: geocoder-nominatim-europe-spain
+    volumes:
+      - /primary/geocoder/storage/europe-spain/nominatim-flatnode:/nominatim-flatnode
+      - /primary/geocoder/storage/europe-spain/nominatim:/nominatim
+      - /primary/geocoder/storage/europe-spain/nominatim-data:/var/lib/postgresql/14/main
+    environment:
+      - PGCTLTIMEOUT=600
+      - PBF_URL=https://download.geofabrik.de/europe/spain-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/europe/spain-updates/
+      - REVERSE_ONLY=true
+      - IMPORT_US_POSTCODES=true
+      - THREADS=32
+      - IMPORT_MODE=address
+    restart: always
+    shm_size: 10g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 1m
+      timeout: 10s
+      retries: 10000
+      start_period: 1m
+    depends_on:
+      nominatim-europe-germany:
+        condition: service_healthy
+  nominatim-europe-france:
+    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-europe-france
+    build: nominatim-docker/4.2
+    container_name: geocoder-nominatim-europe-france
+    volumes:
+      - /primary/geocoder/storage/europe-france/nominatim-flatnode:/nominatim-flatnode
+      - /primary/geocoder/storage/europe-france/nominatim:/nominatim
+      - /primary/geocoder/storage/europe-france/nominatim-data:/var/lib/postgresql/14/main
+    environment:
+      - PGCTLTIMEOUT=600
+      - PBF_URL=https://download.geofabrik.de/europe/france-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/europe/france-updates/
+      - REVERSE_ONLY=true
+      - IMPORT_US_POSTCODES=true
+      - THREADS=32
+      - IMPORT_MODE=address
+    restart: always
+    shm_size: 10g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 1m
+      timeout: 10s
+      retries: 10000
+      start_period: 1m
+    depends_on:
+      nominatim-europe-spain:
+        condition: service_healthy
+  nominatim-africa-kenya:
+    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-africa-kenya
+    build: nominatim-docker/4.2
+    container_name: geocoder-nominatim-africa-kenya
+    volumes:
+      - /primary/geocoder/storage/africa-kenya/nominatim-flatnode:/nominatim-flatnode
+      - /primary/geocoder/storage/africa-kenya/nominatim:/nominatim
+      - /primary/geocoder/storage/africa-kenya/nominatim-data:/var/lib/postgresql/14/main
+    environment:
+      - PGCTLTIMEOUT=600
+      - PBF_URL=https://download.geofabrik.de/africa/kenya-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/africa/kenya-updates/
+      - REVERSE_ONLY=true
+      - IMPORT_US_POSTCODES=true
+      - THREADS=32
+      - IMPORT_MODE=address
+    restart: always
+    shm_size: 10g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 1m
+      timeout: 10s
+      retries: 10000
+      start_period: 1m
+    depends_on:
+      nominatim-europe-france:
+        condition: service_healthy
+  nominatim-africa-mauritius:
+    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-africa-mauritius
+    build: nominatim-docker/4.2
+    container_name: geocoder-nominatim-africa-mauritius
+    volumes:
+      - /primary/geocoder/storage/africa-mauritius/nominatim-flatnode:/nominatim-flatnode
+      - /primary/geocoder/storage/africa-mauritius/nominatim:/nominatim
+      - /primary/geocoder/storage/africa-mauritius/nominatim-data:/var/lib/postgresql/14/main
+    environment:
+      - PGCTLTIMEOUT=600
+      - PBF_URL=https://download.geofabrik.de/africa/mauritius-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/africa/mauritius-updates/
+      - REVERSE_ONLY=true
+      - IMPORT_US_POSTCODES=true
+      - THREADS=32
+      - IMPORT_MODE=address
+    restart: always
+    shm_size: 10g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 1m
+      timeout: 10s
+      retries: 10000
+      start_period: 1m
+    depends_on:
+      nominatim-africa-kenya:
+        condition: service_healthy
+  proxy:
+    container_name: geocoder
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    build: proxy
+    volumes:
+      - ./values.yml:/values.yml

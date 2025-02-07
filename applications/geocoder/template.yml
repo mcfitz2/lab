@@ -1,0 +1,41 @@
+---
+services:
+{{#places}}
+  nominatim-{{continent}}-{{country}}:
+    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-{{continent}}-{{country}}
+    build: nominatim-docker/4.2
+    container_name: geocoder-nominatim-{{continent}}-{{country}}
+    volumes:
+      - {{storage}}/{{continent}}-{{country}}/nominatim-flatnode:/nominatim-flatnode
+      - {{storage}}/{{continent}}-{{country}}/nominatim:/nominatim
+      - {{storage}}/{{continent}}-{{country}}/nominatim-data:/var/lib/postgresql/14/main
+    environment:
+      - PGCTLTIMEOUT=600
+      - PBF_URL=https://download.geofabrik.de/{{continent}}/{{country}}-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/{{continent}}/{{country}}-updates/
+      - REVERSE_ONLY=true
+      - IMPORT_US_POSTCODES=true
+      - THREADS=32
+      - IMPORT_MODE=address
+    restart: always
+    shm_size: 10g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 1m
+      timeout: 10s
+      retries: 10000
+      start_period: 1m
+    {{#depends_on}}
+    depends_on:
+      nominatim-{{continent}}-{{country}}:
+        condition: service_healthy
+    {{/depends_on}}
+{{/places}}
+  proxy:
+    container_name: geocoder
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    build: proxy
+    volumes:
+      - ./values.yml:/values.yml
