@@ -25,7 +25,7 @@ spec:
               value: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
             - name: PREFECT_API_URL
               value: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
-          image: registry.gitlab.com/mcfitz2/lab/wrench_a_part:latest
+          image: ghcr.io/mcfitz2/lab/wrench_a_part:latest
           resources:
              requests:
                memory: "150Mi"

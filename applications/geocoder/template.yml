@@ -2,7 +2,7 @@
 services:
 {{#places}}
   nominatim-{{continent}}-{{country}}:
-    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-{{continent}}-{{country}}
+    image: ghcr.io/mcfitz2/geocoder/nominatim-{{continent}}-{{country}}
     build: nominatim-docker/4.2
     container_name: geocoder-nominatim-{{continent}}-{{country}}
     volumes:

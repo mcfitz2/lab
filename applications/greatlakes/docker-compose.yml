@@ -4,7 +4,7 @@ version: "3.8"
 services:
   oauth:
     restart: always
-    image: registry.gitlab.com/mcfitz2/lab/oauth:latest
+    image: ghcr.io/mcfitz2/lab/oauth:latest
     build:
       context: ./
       dockerfile: ./oauth-service/Dockerfile
@@ -15,7 +15,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   uptime:
-    image: registry.gitlab.com/mcfitz2/lab/uptime:latest
+    image: ghcr.io/mcfitz2/lab/uptime:latest
     restart: always
     build:
       context: ./
@@ -27,7 +27,7 @@ services:
       PREFECT_ACCOUNT_ID: '6661ec6b-f68e-42a9-bec1-fcc2b961e3c4'
       PREFECT_WORKSPACE_ID: '7e45c4b7-3704-45cc-88da-ee84c415c970'
   takeout:
-    image: registry.gitlab.com/mcfitz2/lab/takeout:latest
+    image: ghcr.io/mcfitz2/lab/takeout:latest
     restart: always
     build:
       context: ./
@@ -36,7 +36,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   row-counts:
-    image: registry.gitlab.com/mcfitz2/lab/row-counts:latest
+    image: ghcr.io/mcfitz2/lab/row-counts:latest
     restart: always
     build:
       context: ./
@@ -45,7 +45,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   austin-energy:
-    image: registry.gitlab.com/mcfitz2/lab/austin-energy:latest
+    image: ghcr.io/mcfitz2/lab/austin-energy:latest
     restart: always
     build:
       context: ./
@@ -54,7 +54,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   fitbit-api:
-    image: registry.gitlab.com/mcfitz2/lab/fitbit-api:latest
+    image: ghcr.io/mcfitz2/lab/fitbit-api:latest
     restart: always
     build:
       context: ./
@@ -63,7 +63,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   sms:
-    image: registry.gitlab.com/mcfitz2/lab/sms:latest
+    image: ghcr.io/mcfitz2/lab/sms:latest
     restart: always
     build:
       context: ./
@@ -72,7 +72,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   calls:
-    image: registry.gitlab.com/mcfitz2/lab/calls:latest
+    image: ghcr.io/mcfitz2/lab/calls:latest
     restart: always
     build:
       context: ./
@@ -81,7 +81,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   ynab:
-    image: registry.gitlab.com/mcfitz2/lab/ynab:latest
+    image: ghcr.io/mcfitz2/lab/ynab:latest
     restart: always
     build:
       context: ./
@@ -90,7 +90,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   weather:
-    image: registry.gitlab.com/mcfitz2/lab/weather:latest
+    image: ghcr.io/mcfitz2/lab/weather:latest
     restart: always
     build:
       context: ./
@@ -99,7 +99,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   instagram:
-    image: registry.gitlab.com/mcfitz2/lab/instagram:latest
+    image: ghcr.io/mcfitz2/lab/instagram:latest
     restart: always
     build:
       context: ./
@@ -108,7 +108,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   stocks:
-    image: registry.gitlab.com/mcfitz2/lab/stocks:latest
+    image: ghcr.io/mcfitz2/lab/stocks:latest
     restart: always
     build:
       context: ./
@@ -118,7 +118,7 @@ services:
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
 
   gmail:
-    image: registry.gitlab.com/mcfitz2/lab/gmail:latest
+    image: ghcr.io/mcfitz2/lab/gmail:latest
     restart: always
     build:
       context: ./
@@ -127,7 +127,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   geocoding:
-    image: registry.gitlab.com/mcfitz2/lab/geocoding:latest
+    image: ghcr.io/mcfitz2/lab/geocoding:latest
     restart: always
     build:
       context: ./
@@ -136,7 +136,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   strava_api:
-    image: registry.gitlab.com/mcfitz2/lab/strava_api:latest
+    image: ghcr.io/mcfitz2/lab/strava_api:latest
     restart: always
     build:
       context: ./
@@ -145,7 +145,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   db_tasks:
-    image: registry.gitlab.com/mcfitz2/lab/db_tasks:latest
+    image: ghcr.io/mcfitz2/lab/db_tasks:latest
     restart: always
     build:
       context: ./
@@ -154,7 +154,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   wrench_a_part:
-    image: registry.gitlab.com/mcfitz2/lab/wrench_a_part:latest
+    image: ghcr.io/mcfitz2/lab/wrench_a_part:latest
     restart: always
     build:
       context: ./
@@ -163,7 +163,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   postgres_backup:
-    image: registry.gitlab.com/mcfitz2/lab/postgres_backup:latest
+    image: ghcr.io/mcfitz2/lab/postgres_backup:latest
     restart: always
     build:
       context: ./
@@ -172,7 +172,7 @@ services:
       PREFECT_API_URL: "{{ lookup('bitwarden.secrets.lookup', 'fa0d0056-4ed9-46d4-b211-b202013d0a83') }}"
       PREFECT_API_KEY: "{{ lookup('bitwarden.secrets.lookup', 'a967dcc7-6410-4a51-a9e8-b202013ce6e4') }}"
   amr:
-    image: registry.gitlab.com/mcfitz2/lab/amr:latest
+    image: ghcr.io/mcfitz2/lab/amr:latest
     restart: always
     build:
       context: ./

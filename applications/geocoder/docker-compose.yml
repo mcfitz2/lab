@@ -1,7 +1,7 @@
 ---
 services:
   nominatim-north-america-us:
-    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-north-america-us
+    image: ghcr.io/mcfitz2/geocoder/nominatim-north-america-us
     build: nominatim-docker/4.2
     container_name: geocoder-nominatim-north-america-us
     volumes:
@@ -25,7 +25,7 @@ services:
       retries: 10000
       start_period: 1m
   nominatim-north-america-canada:
-    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-north-america-canada
+    image: ghcr.io/mcfitz2/geocoder/nominatim-north-america-canada
     build: nominatim-docker/4.2
     container_name: geocoder-nominatim-north-america-canada
     volumes:
@@ -52,7 +52,7 @@ services:
       nominatim-north-america-us:
         condition: service_healthy
   nominatim-europe-austria:
-    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-europe-austria
+    image: ghcr.io/mcfitz2/geocoder/nominatim-europe-austria
     build: nominatim-docker/4.2
     container_name: geocoder-nominatim-europe-austria
     volumes:
@@ -79,7 +79,7 @@ services:
       nominatim-north-america-canada:
         condition: service_healthy
   nominatim-europe-germany:
-    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-europe-germany
+    image: ghcr.io/mcfitz2/geocoder/nominatim-europe-germany
     build: nominatim-docker/4.2
     container_name: geocoder-nominatim-europe-germany
     volumes:
@@ -106,7 +106,7 @@ services:
       nominatim-europe-austria:
         condition: service_healthy
   nominatim-europe-spain:
-    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-europe-spain
+    image: ghcr.io/mcfitz2/geocoder/nominatim-europe-spain
     build: nominatim-docker/4.2
     container_name: geocoder-nominatim-europe-spain
     volumes:
@@ -133,7 +133,7 @@ services:
       nominatim-europe-germany:
         condition: service_healthy
   nominatim-europe-france:
-    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-europe-france
+    image: ghcr.io/mcfitz2/geocoder/nominatim-europe-france
     build: nominatim-docker/4.2
     container_name: geocoder-nominatim-europe-france
     volumes:
@@ -160,7 +160,7 @@ services:
       nominatim-europe-spain:
         condition: service_healthy
   nominatim-africa-kenya:
-    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-africa-kenya
+    image: ghcr.io/mcfitz2/geocoder/nominatim-africa-kenya
     build: nominatim-docker/4.2
     container_name: geocoder-nominatim-africa-kenya
     volumes:
@@ -187,7 +187,7 @@ services:
       nominatim-europe-france:
         condition: service_healthy
   nominatim-africa-mauritius:
-    image: registry.gitlab.com/mcfitz2/geocoder/nominatim-africa-mauritius
+    image: ghcr.io/mcfitz2/geocoder/nominatim-africa-mauritius
     build: nominatim-docker/4.2
     container_name: geocoder-nominatim-africa-mauritius
     volumes:
