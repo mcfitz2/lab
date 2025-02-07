@@ -120,7 +120,7 @@ alertable_entities:
 
 
 
-
+prometheus_storage_retention: "1y"
 prometheus_scrape_configs_raw: |
   {% for target in groups['node_metrics'] +%}
   - job_name: "{{ target }}"
