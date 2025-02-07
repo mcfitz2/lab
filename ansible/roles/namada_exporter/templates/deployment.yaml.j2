@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  namada-exporter
+  name:  namada-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: namada-exporter
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: namada-exporter
+    spec:
+      imagePullSecrets:
+        - name: gitlab-credentials
+      containers:
+        - image: ghcr.io/mcfitz2/lab/namada_exporter:latest
+          args: ["/namada_exporter", "--address", "tnam1q9252ynj250dw9d0n96tf9yaycljmpatfvgrj0th", "tnam1qpmuwmqh7rrnsu75q7p4cze48np3ld32jsz84dm5", "--frequency", "60"]
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
+          name:  namada-exporter
+          ports:
+            - containerPort: 9186
+              protocol: TCP
+      restartPolicy: Always
