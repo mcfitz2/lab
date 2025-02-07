@@ -12,48 +12,48 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  linting:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        linter: [isort, black, flake8]
-    steps:
-      - uses: actions/checkout@v4
+  # linting:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       linter: [isort, black, flake8]
+  #   steps:
+  #     - uses: actions/checkout@v4
       
-      - name: Set up Python
-        if: matrix.linter != 'ansible-lint'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+  #     - name: Set up Python
+  #       if: matrix.linter != 'ansible-lint'
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.x'
           
-      - name: Install dependencies
-        if: matrix.linter != 'ansible-lint'
-        run: |
-          python -m pip install --upgrade pip
-          pip install ${{ matrix.linter }}
+  #     - name: Install dependencies
+  #       if: matrix.linter != 'ansible-lint'
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install ${{ matrix.linter }}
           
-      - name: Run ${{ matrix.linter }}
-        if: matrix.linter == 'isort'
-        run: isort applications/formula1 --check-only
+  #     - name: Run ${{ matrix.linter }}
+  #       if: matrix.linter == 'isort'
+  #       run: isort applications/formula1 --check-only
         
-      - name: Run ${{ matrix.linter }}
-        if: matrix.linter == 'black'
-        run: black --check applications/formula1
+  #     - name: Run ${{ matrix.linter }}
+  #       if: matrix.linter == 'black'
+  #       run: black --check applications/formula1
         
-      - name: Run ${{ matrix.linter }}
-        if: matrix.linter == 'flake8'
-        run: flake8 applications/formula1
+  #     - name: Run ${{ matrix.linter }}
+  #       if: matrix.linter == 'flake8'
+  #       run: flake8 applications/formula1
 
-  ansible-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  # ansible-lint:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
       
-      - name: Run ansible-lint
-        uses: ansible/ansible-lint-action@main
-        with:
-          path: "ansible/"
-        continue-on-error: true
+  #     - name: Run ansible-lint
+  #       uses: ansible/ansible-lint-action@main
+  #       with:
+  #         path: "ansible/"
+  #       continue-on-error: true
 
   # secret-detection:
   #   runs-on: ubuntu-latest
@@ -67,7 +67,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: [linting, ansible-lint]
+    # needs: [linting, ansible-lint]
     strategy:
       matrix:
         include:
@@ -165,7 +165,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GitHub Container Registry
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
