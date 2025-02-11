@@ -122,13 +122,18 @@ all:
       postgres_exporter_username: postgres
 
     development:
-      ansible_connection: local
       ansible_user: micah
       ansible_host: 192.168.1.61
       ansible_sudo_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5', state_file_dir=bitwarden_state_dir) }}"
       type: qemu
       metrics: true
 
+    mac_mini:
+      ansible_user: micah
+      ansible_host: 192.168.1.72
+      ansible_sudo_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5', state_file_dir=bitwarden_state_dir) }}"
+      metrics: false
+      
     proxmox:
       ansible_host: 192.168.1.47
       ansible_user: root
