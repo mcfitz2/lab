@@ -27,6 +27,8 @@ cloudflare_api_key: "{{ lookup('bitwarden.secrets.lookup', '863b2844-68c2-4292-9
 cloudflare_api_token: k3s-tunnel
 argocd_admin_pass: "{{ lookup('bitwarden.secrets.lookup', '8f9cc19e-e65d-4816-a277-b2020139abe6', state_file_dir=bitwarden_state_dir) }}"
 gitlab_token: "{{ lookup('bitwarden.secrets.lookup', 'fea627b6-00c0-4f03-b9c7-b2020139dc7d', state_file_dir=bitwarden_state_dir) }}"
+github_token: "{{ lookup('bitwarden.secrets.lookup', 'e1820cf0-45b3-4e88-ad56-b27d013bc5f2', state_file_dir=bitwarden_state_dir) }}"
+
 gitlab_user: mcfitz2
 node_exporter_version: '0.18.1'
 kubernetes_root: "{{ ansible_config_file | dirname }}/../kubernetes"

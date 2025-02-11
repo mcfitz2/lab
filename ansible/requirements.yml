@@ -11,3 +11,6 @@ roles:
   - name: geerlingguy.node_exporter
   - name: riemers.gitlab-runner
   - name: geerlingguy.docker
+  - name: monolithprojects.github_actions_runner
+    version: 1.21.1
+    src: https://github.com/MonolithProjects/ansible-github_actions_runner

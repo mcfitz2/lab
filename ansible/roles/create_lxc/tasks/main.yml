@@ -1,101 +1,122 @@
-- name: Create base system
-  when: build_infra
-  block:
-    - name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
-      community.crypto.openssh_keypair:
-        path: '~/.ssh/id_rsa'
-        regenerate: "full_idempotence"
-      delegate_to: localhost
-      run_once: true
-    - name: Create container
-      community.general.proxmox:
-        vmid: "{{ vmid }}"
-        node: "{{ proxmox_node }}"
-        api_user: "{{ proxmox_user }}"
-        api_password: "{{ proxmox_pass }}"
-        api_host: "{{ proxmox_ip }}"
-        password: "{{ ansible_ssh_pass }}"
-        hostname: '{{ inventory_hostname }}'
-        nameserver: "{{ default_gateway }}"
-        pubkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-        unprivileged: "{{ unprivileged }}"
-        disk: '{{ storage }}:{{ disk_size }}'
-        ostemplate: "{{ default_lxc_template }}"
-        cores: "{{ cores }}"
-        memory: "{{ memory }}"
-        swap: "{{ swap }}"
-        onboot: true
-        netif: '{"net0":"name=eth0,ip={{ ansible_host }}/24,gw={{ default_gateway }},bridge=vmbr0"}'
-        timeout: 500
-        features:
-          - nesting=1
-      delegate_to: localhost
-      register: creation
-      throttle: 1
-    - name: Add cluster mount
-      ansible.builtin.lineinfile:
-        path: "/etc/pve/lxc/{{ vmid }}.conf"
-        regexp: '^mp{{ idx }}:'
-        line: "mp{{ idx }}: {{ item.src }},mp={{ item.target }}"
-      delegate_to: proxmox
-      loop: "{{ mount_points if mount_points is iterable else [] }}"
-      loop_control:
-        index_var: idx
-      register: mounts
-    - name: Stop Container
-      when: mounts.changed
-      community.general.proxmox:
-        vmid: "{{ vmid }}"
-        node: "{{ proxmox_node }}"
-        api_user: "{{ proxmox_user }}"
-        api_password: "{{ proxmox_pass }}"
-        api_host: "{{ proxmox_ip }}"
-        hostname: '{{ inventory_hostname }}'
-        timeout: 500
-        state: stopped
-      delegate_to: localhost
-      throttle: 1
-    - name: Start container
-      community.general.proxmox:
-        vmid: "{{ vmid }}"
-        node: "{{ proxmox_node }}"
-        api_user: "{{ proxmox_user }}"
-        api_password: "{{ proxmox_pass }}"
-        api_host: "{{ proxmox_ip }}"
-        hostname: '{{ inventory_hostname }}'
-        timeout: 500
-        state: started
-      delegate_to: localhost
-      register: started
-      throttle: 1
 
-    - name: Wait 60 seconds for container to start
-      ansible.builtin.pause:
-        seconds: 60
-      when: started.changed
-    - name: Remove host from known_hosts
-      ansible.builtin.command:
-        cmd: "ssh-keygen -R {{ ansible_host }}"
-      delegate_to: localhost
-      when: creation.changed
-      changed_when: true
-      throttle: 1
-    - name: Wait 10 seconds
-      ansible.builtin.pause:
-        seconds: 10
-      throttle: 1
-    - name: Add host to known_hosts
-      ansible.builtin.known_hosts:
-        name: "{{ ansible_host }}"
-        state: present
-        key: "{{ lookup('pipe', 'ssh-keyscan {{ ansible_host }}') }}"
-        hash_host: true
-      retries: 10
-      delay: 10
-      register: result
-      until: result.failed == false
-    - name: Wait 600 seconds for target connection to become reachable/usable
-      ansible.builtin.wait_for_connection:
-        timeout: 120
+- name: Create container
+  community.general.proxmox:
+    node: "{{ proxmox_node }}"
+    api_user: "{{ proxmox_user }}"
+    api_password: "{{ proxmox_pass }}"
+    api_host: "{{ proxmox_ip }}"
+    hostname: '{{ inventory_hostname }}'
+    state: stopped
+  delegate_to: proxmox
+  throttle: 1
+- name: Create container
+  community.general.proxmox:
+    node: "{{ proxmox_node }}"
+    api_user: "{{ proxmox_user }}"
+    api_password: "{{ proxmox_pass }}"
+    api_host: "{{ proxmox_ip }}"
+    hostname: '{{ inventory_hostname }}'
+    state: absent
+  delegate_to: proxmox
+  throttle: 1
+- name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+  community.crypto.openssh_keypair:
+    path: '~/.ssh/id_rsa'
+    regenerate: "full_idempotence"
+  delegate_to: proxmox
+  run_once: true
+  register: ssh_key
+- name: Create container
+  community.general.proxmox:
+    vmid: "{{ vmid }}"
+    node: "{{ proxmox_node }}"
+    api_user: "{{ proxmox_user }}"
+    api_password: "{{ proxmox_pass }}"
+    api_host: "{{ proxmox_ip }}"
+    password: "{{ ansible_ssh_pass }}"
+    hostname: '{{ inventory_hostname }}'
+    nameserver: "{{ default_gateway }}"
+    pubkey: "{{ lookup('file', ssh_key.filename) }}"
+    unprivileged: "{{ unprivileged }}"
+    disk: '{{ storage }}:{{ disk_size }}'
+    ostemplate: "{{ default_lxc_template }}"
+    cores: "{{ cores }}"
+    memory: "{{ memory }}"
+    swap: "{{ swap }}"
+    onboot: true
+    netif: '{"net0":"name=eth0,ip={{ ansible_host }}/24,gw={{ default_gateway }},bridge=vmbr0"}'
+    timeout: 500
+    state: present
+    features:
+      - nesting=1
+  delegate_to: proxmox
+  register: creation
+  throttle: 1
+- name: Add cluster mount
+  ansible.builtin.lineinfile:
+    path: "/etc/pve/lxc/{{ vmid }}.conf"
+    regexp: '^mp{{ idx }}:'
+    line: "mp{{ idx }}: {{ item.src }},mp={{ item.target }}"
+  delegate_to: proxmox
+  loop: "{{ mount_points if mount_points is iterable else [] }}"
+  loop_control:
+    index_var: idx
+  register: mounts
+- name: Stop Container
+  when: mounts.changed
+  community.general.proxmox:
+    vmid: "{{ vmid }}"
+    node: "{{ proxmox_node }}"
+    api_user: "{{ proxmox_user }}"
+    api_password: "{{ proxmox_pass }}"
+    api_host: "{{ proxmox_ip }}"
+    hostname: '{{ inventory_hostname }}'
+    timeout: 500
+    state: stopped
+  delegate_to: proxmox
+  throttle: 1
+- name: Start container
+  community.general.proxmox:
+    vmid: "{{ vmid }}"
+    node: "{{ proxmox_node }}"
+    api_user: "{{ proxmox_user }}"
+    api_password: "{{ proxmox_pass }}"
+    api_host: "{{ proxmox_ip }}"
+    hostname: '{{ inventory_hostname }}'
+    timeout: 500
+    state: started
+  delegate_to: proxmox
+  register: started
+  throttle: 1
+
+- name: Wait 60 seconds for container to start
+  ansible.builtin.pause:
+    seconds: 60
+  when: started.changed
+- name: Remove host from known_hosts
+  ansible.builtin.command:
+    cmd: "ssh-keygen -R {{ ansible_host }}"
+  delegate_to: proxmox
+  when: creation.changed
+  changed_when: true
+  throttle: 1
+- name: Wait 10 seconds
+  ansible.builtin.pause:
+    seconds: 10
+  throttle: 1
+- name: Add host to known_hosts
+  ansible.builtin.known_hosts:
+    name: "{{ ansible_host }}"
+    state: present
+    key: "{{ lookup('pipe', 'ssh-keyscan {{ ansible_host }}') }}"
+    hash_host: true
+  retries: 10
+  delay: 10
+  register: result
+  until: result.failed == false
+  delegate_to: proxmox
+- name: Wait 600 seconds for target connection to become reachable/usable
+  ansible.builtin.wait_for_connection:
+    timeout: 120
 - name: Gather Facts about hosts
   ansible.builtin.gather_facts:

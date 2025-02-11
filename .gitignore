@@ -27,6 +27,7 @@ ansible/collections
 ansible/roles/geerlingguy.nfs
 ansible/roles/geerlingguy.node_exporter
 ansible/roles/bastiaanvanassche.s3fs-fuse
+ansible/roles/monolithprojects.github_actions_runner
 ansible/roles/riemers.gitlab-runner
 ansible/roles/geerlingguy.docker
 applications/**/node_modules
