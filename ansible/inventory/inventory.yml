@@ -211,13 +211,13 @@ all:
       ansible_host: 192.168.2.219
       type: esphome
       metrics: true
-    gitlab-runner:
+    github-runner-lab:
       ansible_user: root
       ansible_host: 192.168.1.15
       ansible_ssh_pass: "{{ lookup('bitwarden.secrets.lookup', 'c59e4eef-9ffb-4ba8-8797-b202013a47d5') }}"
       type: lxc
       metrics: true
-      vmid: 300
+      vmid: 400
       cores: 4
       memory: 4096
       swap: 512
