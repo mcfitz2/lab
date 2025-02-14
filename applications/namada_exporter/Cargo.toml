@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-prometheus_exporter = "0.8"
+prometheus_exporter = "0.8.5"
 namada_sdk = { git = "https://github.com/anoma/namada", tag = "v1.1.1", default-features = false, features = ["std", "async-send", "download-params"] }
 tendermint-rpc = { version = "0.40.1", features = ["http-client"] }
 color-eyre = "0.6.3"
