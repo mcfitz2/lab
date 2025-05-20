@@ -1,20 +1,7 @@
 - name: Install manifests
   kubernetes.core.k8s:
-    kubeconfig: '~/.kube/config'
-    state: present
+    kubeconfig: '/etc/rancher/k3s/k3s.yaml'
+    state: absent
     template: "{{ item }}"
     apply: true
   loop: "{{ lookup('fileglob', 'templates/*.yaml.j2', wantlist=true) }}"
-
-- name: Create local env
-  ansible.builtin.template:
-    src: local_env.j2
-    dest: "/home/micah/lab/applications/chicahgo/env.sh"
-    owner: "micah"
-    group: "micah"
-    mode: "0640"
-
-- name: Copy service account file
-  ansible.builtin.copy:
-    content: "{{ lookup('bitwarden.secrets.lookup', '5e47f58a-0461-4bda-a8ba-b25e0125a798', state_file_dir=bitwarden_state_dir) }}"
-    dest: "/home/micah/lab/applications/chicahgo/service_account.json"

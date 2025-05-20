@@ -1,0 +1,4 @@
+- name: Remove /etc/prometheus/rules/ansible_managed.rules
+  ansible.builtin.file:
+    path: /etc/prometheus/rules/ansible_managed.rules
+    state: absent

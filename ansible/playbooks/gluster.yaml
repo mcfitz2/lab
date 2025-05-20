@@ -1,0 +1,51 @@
+---
+- name: Create Gluster cluster
+  hosts: iot
+  remote_user: root
+  gather_facts: false
+
+  tasks:
+    - name: Install gluster via apt
+      ansible.builtin.apt:
+        name:
+          - glusterfs-server
+          - glusterfs-client
+        state: present
+    - name: Start service httpd, if not started
+      ansible.builtin.service:
+        name: glusterd
+        enabled: true
+        state: started
+    - name: Create a new ext4 primary partition
+      community.general.parted:
+        device: /dev/sda
+        number: 1
+        state: present
+        fs_type: ext4
+    - name: Format data disk
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/sda1
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: /mnt/brick1
+        state: directory
+        mode: '0755'
+    - name: Mount disk
+      ansible.posix.mount:
+          state: mounted
+          fstype: ext4
+          path: /mnt/brick1
+          src: /dev/sda1
+- name: Create Gluster cluster
+  hosts: iot1
+  remote_user: root
+  gather_facts: false
+
+  tasks:
+    - name: create volume
+      ansible.builtin.apt:
+        name:
+          - glusterfs-server
+          - glusterfs-client
+        state: present

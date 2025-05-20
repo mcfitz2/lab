@@ -78,6 +78,14 @@
   ansible.builtin.pause:
     seconds: 60
   when: started.changed
+- name: Enable root ssh login
+  ansible.builtin.shell: |
+    pct exec {{ vmid }} -- sed -i 's/#PermitRootLogin/PermitRootLogin/g' /etc/ssh/sshd_config
+    pct exec {{ vmid }} -- sed -i 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config
+    pct exec {{ vmid }} -- sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+    pct exec {{ vmid }} systemctl restart sshd
+  delegate_to: proxmox
+#  when: creation.changed
 - name: Remove host from known_hosts
   ansible.builtin.command:
     cmd: "ssh-keygen -R {{ ansible_host }}"

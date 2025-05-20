@@ -1,6 +1,6 @@
 - name: Deploy CRDs
   kubernetes.core.k8s:
-    kubeconfig: '~/.kube/config'
+    kubeconfig: '/etc/rancher/k3s/k3s.yaml'
     state: present
     src: "https://github.com/k8up-io/k8up/releases/download/k8up-4.8.1/k8up-crd.yaml"
     apply: true
@@ -29,7 +29,7 @@
 
 - name: Setup backup-credentials in namespace
   kubernetes.core.k8s:
-    kubeconfig: '~/.kube/config'
+    kubeconfig: '/etc/rancher/k3s/k3s.yaml'
     state: present
     apply: true
     resource_definition:
@@ -46,7 +46,7 @@
 
 - name: Setup backup-repo in namespace
   kubernetes.core.k8s:
-    kubeconfig: '~/.kube/config'
+    kubeconfig: '/etc/rancher/k3s/k3s.yaml'
     state: present
     apply: true
     resource_definition:
@@ -62,7 +62,7 @@
 
 - name: Setup backup schedule in namespace
   kubernetes.core.k8s:
-    kubeconfig: '~/.kube/config'
+    kubeconfig: '/etc/rancher/k3s/k3s.yaml'
     state: present
     apply: true
     resource_definition:

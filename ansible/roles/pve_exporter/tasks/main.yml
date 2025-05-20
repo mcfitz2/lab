@@ -4,21 +4,23 @@
     api_version: v1
     kind: Namespace
     state: present
+    kubeconfig: '/etc/rancher/k3s/k3s.yaml'
+
 - name: Deploy configmap
   kubernetes.core.k8s:
-    kubeconfig: '~/.kube/config'
+    kubeconfig: '/etc/rancher/k3s/k3s.yaml'
     state: present
     template: "configmap.yaml.j2"
     apply: true
 - name: Deploy deployment
   kubernetes.core.k8s:
-    kubeconfig: '~/.kube/config'
+    kubeconfig: '/etc/rancher/k3s/k3s.yaml'
     state: present
     template: "deployment.yaml.j2"
     apply: true
 - name: Deploy service
   kubernetes.core.k8s:
-    kubeconfig: '~/.kube/config'
+    kubeconfig: '/etc/rancher/k3s/k3s.yaml'
     state: present
     template: "service.yaml.j2"
     apply: true

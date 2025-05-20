@@ -1,5 +1,6 @@
+proxmox_inventory_name: proxmox
 bitwarden_state_dir: /tmp/bitwarden
-k3s_version: v1.31.1+k3s1
+k3s_version: v1.32.2+k3s1
 systemd_dir: /etc/systemd/system
 extra_server_args: "--write-kubeconfig-mode=644"
 extra_agent_args: ""
@@ -50,6 +51,7 @@ prowlarr_fqdn: "prowlarr.{{ tunnel_domain }}"
 nzbget_fqdn: "nzbget.{{ tunnel_domain }}"
 transmission_fqdn: "transmission.{{ tunnel_domain }}"
 chicahgo_fqdn: "chicahgo.{{ tunnel_domain }}"
+metabase_fqdn: "metabase.{{ tunnel_domain }}"
 
 
 greatlakes_host: "{{ hostvars['greatlakes-db']['ansible_host'] }}"
@@ -106,18 +108,18 @@ transmission_exporter_port: 30212
 namada_exporter_port: 30213
 
 alertable_entities:
-  - sensor.tz3000_bguser20_ts0201_humidity_3
-  - sensor.tz3000_bguser20_ts0201_humidity_2
-  - sensor.tz3000_bguser20_ts0201_temperature_3
-  - sensor.tz3000_bguser20_ts0201_temperature_2
-  - sensor.tz3000_bguser20_ts0201_temperature
-  - sensor.tz3000_bguser20_ts0201_humidity
-  - binary_sensor.tz3000_ayc0ccuk_ts0203_opening
-  - binary_sensor.tz3000_bnai1qnw_ts0203_opening
-  - sensor.ewelink_wb01_battery
+  # - sensor.tz3000_bguser20_ts0201_humidity_3
+  # - sensor.tz3000_bguser20_ts0201_humidity_2
+  # - sensor.tz3000_bguser20_ts0201_temperature_3
+  # - sensor.tz3000_bguser20_ts0201_temperature_2
+  # - sensor.tz3000_bguser20_ts0201_temperature
+  # - sensor.tz3000_bguser20_ts0201_humidity
+  # - binary_sensor.tz3000_ayc0ccuk_ts0203_opening
+  # - binary_sensor.tz3000_bnai1qnw_ts0203_opening
+#  - sensor.ewelink_wb01_battery
   - lock.touchscreen_deadbolt
   - binary_sensor.cheese_bowl_limit_switch
-  - sensor.filament_scale_calibrated_weight
+#  - sensor.filament_scale_calibrated_weight
 
 
 
@@ -190,6 +192,7 @@ prometheus_scrape_configs_raw: |
   - job_name: 'namada'
     scrape_interval: 1m
     scrape_timeout: 30s
+    fallback_scrape_protocol: PrometheusText0.0.4
     static_configs:
       - targets: ['{{ master_ip }}:{{ namada_exporter_port }}']
   - job_name: 'transmission'

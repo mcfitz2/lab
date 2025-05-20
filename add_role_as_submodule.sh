@@ -1,0 +1,1 @@
+ansible-galaxy info $1 | grep -A 1 github_repo | tr '\n' ' ' | sed -e "s/.*github_repo: \([^[:space:]]*\)[^\w]*github_user: \([^[:space:]]*\)[[:space:]]*/git submodule add git:\/\/github.com\/\2\/\1.git roles\/\2.\1/g" | sh

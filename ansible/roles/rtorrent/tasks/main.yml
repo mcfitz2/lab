@@ -1,6 +1,6 @@
 - name: Deploy Manifests
   kubernetes.core.k8s:
-    kubeconfig: '~/.kube/config'
+    kubeconfig: '/etc/rancher/k3s/k3s.yaml'
     state: present
     template: "{{ item }}"
     apply: true

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  metabase
+  name:  metabase
+  namespace: greatlakes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metabase
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: metabase
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: JAVA_TIMEZONE
+              value: America/Chicago
+            - name: MB_DB_FILE
+              value: /metabase-data/metabase.db
+          image: metabase/metabase:latest
+          resources:
+             requests:
+               memory: "150Mi"
+             limits:
+               memory: "2Gi"
+          name:  metabase
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /metabase-data
+              name: metabase-config
+      restartPolicy: Always
+      volumes:
+        - name: metabase-config
+          persistentVolumeClaim:
+            claimName: metabase-config

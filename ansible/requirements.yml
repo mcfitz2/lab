@@ -4,6 +4,9 @@ collections:
   - name: mcfitz2.proxmox_backup
   - name: devopsarr.sonarr
   - name: prometheus.prometheus
+  - name: mcfitz2.libguestfs
+    source: https://github.com/mcfitz2/ansible-libguestfs-collection.git
+    type: git
 
 roles:
   # Install a role from Ansible Galaxy.

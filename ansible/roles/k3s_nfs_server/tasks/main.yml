@@ -48,7 +48,7 @@
     - name: Add geocoder mount
       ansible.builtin.lineinfile:
         path: "/etc/pve/lxc/{{ vmid }}.conf"
-        regexp: '^mp1:'
+        regexp: '^mp2:'
         line: "mp2: /primary/geocoder,mp=/primary/geocoder"
       delegate_to: proxmox
       register: mount3
@@ -82,6 +82,13 @@
   ansible.builtin.pause:
     seconds: 10
   throttle: 1
+- name: Enable root ssh login
+  ansible.builtin.shell: |
+    pct exec {{ vmid }} -- sed -i 's/#PermitRootLogin/PermitRootLogin/g' /etc/ssh/sshd_config
+    pct exec {{ vmid }} -- sed -i 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config
+    pct exec {{ vmid }} -- sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+    pct exec {{ vmid }} systemctl restart sshd
+  delegate_to: proxmox
 - name: Add host to known_hosts
   ansible.builtin.known_hosts:
     name: "{{ ansible_host }}"
@@ -92,6 +99,8 @@
   delay: 3
   register: result
   until: result.failed == false
+
+#  when: creation.changed
 - name: Wait 600 seconds for target connection to become reachable/usable
   ansible.builtin.wait_for_connection:
     timeout: 120

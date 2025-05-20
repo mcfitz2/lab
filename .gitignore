@@ -43,3 +43,4 @@ applications/namada_exporter/.idea/vcs.xml
 .idea/modules.xml
 .idea/vcs.xml
 .idea/.gitignore
+ansible/roles/gluster.cluster
