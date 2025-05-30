@@ -77,27 +77,27 @@ jobs:
           - dir: applications/prometheus-prefect-exporter
             image_suffix: prometheus-prefect-exporter
             dockerfile: applications/prometheus-prefect-exporter/Dockerfile
-          - dir: applications/fidelity_calendar
-            image_suffix: fidelity_calendar
-            dockerfile: applications/fidelity_calendar/Dockerfile
+          # - dir: applications/fidelity_calendar
+          #   image_suffix: fidelity_calendar
+          #   dockerfile: applications/fidelity_calendar/Dockerfile
           - dir: applications/namada_exporter
             image_suffix: namada_exporter
             dockerfile: applications/namada_exporter/Dockerfile
           - dir: applications/habit
             image_suffix: habit
             dockerfile: applications/habit/Dockerfile
-          - dir: applications/magic-mirror
-            image_suffix: mm-office
-            dockerfile: applications/magic-mirror-home/Dockerfile
-          - dir: applications/magic-mirror-home
-            image_suffix: mm-living-room
-            dockerfile: applications/magic-mirror-home/Dockerfile
+          # - dir: applications/magic-mirror
+          #   image_suffix: mm-office
+          #   dockerfile: applications/magic-mirror-home/Dockerfile
+          # - dir: applications/magic-mirror-home
+          #   image_suffix: mm-living-room
+          #   dockerfile: applications/magic-mirror-home/Dockerfile
           - dir: applications/formula1
             image_suffix: formula1
             dockerfile: applications/formula1/Dockerfile
-          - dir: applications/chicahgo
-            image_suffix: chicahgo
-            dockerfile: applications/chicahgo/Dockerfile
+          # - dir: applications/chicahgo
+          #   image_suffix: chicahgo
+          #   dockerfile: applications/chicahgo/Dockerfile
           - dir: applications/greatlakes
             image_suffix: airport-locations
             dockerfile: applications/greatlakes/airport_locations/Dockerfile
@@ -149,15 +149,15 @@ jobs:
           - dir: applications/greatlakes
             image_suffix: db_tasks
             dockerfile: applications/greatlakes/db_tasks/Dockerfile
-          - dir: applications/greatlakes
-            image_suffix: wrench_a_part
-            dockerfile: applications/greatlakes/wrench_a_part/Dockerfile
+          # - dir: applications/greatlakes
+          #   image_suffix: wrench_a_part
+          #   dockerfile: applications/greatlakes/wrench_a_part/Dockerfile
           - dir: applications/greatlakes
             image_suffix: postgres_backup
             dockerfile: applications/greatlakes/postgres_backup/Dockerfile
-          - dir: applications/greatlakes
-            image_suffix: amr
-            dockerfile: applications/greatlakes/mortgage_rates/Dockerfile
+          # - dir: applications/greatlakes
+          #   image_suffix: amr
+          #   dockerfile: applications/greatlakes/mortgage_rates/Dockerfile
 
     steps:
       - uses: actions/checkout@v4
