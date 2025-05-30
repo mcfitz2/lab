@@ -48,7 +48,7 @@ def api():
             attrib={
                 "version": "2.0",
                 "xmlns:atom": "http://www.w3.org/2005/Atom",
-                "xmlns:torznab": "http://torznab.com/schemas/2015/feed",
+                "xmlns:newznab": "http://newznab.com/schemas/2015/feed",
             },
         )
         caps = ET.SubElement(rss, "caps")
@@ -75,7 +75,7 @@ def api():
             attrib={
                 "version": "2.0",
                 "xmlns:atom": "http://www.w3.org/2005/Atom",
-                "xmlns:torznab": "http://torznab.com/schemas/2015/feed",
+                "xmlns:newznab": "http://newznab.com/schemas/2015/feed",
             },
         )
         channel = ET.SubElement(rss, "channel")
@@ -99,12 +99,12 @@ def api():
                 ET.SubElement(item, "description").text = entry["description"]
                 ET.SubElement(
                     item,
-                    "torznab:attr",
+                    "newznab:attr",
                     attrib={"name": "season", "value": "S" + str(tvdb_episode["seasonNumber"])},
                 )
                 ET.SubElement(
                     item,
-                    "torznab:attr",
+                    "newznab:attr",
                     attrib={
                         "name": "episode",
                         "value": "E" + str(tvdb_episode["number"]).zfill(3),
@@ -112,7 +112,7 @@ def api():
                 )
                 ET.SubElement(
                     item,
-                    "torznab:attr",
+                    "newznab:attr",
                     attrib={"name": "tvdbid", "value": str(tvdb_episode["id"])},
                 )
 
