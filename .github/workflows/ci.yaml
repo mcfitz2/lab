@@ -71,9 +71,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - dir: ansible
-            image_suffix: ansible
-            dockerfile: ansible/Dockerfile
+          # - dir: ansible
+          #   image_suffix: ansible
+          #   dockerfile: ansible/Dockerfile
           - dir: applications/prometheus-prefect-exporter
             image_suffix: prometheus-prefect-exporter
             dockerfile: applications/prometheus-prefect-exporter/Dockerfile

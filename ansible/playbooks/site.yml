@@ -19,13 +19,13 @@
 #           - ansible-lint
 #         state: present
 
-- hosts: master:node
-  name: Configure machine(s) [cluster]
-  gather_facts: false
-  roles:
-    - k3s_infra
-    - k3s_prereq
-    - k3s_download
+# - hosts: master:node
+#   name: Configure machine(s) [cluster]
+#   gather_facts: false
+#   roles:
+#     - k3s_infra
+#     - k3s_prereq
+#     - k3s_download
 
 # - hosts: cluster_nfs
 #   name: Configure machine [cluster nfs]
@@ -79,31 +79,26 @@
   roles:
     - kube_setup
     - grafana
-    # - pgadmin
-    # - pve_exporter
-    # - unpoller
-    # - sonarr
-    # - radarr
-    # - tautulli
+    - pgadmin
+    - pve_exporter
+    - unpoller
+    - sonarr
+    - radarr
+    - tautulli
     - overseer
-    # - fidelity_calendar
-    # - prefect_exporter
-    # - greatlakes
-    # - prometheus_operator
-    # - prowlarr
-    # - formula1
-    # - jackett
-    # - transmission
-    # - nzbget
-    # - monica
-    # - magic_mirror
-    # - flaresolverr
-    # - nzbget_exporter
-    # - transmission_exporter
-    # - rtorrent
-    # - chicahgo
-    # - namada_exporter
-    # - metabase
+    - prefect_exporter
+    - greatlakes
+    - prometheus_operator
+    - prowlarr
+    - formula1
+    - jackett
+    - transmission
+    - nzbget
+    - flaresolverr
+    - nzbget_exporter
+    - transmission_exporter
+    - rtorrent
+    - namada_exporter
 
 # # - hosts: plex
 # #   gather_facts: false
