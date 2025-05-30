@@ -1,6 +1,17 @@
-FROM python:3.9
-ADD requirements.txt /code/requirements.txt
+FROM python:3.12-slim
+
 WORKDIR /code
-RUN pip install -r requirements.txt
-ADD . /code
+
+# Install uv
+RUN pip install uv
+
+# Copy requirements file
+COPY pyproject.toml /code/pyproject.toml
+
+# Install dependencies with uv
+RUN uv sync
+
+# Copy the rest of the application
+COPY . /code
+
 CMD python main.py

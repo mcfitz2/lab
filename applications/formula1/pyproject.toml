@@ -1,0 +1,23 @@
+[project]
+name = "f1_downloader"
+version = "0.1.0"
+description = "A Playwright-based script to login to F1TV in stealth mode and print cookies."
+authors = [
+    { name = "Your Name", email = "your_email@example.com" }
+]
+requires-python = ">=3.8"
+dependencies = [
+    "flask>=3.0.3",
+    "playwright>=1.44.0",
+    "playwright-stealth>=1.0.6",
+    "rapidfuzz>=3.9.7",
+    "requests>=2.32.3",
+    "setuptools>=75.3.2",
+    "tvdb-v4-official>=1.1.0",
+]
+
+[tool.setuptools]
+packages = [""]
+
+[tool.playwright]
+install = true

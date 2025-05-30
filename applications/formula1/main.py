@@ -1,14 +1,11 @@
+import pprint
 import re
 import xml.etree.ElementTree as ET
 from io import BytesIO
 
 from flask import Flask, Response, request
-from formula1.feeds import ReleaseFetcher
+from formula1.matcher import search_f1_releases
 
-rss_url = "https://torrentgalaxy.mx/rss?magnet&user=48718"
-
-regex = r"Formula 1\. (?P<year>\d{4})\. R(?P<race_number>.+?)\. (?P<name>.+)\. (?P<broadcaster>.+?)\. (?P<quality>.+)"
-desc_regex = r"(?P<category>.+?)\W+Size:\W+(?P<size>\d+\.\d+)\W+(?P<unit>[mktgMKTG][Bb])\W+Added: .+"
 app = Flask(__name__)
 app.cache = []
 app.last_check = None
@@ -56,142 +53,45 @@ def api():
         channel = ET.SubElement(rss, "channel")
         ET.SubElement(channel, "title")
         ET.SubElement(channel, "description")
-        episodes = app.fetcher.get_releases(
+        episodes = search_f1_releases(
             request.args.get("season"), request.args.get("ep")
         )
-        for release, entry, episode in episodes:
-            if not entry or not episode:
-                continue
-            item = ET.SubElement(channel, "item")
-            ET.SubElement(item, "title").text = entry["title"]
-            ET.SubElement(item, "guid").text = entry["guid"]
-            ET.SubElement(item, "link").text = entry["links"][0]["href"]
-            m = re.match(desc_regex, entry["description"])
-            if m:
-                description_fields = m.groupdict()
-                size_num = float(description_fields["size"])
-                if description_fields["unit"].lower() == "kb":
-                    size = size_num * 1000
-                    ET.SubElement(item, "size").text = str(int(size))
-                    ET.SubElement(
-                        item,
-                        "enclosure",
-                        attrib={
-                            "url": entry["links"][0]["href"],
-                            "type": "application/x-bittorent",
-                            "size": str(int(size)),
-                        },
-                    )
-                    ET.SubElement(
-                        item,
-                        "torznab:attr",
-                        attrib={"name": "size", "value": str(int(size))},
-                    )
-
-                elif description_fields["unit"].lower() == "mb":
-                    size = size_num * 1000 * 1000
-                    ET.SubElement(item, "size").text = str(int(size))
-                    ET.SubElement(
-                        item,
-                        "enclosure",
-                        attrib={
-                            "url": entry["links"][0]["href"],
-                            "type": "application/x-bittorent",
-                            "size": str(int(size)),
-                        },
-                    )
-                    ET.SubElement(
-                        item,
-                        "torznab:attr",
-                        attrib={"name": "size", "value": str(int(size))},
-                    )
-
-                elif description_fields["unit"].lower() == "gb":
-                    size = size_num * 1000 * 1000 * 1000
-                    ET.SubElement(item, "size").text = str(int(size))
-                    ET.SubElement(
-                        item,
-                        "enclosure",
-                        attrib={
-                            "url": entry["links"][0]["href"],
-                            "type": "application/x-bittorent",
-                            "size": str(int(size)),
-                        },
-                    )
-                    ET.SubElement(
-                        item,
-                        "torznab:attr",
-                        attrib={"name": "size", "value": str(int(size))},
-                    )
-
-                elif description_fields["unit"].lower() == "tb":
-                    size = size_num * 1000 * 1000 * 1000 * 1000
-                    ET.SubElement(item, "size").text = str(int(size))
-                    ET.SubElement(
-                        item,
-                        "enclosure",
-                        attrib={
-                            "url": entry["links"][0]["href"],
-                            "type": "application/x-bittorent",
-                            "size": str(int(size)),
-                        },
-                    )
-                    ET.SubElement(
-                        item,
-                        "torznab:attr",
-                        attrib={"name": "size", "value": str(int(size))},
-                    )
-
-                else:
-                    print(
-                        f"found {description_fields['unit'].lower()} unit, unable to calc size"
-                    )
-                    ET.SubElement(
-                        item,
-                        "enclosure",
-                        attrib={
-                            "url": entry["links"][0]["href"],
-                            "type": "application/x-bittorent",
-                        },
-                    )
-            else:
-                print("unable to parse description")
+        for combined_data in episodes:
+            try:
+                entry = combined_data["entry"]
+                tvdb_episode = combined_data["tvdb_episode"]
+                item = ET.SubElement(channel, "item")
+                ET.SubElement(item, "title").text = combined_data["title"]
+                ET.SubElement(item, "guid").text = entry["guid"]
+                ET.SubElement(item, "link").text = entry['link']
+                ET.SubElement(item, "enclosure", attrib=combined_data["enclosure"])
+                ET.SubElement(item, "comments").text = entry["comments"]
+                ET.SubElement(item, "pubDate").text = entry["pubDate"]
+                ET.SubElement(item, "category").text = "Formula 1"
+                ET.SubElement(item, "description").text = entry["description"]
                 ET.SubElement(
                     item,
-                    "enclosure",
+                    "torznab:attr",
+                    attrib={"name": "season", "value": "S" + str(tvdb_episode["seasonNumber"])},
+                )
+                ET.SubElement(
+                    item,
+                    "torznab:attr",
                     attrib={
-                        "url": entry["links"][0]["href"],
-                        "type": "application/x-bittorent",
+                        "name": "episode",
+                        "value": "E" + str(tvdb_episode["number"]).zfill(3),
                     },
                 )
-            ET.SubElement(item, "comments").text = entry["comments"]
-            ET.SubElement(item, "pubDate").text = entry["published"]
-            ET.SubElement(item, "category").text = "Formula 1"
-            ET.SubElement(item, "description").text = entry["description"]
-            ET.SubElement(
-                item,
-                "torznab:attr",
-                attrib={"name": "season", "value": "S" + str(episode["seasonNumber"])},
-            )
-            ET.SubElement(
-                item,
-                "torznab:attr",
-                attrib={
-                    "name": "episode",
-                    "value": "E" + str(episode["number"]).zfill(3),
-                },
-            )
-            ET.SubElement(
-                item,
-                "torznab:attr",
-                attrib={"name": "tvdbid", "value": str(episode["id"])},
-            )
-            ET.SubElement(
-                item,
-                "torznab:attr",
-                attrib={"name": "magneturl", "value": entry["links"][0]["href"]},
-            )
+                ET.SubElement(
+                    item,
+                    "torznab:attr",
+                    attrib={"name": "tvdbid", "value": str(tvdb_episode["id"])},
+                )
 
+            except KeyError as e:
+                print(f"KeyError: {e}")
+                pprint.pprint(combined_data)
+                continue
         doc = ET.ElementTree(rss)
         f = BytesIO()
         doc.write(f, encoding="utf-8", xml_declaration=True, method="xml")
@@ -201,7 +101,6 @@ def api():
 
 
 def main():
-    app.fetcher = ReleaseFetcher()
     app.run("0.0.0.0", 9999, debug=True)
 
 
