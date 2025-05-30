@@ -78,7 +78,7 @@ def api():
                 ET.SubElement(item, "title").text = combined_data["title"]
                 ET.SubElement(item, "guid").text = entry["guid"]
                 ET.SubElement(item, "link").text = entry['link']
-                ET.SubElement(item, "enclosure", attrib=combined_data["enclosure"])
+                ET.SubElement(item, "enclosure", attrib=combined_data["enclosure"]['@attributes'])
                 ET.SubElement(item, "comments").text = entry["comments"]
                 ET.SubElement(item, "pubDate").text = entry["pubDate"]
                 ET.SubElement(item, "category").text = "Formula 1"
