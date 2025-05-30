@@ -1,0 +1,250 @@
+---
+- name: Create and Configure Proxmox Cloud-Init Template
+  hosts: ltss
+  gather_facts: false
+  become: true
+
+  vars:
+    # VM Configuration
+    vm_id: 9000
+    vm_name: "ubuntu-plucky"
+    vm_memory: 2048
+    vm_cores: 2
+    vm_disk_resize_amount: "20G"
+    vm_network: "virtio,bridge=vmbr0"
+    vm_storage_pool: "zfs-hdd"
+    vm_scsi_hw: "virtio-scsi-pci"
+    # Cloud Image Configuration
+    cloud_image_url: "https://cloud-images.ubuntu.com/releases/plucky/release/ubuntu-25.04-server-cloudimg-amd64.img"
+    cloud_image_name: "/tmp/plucky-server-cloudimg-amd64.img"
+
+    # User Configuration
+    cloud_init_user: "{{ ansible_user }}"
+    cloud_init_user_password: "{{ ansible_ssh_pass }}"
+    cloud_init_user_shell: "/bin/bash"
+    cloud_init_user_groups:
+      - "sudo"
+
+    sudoers_file_path: "/root/ansible"
+    ssh_key_path: "/root/.ssh/id_rsa.pub" #ssh key on Proxmox host
+
+    # Additional Software
+    additional_packages:
+      - qemu-guest-agent
+
+    vm_ipconfig: "ip={{ ansible_host }}/24,gw={{ default_gateway }},ip6=dhcp"
+    
+  tasks:
+    - name: Ensure required packages are installed
+      ansible.builtin.apt:
+        name:
+          - libguestfs-tools
+          - wget
+          - python3-guestfs
+        state: present
+      tags: packages
+      delegate_to: "{{ proxmox_inventory_name }}"
+
+    - name: Remove cloudinit image file if it exists
+      ansible.builtin.file:
+        path: "{{ cloud_image_name }}"
+        state: absent
+      tags: cleanup
+      delegate_to: "{{ proxmox_inventory_name }}"
+
+    - name: Download cloud image
+      ansible.builtin.get_url:
+        url: "{{ cloud_image_url }}"
+        dest: "{{ cloud_image_name }}"
+        mode: "0644"
+      tags: image
+      delegate_to: "{{ proxmox_inventory_name }}"
+
+    - name: Customize cloud image
+      block:
+        - name: Install additional packages in the image
+          mcfitz2.libguestfs.guestfs_package:
+            image: "{{ cloud_image_name }}"
+            name: "{{ additional_packages }}"
+            state: present
+          tags: image
+
+        - name: Create user in the image
+          mcfitz2.libguestfs.guestfs_user:
+            image: "{{ cloud_image_name }}"
+            name: "{{ cloud_init_user }}"
+            password: "{{ cloud_init_user_password }}"
+            shell: "{{ cloud_init_user_shell }}"
+            groups: "{{ cloud_init_user_groups }}"
+            state: present
+
+        - name: Inject SSH key for user
+          mcfitz2.libguestfs.guestfs_ssh_inject:
+            image: "{{ cloud_image_name }}"
+            key_file: "{{ ssh_public_key_path }}"
+            user: "{{ cloud_init_user }}"
+            state: present
+          tags: image
+
+        - name: Set correct ownership for user home directory
+          mcfitz2.libguestfs.guestfs_command:
+            image: "{{ cloud_image_name }}"
+            command: "chown -R {{ cloud_init_user }}:{{ cloud_init_user }} /home/{{ cloud_init_user }}"
+          tags: image
+
+        - name: Create sudoers file locally
+          ansible.builtin.copy:
+            content: "ansible ALL=(ALL) NOPASSWD: ALL"
+            dest: /tmp/sudoers
+          tags: image
+
+        - name: Upload sudoers file for user
+          mcfitz2.libguestfs.guestfs_copy_in:
+            image: "{{ cloud_image_name }}"
+            dest: "/etc/sudoers.d/{{ cloud_init_user }}"
+            src: "/tmp/sudoers"
+          tags: image
+          
+        - name: Create machine-id file locally
+          ansible.builtin.copy:
+            content: ""
+            dest: /tmp/machine-id
+          tags: image
+
+        - name: Clear machine-id
+          mcfitz2.libguestfs.guestfs_copy_in:
+            image: "{{ cloud_image_name }}"
+            dest: "/etc/machine-id"
+            src: "/tmp/machine-id"
+          tags: image
+      delegate_to: "{{ proxmox_inventory_name }}"
+      
+    - name: Stop VM if it exists
+      community.general.proxmox_kvm:
+        vmid: "{{ vm_id }}"
+        node: "{{ proxmox_node }}"
+        api_user: "{{ proxmox_user }}"
+        api_password: "{{ proxmox_pass }}"
+        api_host: "localhost"
+        state: stopped
+      ignore_errors: true
+      tags: proxmox
+      delegate_to: "{{ proxmox_inventory_name }}"
+      
+    - name: Remove VM if it exists
+      community.general.proxmox_kvm:
+        vmid: "{{ vm_id }}"
+        node: "{{ proxmox_node }}"
+        api_user: "{{ proxmox_user }}"
+        api_password: "{{ proxmox_pass }}"
+        api_host: "localhost"
+        state: absent
+      ignore_errors: true
+      tags: proxmox
+      delegate_to: "{{ proxmox_inventory_name }}"
+
+    - name: Create VM in Proxmox
+      community.general.proxmox_kvm:
+        vmid: "{{ vm_id }}"
+        name: "{{ vm_name }}"
+        node: "{{ proxmox_node }}"
+        api_user: "{{ proxmox_user }}"
+        api_password: "{{ proxmox_pass }}"
+        api_host: "localhost"
+        memory: "{{ vm_memory }}"
+        cores: "{{ vm_cores }}"
+        scsihw: "{{ vm_scsi_hw }}"
+        ide:
+          ide2: "{{ vm_storage_pool }}:cloudinit"
+        net:
+          net0: "{{ vm_network }}"
+        vga: "std"
+        agent: "enabled=1"
+        state: present
+        ipconfig:
+          ipconfig0: "{{ vm_ipconfig }}"
+      tags: proxmox
+      delegate_to: "{{ proxmox_inventory_name }}"
+   
+    - name: Import disk to Proxmox storage
+      ansible.builtin.command: "qm importdisk {{ vm_id }} {{ cloud_image_name }} {{ vm_storage_pool }}"
+      tags: proxmox
+      delegate_to: "{{ proxmox_inventory_name }}"
+      
+    - name: Wait for VM to be created
+      ansible.builtin.pause:
+        seconds: 10
+      delegate_to: "{{ proxmox_inventory_name }}"
+      
+    - name: Configure VM hardware and options
+      community.general.proxmox_kvm:
+        vmid: "{{ vm_id }}"
+        node: "{{ proxmox_node }}"
+        api_user: "{{ proxmox_user }}"
+        api_password: "{{ proxmox_pass }}"
+        api_host: "localhost"
+        update: true
+        update_unsafe: true
+        boot: "c"
+        scsi:
+          scsi0: "{{ vm_storage_pool }}:vm-{{ vm_id }}-disk-0"
+        bootdisk: "scsi0"
+      tags: proxmox
+      delegate_to: "{{ proxmox_inventory_name }}"
+      
+    - name: Resize Disk
+      community.general.proxmox_kvm:
+        vmid: "{{ vm_id }}"
+        node: "{{ proxmox_node }}"
+        api_user: "{{ proxmox_user }}"
+        api_password: "{{ proxmox_pass }}"
+        api_host: "localhost"
+        update: true
+        update_unsafe: true
+        disk: scsi0
+        size: "+{{ vm_disk_resize_amount }}"
+        state: resized
+      tags: proxmox
+      delegate_to: "{{ proxmox_inventory_name }}"
+
+    - name: Remove temporary sudoers file
+      ansible.builtin.file:
+        path: "/tmp/sudoers"
+        state: absent
+      tags: cleanup
+      delegate_to: "{{ proxmox_inventory_name }}"
+
+    - name: Remove cloudinit image file
+      ansible.builtin.file:
+        path: "{{ cloud_image_name }}"
+        state: absent
+      tags: cleanup
+      delegate_to: "{{ proxmox_inventory_name }}"
+
+    - name: Start VM
+      community.general.proxmox_kvm:
+        node: "{{ proxmox_node }}"
+        api_user: "{{ proxmox_user }}"
+        api_password: "{{ proxmox_pass }}"
+        api_host: "localhost"
+        clone: arbitrary_name
+        vmid: "{{ vm_id }}"
+        state: started
+      tags: clone
+      delegate_to: "{{ proxmox_inventory_name }}"
+    - name: Add host to known_hosts
+      ansible.builtin.known_hosts:
+        name: "{{ ansible_host }}"
+        state: present
+        key: "{{ lookup('pipe', 'ssh-keyscan {{ ansible_host }}') }}"
+        hash_host: true
+      retries: 10
+      delay: 10
+      register: result
+      until: result.failed == false
+      delegate_to: "{{ proxmox_inventory_name }}"
+    - name: Wait 600 seconds for target connection to become reachable/usable
+      ansible.builtin.wait_for_connection:
+        timeout: 120
+    - name: Gather Facts about hosts
+      ansible.builtin.gather_facts:
