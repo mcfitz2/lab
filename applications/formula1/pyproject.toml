@@ -8,6 +8,7 @@ authors = [
 requires-python = ">=3.8"
 dependencies = [
     "flask>=3.0.3",
+    "flask-caching>=2.3.1",
     "playwright>=1.44.0",
     "playwright-stealth>=1.0.6",
     "rapidfuzz>=3.9.7",

@@ -5,13 +5,27 @@ from io import BytesIO
 
 from flask import Flask, Response, request
 from formula1.matcher import search_f1_releases
+from flask_caching import Cache
 
+config = {
+    "DEBUG": True,          # some Flask specific configs
+    "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
+    "CACHE_DEFAULT_TIMEOUT": 300
+}
 app = Flask(__name__)
-app.cache = []
-app.last_check = None
-
+# tell Flask to use the above defined config
+app.config.from_mapping(config)
+cache = Cache(app)
+def make_key():
+   """A function which is called to derive the key for a computed value.
+      The key in this case is the concat value of all the json request
+      parameters. Other strategy could to use any hashing function.
+   :returns: unique string for which the value should be cached.
+   """
+   return request.args.get("t", "") + "_" + request.args.get("season", "") + "_" + request.args.get("ep", "")
 
 @app.route("/api")
+@cache.cached(timeout=60, make_cache_key=make_key)
 def api():
     t = request.args.get("t")
     if t == "caps":
