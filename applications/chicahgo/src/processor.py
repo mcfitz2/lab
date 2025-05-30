@@ -175,7 +175,7 @@ class HouseProcessor:
     async def _process_mls(self, session: AsyncSession, house: House) -> House:
         properties = scrape_property(
             location=house.address,
-            listing_type="for_sale",  # or (for_sale, for_rent, pending)
+            #listing_type="for_sale",  # or (for_sale, for_rent, pending)
             property_type=["single_family", "multi_family"],
         )
         mls = properties.to_dict(orient="records")[0]
