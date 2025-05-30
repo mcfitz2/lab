@@ -25,7 +25,7 @@ jobs:
         id: changed-dirs
         run: |
           # Get the base branch (typically main)
-          BASE_BRANCH="main"
+          BASE_BRANCH="master"
           
           # Find changed directories
           CHANGED_DIRS=$(git diff --name-only $BASE_BRANCH...${{ github.sha }} | grep -v "^\.github/" | sed 's|/[^/]*$||' | sort -u)
@@ -91,7 +91,7 @@ jobs:
                       break
           
           # If running on main branch, or specifically targeting CI workflow, include all builds
-          if os.environ.get("GITHUB_REF") == "refs/heads/main" or ".github/workflows" in changed_dirs:
+          if os.environ.get("GITHUB_REF") == "refs/heads/main" or os.environ.get("GITHUB_REF") == "refs/heads/master" or ".github/workflows" in changed_dirs:
               filtered_builds = potential_builds
           
           # Output the final matrix
