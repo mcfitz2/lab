@@ -120,36 +120,70 @@ class NZBGeekClient:
         self.api_key = api_key
         self.base_url = base_url
 
-    def search(self, query, limit=200, extended=1):
+    def search(self, query, limit=100, extended=1, total_limit=1000):
         """
-        Search NZBGeek for a query string.
-        Returns the parsed JSON response.
+        Search NZBGeek for a query string with pagination.
+        Returns the parsed JSON response containing up to total_limit items.
+        
+        Args:
+            query (str): Search query
+            limit (int): Number of items per page (max 100)
+            extended (int): Whether to include extended attributes
+            total_limit (int): Maximum total number of results to return
         """
-        params = {
-            "t": "search",
-            "q": query,
-            "limit": limit,
-            "extended": extended,
-            "o": "json",
-            "apikey": self.api_key,
+        all_items = []
+        offset = 0
+        
+        while offset < total_limit:
+            params = {
+                "t": "search",
+                "q": query,
+                "limit": min(limit, total_limit - offset),
+                "offset": offset,
+                "extended": extended,
+                "o": "json",
+                "apikey": self.api_key,
+            }
+            resp = requests.get(self.base_url, params=params)
+            resp.raise_for_status()
+            results = resp.json()
+            
+            # Extract items from the response
+            items = results.get("channel", {}).get("item", [])
+            if not items:
+                break  # No more results
+            
+            all_items.extend(items)
+            offset += len(items)
+            
+            # If we got fewer items than requested, there are no more results
+            if len(items) < params["limit"]:
+                break
+        
+        # Create a response structure similar to the original API
+        response = {
+            "channel": {
+                "item": all_items
+            }
         }
-        resp = requests.get(self.base_url, params=params)
-        resp.raise_for_status()
-        return resp.json()
-    def search_multiple(self, keywords):
+        return response
+
+    def search_multiple(self, keywords, total_limit=1000):
         """
-        Search NZBGeek for multiple keywords.
-        Returns a list of unique items.
+        Search NZBGeek for multiple keywords with pagination.
+        Returns a list of unique items up to total_limit per keyword.
         """
         all_items = []
         seen_guids = set()
+        
         for keyword in keywords:
-            search_results = self.search(keyword)
+            search_results = self.search(keyword, total_limit=total_limit)
             for result_item in search_results.get("channel", {}).get("item", []):
                 guid = result_item.get("guid")
                 if guid and guid not in seen_guids:
                     all_items.append(result_item)
                     seen_guids.add(guid)
+        
         return all_items
     
 def normalize_name(name):
@@ -443,9 +477,7 @@ def search_f1_releases(season=None, episode=None):
     filtered_results = filter(
         lambda x: (x is not None and 
                   x.get("tvdb_episode") is not None and 
-                  x.get("tvdb_score", 0) >= 120 and
-                  (season is None or str(x["tvdb_episode"].get("seasonNumber")) == str(season)) and
-                  (episode is None or str(x["tvdb_episode"].get("number")) == str(episode))),
+                  x.get("tvdb_score", 0) >= 120),
         processed_results
     )
     
