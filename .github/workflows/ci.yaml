@@ -68,10 +68,11 @@ jobs:
           import json
           import os
           import sys
+          import pprint
           
           potential_builds = json.loads(sys.argv[1])
           changed_dirs = os.environ["CHANGED_DIRS"].strip().split("\n")
-          
+          pprint.pprint(changed_dirs)
           # Handle empty string if no directories changed
           if changed_dirs == [""]:
               changed_dirs = []
@@ -95,6 +96,7 @@ jobs:
           
           # Output the final matrix
           matrix = {"include": filtered_builds}
+          pprint.pprint(matrix)
           print(f"::set-output name=matrix::{json.dumps(matrix)}")
           ' "$POTENTIAL_BUILDS"
 
