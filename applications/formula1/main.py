@@ -6,7 +6,8 @@ from io import BytesIO
 from flask import Flask, Response, request
 from formula1.matcher import search_f1_releases
 from flask_caching import Cache
-
+import html
+from typing import Dict, Any
 config = {
     "DEBUG": True,          # some Flask specific configs
     "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
@@ -24,6 +25,19 @@ def make_key():
    """
    return request.args.get("t", "") + "_" + request.args.get("season", "") + "_" + request.args.get("ep", "")
 
+
+def unescape_dict_values(data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Unescapes HTML entities (like &amp;) in all string values of a dictionary.
+    This function assumes the dictionary does not contain nested dictionaries.
+    
+    Args:
+        data: Dictionary that may contain string values with HTML entities
+        
+    Returns:
+        Dictionary with all string values unescaped
+    """
+    return {k: html.unescape(v) if isinstance(v, str) else v for k, v in data.items()}
 @app.route("/api")
 @cache.cached(timeout=60, make_cache_key=make_key)
 def api():
@@ -78,7 +92,7 @@ def api():
                 ET.SubElement(item, "title").text = combined_data["title"]
                 ET.SubElement(item, "guid").text = entry["guid"]
                 ET.SubElement(item, "link").text = entry['link']
-                ET.SubElement(item, "enclosure", attrib=combined_data["enclosure"]['@attributes'])
+                ET.SubElement(item, "enclosure", attrib=unescape_dict_values(combined_data["enclosure"]['@attributes']))
                 ET.SubElement(item, "comments").text = entry["comments"]
                 ET.SubElement(item, "pubDate").text = entry["pubDate"]
                 ET.SubElement(item, "category").text = "Formula 1"
