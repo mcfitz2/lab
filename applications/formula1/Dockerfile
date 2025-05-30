@@ -14,4 +14,4 @@ RUN uv sync
 # Copy the rest of the application
 COPY . /code
 
-CMD python main.py
+CMD uv run main.py
