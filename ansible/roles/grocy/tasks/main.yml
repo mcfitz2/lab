@@ -1,0 +1,7 @@
+- name: Deploy Manifests
+  kubernetes.core.k8s:
+    kubeconfig: '/etc/rancher/k3s/k3s.yaml'
+    state: present
+    template: "{{ item }}"
+    apply: true
+  loop: "{{ lookup('fileglob', 'templates/*.yaml.j2', wantlist=true) }}"

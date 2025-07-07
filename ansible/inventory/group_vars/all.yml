@@ -52,7 +52,7 @@ nzbget_fqdn: "nzbget.{{ tunnel_domain }}"
 transmission_fqdn: "transmission.{{ tunnel_domain }}"
 chicahgo_fqdn: "chicahgo.{{ tunnel_domain }}"
 metabase_fqdn: "metabase.{{ tunnel_domain }}"
-
+grocy_fqdn: "grocy.{{ tunnel_domain }}"
 
 greatlakes_host: "{{ hostvars['greatlakes-db']['ansible_host'] }}"
 greatlakes_user: "{{ lookup('bitwarden.secrets.lookup', 'e4313714-d00a-48e7-a29a-b20201410624', state_file_dir=bitwarden_state_dir) }}"

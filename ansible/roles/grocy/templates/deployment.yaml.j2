@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grocy
+  name: grocy
+  namespace: misc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grocy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: grocy
+spec:
+      containers:
+      - name: grocy
+        imagePullPolicy: Always
+        image: linuxserver/grocy:latest
+        ports:
+          - containerPort: 9283
+        volumeMounts:
+          - name: db
+            mountPath: /var/www/data
+        env:
+          - name: PUID
+            value: "1000"
+          - name: PGID
+            value: "1000"
+          - name: TZ
+            value: "America/Chicago"
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: grocy
